@@ -491,7 +491,7 @@ export class AgileForm extends Web {
             specification:{childNames:Array<string>;showIf?:Function},
             domNode:AnnotatedDomNode
         ):void => {
-            const oldState:null|boolean = domNode.shown
+            const oldState:boolean|null = domNode.shown
             domNode.shown = (
                 specification.showIf &&
                 specification.showIf() ||
@@ -786,7 +786,7 @@ export class AgileForm extends Web {
             not specified input into the specification (model configuration).
         */
         for (const domNode of inputs) {
-            const name:string|null = domNode.getAttribute('name')
+            const name:null|string = domNode.getAttribute('name')
             if (name) {
                 if (this.resolvedConfiguration.model.hasOwnProperty(name)) {
                     /*
