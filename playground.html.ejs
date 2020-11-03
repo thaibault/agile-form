@@ -1,0 +1,145 @@
+<!doctype html>
+<%_ /*
+    region header
+    Copyright Torben Sickert (info["~at~"]torben.website) 16.12.2012
+
+    License
+    -------
+
+    This library written by Torben Sickert stand under a creative commons
+    naming 3.0 unported license.
+    See https://creativecommons.org/licenses/by/3.0/deed.de
+    endregion
+*/ _%>
+<html>
+    <!--region head-->
+    <head>
+        <meta charset="utf-8">
+        <!--Prevent browser caching-->
+        <meta http-equiv="cache-control" content="no-cache">
+        <meta http-equiv="expires" content="0">
+        <meta http-equiv="pragma" content="no-cache">
+        <title>playground</title>
+
+        <link rel="stylesheet" href="/react-input-material/index.styles.css">
+        <!--region style-->
+        <style>
+            .inputs {
+                float: left;
+                width: 50%;
+            }
+            .tab.hide {
+                display: none;
+            }
+            generic-input {
+                display: block;
+                margin-bottom: 20px;
+            }
+            .outputs {
+                height: -webkit-fill-available;
+                overflow: auto;
+                position: fixed;
+                right: 0;
+                top: 0;
+            }
+            <%-
+                require('material-design-icons/iconfont/material-icons.css')
+                    .replace(
+                        /(url\()(MaterialIcons-Regular\.[^.]+\))/g,
+                        '$1./material-design-icons/iconfont/$2'
+                    )
+             %>
+        </style>
+        <!--endregion-->
+        <!--region polyfill-->
+        <script src="https://polyfill.io/v3/polyfill.js?features=Array.from%2CArray.prototype.flat%2CArray.prototype.includes%2CArray.prototype.values%2CCustomEvent%2CElement.prototype.after%2CElement.prototype.cloneNode%2Cfetch%2CObject.assign%2CObject.entries%2CObject.values%2CPromise%2CString.prototype.endsWith%2CString.prototype.includes%2CString.prototype.startsWith%2CSymbol%2Cfetch"></script>
+        <script>
+            /*
+                Only provide the shadow dom polyfill and avoid to patch a lot
+                of dom apis.
+            */
+            window.ShadyDOM = {noPatch: true}
+        </script>
+        <script src="/@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+        <!--endregion-->
+        <!--region script-->
+        <script>
+            window.onload = function() {
+                CircularSpinner.register()
+                GenericInput.register()
+                GenericInput.component.content.local = 'de-DE'
+                 GenericInput.component.content.transformer.currency.format
+                    .final.options = {currency: 'EUR'}
+                RequireableCheckbox.register()
+                AgileFormAPI.register()
+            }
+        </script>
+        <!--endregion-->
+    </head>
+    <!--endregion-->
+    <body>
+        <agile-form configuration="{
+            model: {
+                type: {
+                    default: 'AG',
+                    nullable: false,
+                    selection: ['AG', 'AN', 'BikeDealer', 'Freelancer', 'Misc']
+                },
+                name: {
+                    default: 'Default Name',
+                    maximumLength: 15,
+                    minimumLength: 2,
+                    nullable: false,
+                    regularExpressionPattern: '[a-zA-Z]+'
+                },
+                message: {
+                    maximumLength: 50,
+                    minimumLength: 10,
+                    nullable: false,
+                    regularExpressionPattern: '[a-zA-Z0-9]+'
+                },
+                legalNotesChecked: {
+                    nullable: false
+                },
+                anotherName: {}
+            }
+        }">
+
+            <circular-spinner size="'xlarge'"></circular-spinner>
+
+            <div class="agile-form__status-message"></div>
+
+            <generic-input
+                declaration="Please fill in your type."
+                description="Type"
+                name="type"
+            ></generic-input>
+            <generic-input
+                declaration="Please fill in your name."
+                description="Name"
+                name="name"
+            ></generic-input>
+            <generic-input
+                declaration="Please fill in your name."
+                description="Name"
+                name="name"
+                placeholder="Please type in a message..."
+            ></generic-input>
+
+            <requireable-checkbox
+                name="legalNotesChecked" description="Check it!"
+            ></requireable-checkbox>
+
+            <button clear>Clear</button>
+            <button type="reset">Reset</button>
+            <button type="submit">OK</button>
+
+        </agile-form>
+    </body>
+<html>
+<%_ /*
+    region vim modline
+    vim: set tabstop=4 shiftwidth=4 expandtab:
+    vim: foldmethod=marker foldmarker=region,endregion:
+    endregion
+*/ _%>
