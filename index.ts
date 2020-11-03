@@ -1370,7 +1370,7 @@ export class AgileForm extends Web {
      * @returns Nothing.
      */
     onClear = (event:MouseEvent):void => {
-        this.onReset(event, false)
+        this.onReset(event, true)
     }
     /**
      * Sets all given input fields to their initial value.
@@ -1378,7 +1378,7 @@ export class AgileForm extends Web {
      * @param useDefault - Indicates to use default value while reseting.
      * @returns Nothing.
      */
-    onReset = (event:MouseEvent, useDefault:boolean = true):void => {
+    onReset = (event:MouseEvent, useDefault:boolean = false):void => {
         for (const name in this.inputs)
             this.resetInput(name, useDefault)
         event.preventDefault()
@@ -1389,20 +1389,12 @@ export class AgileForm extends Web {
      * @param useDefault - Indicates to use default value while resetting.
      * @returns A boolean indicating whether provided field name exists.
      */
-    resetInput(name:string, useDefault:boolean = true):boolean {
+    resetInput(name:string, useDefault:boolean = false):boolean {
         if (
             this.inputs.hasOwnProperty(name) &&
             this.resolvedConfiguration.model.hasOwnProperty(name)
         ) {
             if (
-                useDefault &&
-                this.resolvedConfiguration.model[name].hasOwnProperty(
-                    'default'
-                )
-            )
-                this.inputs[name].value =
-                    this.resolvedConfiguration.model[name].default
-            else if (
                 !useDefault &&
                 this.resolvedConfiguration.model[name].hasOwnProperty(
                     'initialValue'
@@ -1410,6 +1402,14 @@ export class AgileForm extends Web {
             )
                 this.inputs[name].value =
                     this.resolvedConfiguration.model[name].initialValue
+            else if (
+                useDefault &&
+                this.resolvedConfiguration.model[name].hasOwnProperty(
+                    'default'
+                )
+            )
+                this.inputs[name].value =
+                    this.resolvedConfiguration.model[name].default
             else
                 this.inputs[name].value = null
             return true
