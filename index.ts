@@ -221,18 +221,6 @@ export class AgileForm extends Web {
     urlConfiguration:null|PlainObject = null
     // region live cycle hooks
     /**
-     * Initializes host specific event listener observations.
-     * @returns Nothing.
-     */
-    constructor() {
-        super()
-        // Submit form after pressing the enter button on keyboard.
-        window.addEventListener('keydown', (event:KeyboardEvent):void => {
-            if (Tools.keyCode.ENTER === event.keyCode)
-                this.submit(event)
-        })
-    }
-    /**
      * Parses given configuration object and delegates to forward them to
      * nested input nodes.
      * @param name - Attribute name which was updates.
@@ -263,12 +251,13 @@ export class AgileForm extends Web {
     disconnectedCallback():void {
         super.disconnectedCallback()
 
+        window.removeEventListener('keydown', this.onKeyDown)
         for (const domNode of this.clearButtons)
-            domNode.removeEventListener('click', this.clear.bind(this), false)
+            domNode.removeEventListener('click', this.onClear, false)
         for (const domNode of this.resetButtons)
-            domNode.removeEventListener('click', this.reset.bind(this), false)
+            domNode.removeEventListener('click', this.onReset, false)
         for (const domNode of this.submitButtons)
-            domNode.removeEventListener('click', this.submit.bind(this), false)
+            domNode.removeEventListener('click', this.onSubmit, false)
         this.self.initialized = false
     }
     /**
@@ -298,12 +287,13 @@ export class AgileForm extends Web {
             this.resolvedConfiguration.selector.submitButtons
         ))
 
+        window.addEventListener('keydown', this.onKeyDown)
         for (const domNode of this.clearButtons)
-            domNode.addEventListener('click', this.clear.bind(this), false)
+            domNode.addEventListener('click', this.onClear, false)
         for (const domNode of this.resetButtons)
-            domNode.addEventListener('click', this.reset.bind(this), false)
+            domNode.addEventListener('click', this.onReset, false)
         for (const domNode of this.submitButtons)
-            domNode.addEventListener('click', this.submit.bind(this), false)
+            domNode.addEventListener('click', this.onSubmit, false)
     }
     // endregion
     // region handle visibility states
@@ -1379,8 +1369,8 @@ export class AgileForm extends Web {
      * @param event - Triggered event object.
      * @returns Nothing.
      */
-    clear(event:MouseEvent):void {
-        this.reset(event, false)
+    onClear = (event:MouseEvent):void => {
+        this.onReset(event, false)
     }
     /**
      * Sets all given input fields to their initial value.
@@ -1388,7 +1378,7 @@ export class AgileForm extends Web {
      * @param useDefault - Indicates to use default value while reseting.
      * @returns Nothing.
      */
-    reset(event:MouseEvent, useDefault:boolean = true):void {
+    onReset = (event:MouseEvent, useDefault:boolean = true):void => {
         for (const name in this.inputs)
             this.resetInput(name, useDefault)
         event.preventDefault()
@@ -1425,6 +1415,10 @@ export class AgileForm extends Web {
             return true
         }
         return false
+    }
+    onKeyDown = (event:KeyboardEvent):void => {
+        if (Tools.keyCode.ENTER === event.keyCode)
+            this.onSubmit(event)
     }
     /**
      * Sets all hidden non persistent input fields to their initial value.
@@ -1862,7 +1856,7 @@ export class AgileForm extends Web {
      * @param event - Triggered event object.
      * @returns Nothing.
      */
-    async submit(event:KeyboardEvent|MouseEvent):Promise<void> {
+    onSubmit = async (event:KeyboardEvent|MouseEvent):Promise<void> => {
         try {
             event.preventDefault()
             if (this.submitted || this.pending)
