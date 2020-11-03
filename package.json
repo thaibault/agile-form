@@ -4,6 +4,11 @@
   "license": "CC-BY-3.0",
   "description": "Reusable form builder with support for (richt-)text, code, selections, numbers, dates and so on.",
   "main": "index.js",
+  "files": [
+    "index.ts",
+    "index.css",
+    "type.ts"
+  ],
   "scripts": {
     "build": "weboptimizer build",
     "build:export": "weboptimizer build '{__reference__: \"target:export\"}'",
@@ -103,6 +108,11 @@
         "last 2 versions",
         "> 5%"
       ]
+    },
+    "injection": {
+      "entry": {
+        "__evaluate__": "2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2].startsWith('test') ? './test.ts' : 2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2] === 'serve' ? {components: 'web-input-material' index: './index'} : {index: './index'}"
+      }
     },
     "module": {
       "optimizer": {
