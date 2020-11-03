@@ -1,6 +1,6 @@
 {
   "name": "agile-form",
-  "version": "0.0.3",
+  "version": "0.0.2",
   "license": "CC-BY-3.0",
   "description": "Reusable form builder with support for (richt-)text, code, selections, numbers, dates and so on.",
   "main": "index.js",
@@ -66,6 +66,7 @@
     "eslint-plugin-jsdoc": "*",
     "identity-obj-proxy": "*",
     "jest": "*",
+    "jquery": "*",
     "jsdoc": "*",
     "material-design-icons": "*",
     "mini-css-extract-plugin": "*",
@@ -111,7 +112,7 @@
     },
     "injection": {
       "entry": {
-        "__evaluate__": "2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2].startsWith('test') ? './test.ts' : 2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2] === 'serve' ? {components: 'web-input-material', index: './index'} : './index'"
+        "__evaluate__": "2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2].startsWith('test') ? './test.ts' : 2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2] === 'serve' ? {index: './index', webInputMaterial: 'web-input-material'} : './index'"
       }
     },
     "module": {

@@ -6808,6 +6808,11 @@ jest@*:
     import-local "^3.0.2"
     jest-cli "^26.6.2"
 
+jquery@*:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.5.1.tgz#d7b4d08e1bfdb86ad2f1a3d039ea17304717abb5"
+  integrity sha512-XwIBPqcMn57FxfT+Go5pzySnm4KWkT1Tv7gjrpT1srtf8Weynl6R273VJ5GjkRb51IzMp5nbaPjJXMWeju2MKg==
+
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
@@ -8896,9 +8901,9 @@ react-dom@*:
     scheduler "^0.20.1"
 
 react-input-material@*:
-  version "0.0.78"
-  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.78.tgz#9533257cb5b5af13947067fe3fd6cadee2c892c0"
-  integrity sha512-pAiFe1RTz9n6uRuf5JdECWEcaCQmUSZzqJZhcqPmOG2n++dhA5QgysPgV5grrDRe9UySpDAigGSaRMCyOP43rA==
+  version "0.0.79"
+  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.79.tgz#0ef0579bf1b8afb02a32d23514079486206b9643"
+  integrity sha512-XwKq6/LhYSP5P9Zi1+F+O+o84p4vYQaK6ezLnEkawXYhLTZgLkxWB74F7XymqKT7bShi9ujlnTaRIVH05/4DIA==
 
 react-is@^16.12.0, react-is@^16.8.1:
   version "16.13.1"
@@ -10506,9 +10511,9 @@ web-component-wrapper@*:
   integrity sha512-AS4O11eHe21fM9XQgAjrnYu3Hox/4FESDF+CBDS4JtEf3QTonLf/04beVGYR8JWdya4w086J3wJHGugga+MosQ==
 
 web-input-material@*:
-  version "0.0.30"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.30.tgz#db586f304bc9c523ee95749eb300e6543c2f85d8"
-  integrity sha512-Ak/0DagNwwpwme2zp1Wcbzx/ajarm1569GvcD6rPGBP4ngV/PUYz3+vAagEUt2Mnl3OsYAciRgt8Z/fhnt2/Pw==
+  version "0.0.31"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.31.tgz#922bea624b854dced1a168c508d0ec61ec355b5f"
+  integrity sha512-BWJDVy125DG0lF6manup0hNkki95u3loT4iUXI+fzHlaZFe+q7a3Wckv0NvrlFhsKQZ1ZHbPcZSswGliPdCcrA==
   dependencies:
     react-input-material "*"
     web-component-wrapper "*"
