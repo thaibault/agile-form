@@ -1,6 +1,6 @@
 // #!/usr/bin/env node
 // -*- coding: utf-8 -*-
-/** @module jobrad-form */
+/** @module agile-form */
 'use strict'
 /* !
     region header

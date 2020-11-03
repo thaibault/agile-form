@@ -65,13 +65,10 @@
         <!--region script-->
         <script>
             window.onload = function() {
-                CircularSpinner.register()
-                GenericInput.register()
-                GenericInput.component.content.local = 'de-DE'
-                 GenericInput.component.content.transformer.currency.format
-                    .final.options = {currency: 'EUR'}
-                RequireableCheckbox.register()
-                AgileFormAPI.register()
+                Object.values(agileForm.components).map(function(component) {
+                    component.register()
+                })
+                agileForm.index.api.register()
             }
         </script>
         <!--endregion-->
