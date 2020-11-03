@@ -65,9 +65,11 @@
         <!--region script-->
         <script>
             window.onload = function() {
-                Object.values(agileForm.components).map(function(component) {
-                    component.register()
-                })
+                Object.values(agileForm.webInputMaterial.components).map(
+                    function(component) {
+                        component.register()
+                    }
+                )
                 agileForm.index.api.register()
             }
         </script>
@@ -78,9 +80,9 @@
         <agile-form configuration="{
             model: {
                 type: {
-                    default: 'AG',
+                    default: 'A',
                     nullable: false,
-                    selection: ['AG', 'AN', 'BikeDealer', 'Freelancer', 'Misc']
+                    selection: ['A', 'B', 'C']
                 },
                 name: {
                     default: 'Default Name',
@@ -117,9 +119,10 @@
                 name="name"
             ></generic-input>
             <generic-input
-                declaration="Please fill in your name."
-                description="Name"
-                name="name"
+                declaration="Please provide a message."
+                description="Message"
+                editor="text"
+                name="message"
                 placeholder="Please type in a message..."
             ></generic-input>
 

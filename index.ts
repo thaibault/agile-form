@@ -1396,7 +1396,7 @@ export class AgileForm extends Web {
     /**
      * Sets given input field their initial value.
      * @param name - Name of the field to clear.
-     * @param useDefault - Indicates to use default value while reseting.
+     * @param useDefault - Indicates to use default value while resetting.
      * @returns A boolean indicating whether provided field name exists.
      */
     resetInput(name:string, useDefault:boolean = true):boolean {
@@ -1411,12 +1411,17 @@ export class AgileForm extends Web {
                 )
             )
                 this.inputs[name].value =
-                this.inputs[name].model.value =
                     this.resolvedConfiguration.model[name].default
-            else
+            else if (
+                !useDefault &&
+                this.resolvedConfiguration.model[name].hasOwnProperty(
+                    'initialValue'
+                )
+            )
                 this.inputs[name].value =
-                this.inputs[name].model.value =
-                    null
+                    this.resolvedConfiguration.model[name].initialValue
+            else
+                this.inputs[name].value = null
             return true
         }
         return false
@@ -2262,7 +2267,7 @@ export class AgileForm extends Web {
 export const api:WebComponentAPI<AgileForm> = {
     component: AgileForm,
     register: (tagName:string = 'agile-form'):void =>
-        customElements.define(name, AgileForm)
+        customElements.define(tagName, AgileForm)
 }
 export default api
 // region vim modline
