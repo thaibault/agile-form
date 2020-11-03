@@ -1,0 +1,146 @@
+{
+  "name": "agile-form",
+  "version": "0.0.1",
+  "license": "CC-BY-3.0",
+  "description": "Reusable form builder with support for (richt-)text, code, selections, numbers, dates and so on.",
+  "main": "index.js",
+  "scripts": {
+    "build": "weboptimizer build",
+    "build:export": "weboptimizer build '{__reference__: \"target:export\"}'",
+    "check": "yarn check:types; yarn lint",
+    "check:types": "weboptimizer check:types",
+    "clear": "weboptimizer clear",
+    "document": "weboptimizer document",
+    "lint": "weboptimizer lint",
+    "prepare": "yarn build",
+    "report:coverage": "nyc report --reporter=text-lcov | coveralls",
+    "serve": "weboptimizer serve",
+    "start": "yarn serve",
+    "test": "weboptimizer test",
+    "test:browser": "weboptimizer test:browser",
+    "update": "yarn version --patch && yarn publish",
+    "update:documentation": "documentationWebsite --log-level info",
+    "watch": "weboptimizer build --watch"
+  },
+  "devDependencies": {
+    "@babel/preset-react": "*",
+    "@rmwc/card": "*",
+    "@rmwc/checkbox": "*",
+    "@rmwc/circular-progress": "*",
+    "@rmwc/formfield": "*",
+    "@rmwc/icon": "*",
+    "@rmwc/icon-button": "*",
+    "@rmwc/select": "*",
+    "@rmwc/tabs": "*",
+    "@rmwc/textfield": "*",
+    "@rmwc/theme": "*",
+    "@rmwc/tooltip": "*",
+    "@rmwc/typography": "*",
+    "@types/ejs": "*",
+    "@types/grecaptcha": "*",
+    "@types/html-minifier": "*",
+    "@types/jest": "*",
+    "@types/jquery": "*",
+    "@types/jsdom": "*",
+    "@types/loader-utils": "*",
+    "@types/node": "*",
+    "@types/node-fetch": "*",
+    "@types/react": "*",
+    "@types/react-dom": "*",
+    "@types/react-transition-group": "*",
+    "@types/webpack-env": "*",
+    "@typescript-eslint/eslint-plugin": "*",
+    "@typescript-eslint/parser": "*",
+    "@webcomponents/webcomponentsjs": "*",
+    "babel-eslint": "*",
+    "clientnode": "*",
+    "css-loader": "*",
+    "cssnano": "*",
+    "eslint": "*",
+    "eslint-config-google": "*",
+    "eslint-plugin-jsdoc": "*",
+    "identity-obj-proxy": "*",
+    "jest": "*",
+    "jsdoc": "*",
+    "material-design-icons": "*",
+    "mini-css-extract-plugin": "*",
+    "postcss-loader": "*",
+    "postcss-preset-env": "*",
+    "prop-types": "*",
+    "react": "*",
+    "react-dom": "*",
+    "react-transition-group": "*",
+    "style-loader": "*",
+    "web-input-material": "*",
+    "weboptimizer": "*",
+    "webpack-dev-server": "*"
+  },
+  "peerDependencies": {
+    "@babel/runtime": "*",
+    "clientnode": "*"
+  },
+  "sideEffects": false,
+  "webOptimizer": {
+    "commandLine": {
+      "test": {
+        "environments": [
+          "jsdom"
+        ]
+      }
+    },
+    "development": {
+      "server": {
+        "contentBase": {
+          "__prepend__": {
+            "__evaluate__": "path.resolve(self.path.base, '../../', self.module.directoryNames[0])"
+          }
+        }
+      }
+    },
+    "generic": {
+      "supportedBrowsers": [
+        "IE >= 11",
+        "last 2 versions",
+        "> 5%"
+      ]
+    },
+    "module": {
+      "optimizer": {
+        "babelMinify": {
+          "#": "To provide a logging output we need to exclude this feature.",
+          "__evaluate__": "self.debug ? {bundle: null, module: null} : {bundle: {transform: {removeConsole: false}}, module: {removeConsole: false}}"
+        }
+      },
+      "replacements": {
+        "normal": {
+          "#": "Mock unneeded optional dependencies away.",
+          "ace-builds": "react-input-material/components/Dummy",
+          "@tinymce/tinymce-react$": "react-input-material/components/Dummy",
+          "react-ace": "react-input-material/components/Dummy",
+          "react-useanimations$": "react-input-material/components/Dummy",
+          "react-useanimations/lib/lock$": "react-input-material/components/Dummy",
+          "react-useanimations/lib/plusToX$": "react-input-material/components/Dummy"
+        }
+      }
+    },
+    "target:export": {
+      "inPlace": {
+        "externalLibrary": {
+          "dynamic": true,
+          "normal": true
+        }
+      },
+      "module": {
+        "preprocessor": {
+          "javaScript": {
+            "options": {
+              "plugins": {
+                "__remove__": "@babel/plugin-transform-runtime"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
