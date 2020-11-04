@@ -119,7 +119,8 @@ export class AgileForm extends Web {
         selector: {
             clearButtons: 'button[clear], [type=button]',
             groups: '.agile-form__group',
-            inputs: 'generic-input, input, requireable-checkbox',
+            // TODO do not allow nested elements
+            inputs: 'generic-input, requireable-checkbox',
             resetButtons: 'button[reset], [type=button], [type=reset]',
             spinner: 'circular-spinner',
             statusMessageBoxes: '.agile-form__status-message',
@@ -815,7 +816,6 @@ export class AgileForm extends Web {
                         extend given model object with their defaults.
                     */
                     await Tools.timeout()
-                    console.log('B', name, domNode.model.default)
                     Object.defineProperty(
                         this.models,
                         name,
