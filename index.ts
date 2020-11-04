@@ -266,12 +266,17 @@ export class AgileForm extends Web {
     /**
      * Triggered when content projected and nested dom nodes are ready to be
      * traversed. Selects all needed dom nodes.
-     * @returns Nothing.
+     * @returns A promise resolving to nothing.
      */
-    render():void {
+    async render():Promise<void> {
         super.render()
 
-        this.configureContentProjectedInputs()
+        /*
+            NOTE: We need a digest loop to allow the components to extend given
+            model object with their defaults.
+        */
+        await Tools.timeout()
+        await this.configureContentProjectedInputs()
 
         this.spinner = Array.from(this.root.querySelectorAll(
             this.resolvedConfiguration.selector.spinner
@@ -297,6 +302,9 @@ export class AgileForm extends Web {
             domNode.addEventListener('click', this.onReset, false)
         for (const domNode of this.submitButtons)
             domNode.addEventListener('click', this.onSubmit, false)
+
+        this.updateMessageBox()
+        await this.stopBackgroundProcess()
     }
     // endregion
     // region handle visibility states
@@ -702,10 +710,8 @@ export class AgileForm extends Web {
             this.message =
                 'Missing input for expected model name "' +
                 `${Object.keys(missingInputs).join('", "')}".`
-        this.updateMessageBox()
         this.createDependencyMapping()
         this.addEventListener()
-        await this.stopBackgroundProcess()
     }
     /**
      * Determine all environment variables to ran expressions again. We have to
@@ -736,10 +742,10 @@ export class AgileForm extends Web {
         if (dummyMode)
             for (const domNode of inputs)
                 this.activate(domNode)
+        this.models = {...this.resolvedConfiguration.model}
         const missingInputs:Mapping<Model> = {...this.models}
         this.determineModelNames()
         this.inputs = {}
-        this.models = {}
         this.initialData = {}
         let index:number = 0
         /*
@@ -751,60 +757,7 @@ export class AgileForm extends Web {
             if (name) {
                 if (this.resolvedConfiguration.model.hasOwnProperty(name)) {
                     this.models[name] = this.resolvedConfiguration.model[name]
-                    // TODO
-                    /*
-                        Found input is specified: Extend existing configuration
-                        with forms specification.
-                        NOTE: We need nested "Tools.extend" calls to control
-                        order of extending.
-                    */
-                    if (
-                        domNode.model !== null &&
-                        typeof domNode.model === 'object'
-                    )
-
-
-                Object.defineProperty(
-                    this.models[name],
-                    'value',
-                    {
-                        get: ():any => this.inputs[name].value,
-                        set: (value:any):void => {
-                            this.inputs[name].value = value
-                        }
-                    }
-                )
-                if (
-                    this.inputs.hasOwnProperty(name) &&
-                    this.models[name].hasOwnProperty('eventChangedName')
-                )
-                    Object.defineProperty(
-                        this.models[name],
-                        'value',
-                        {
-                            get: ():any => this.inputs[name].value,
-                            set: (value:any):void => {
-                                this.inputs[name].value = value
-                            }
-                        }
-                    )
-
-
-                        Tools.extend(
-                            true,
-                            this.models[name],
-                            Tools.extend(
-                                true, {}, domNode.model, this.models[name]
-                            )
-                        )
-
-
-
-                    domNode.model = this.models[name]
-                    if (domNode.model.hasOwnProperty('value'))
-                        domNode.value = domNode.model.value
                     delete missingInputs[name]
-                    this.inputs[name] = domNode
                     if (
                         this.resolvedConfiguration.debug &&
                         this.models[name].showIfExpression
@@ -813,7 +766,7 @@ export class AgileForm extends Web {
                             'title',
                             this.models[name].showIfExpression as string
                         )
-                } else if (name.includes('.')) {
+                } else if (name.includes('.'))
                     // Found input is a computable field.
                     this.models[name] = {
                         /*
@@ -825,10 +778,8 @@ export class AgileForm extends Web {
                         showIfExpression: name,
                         value: null
                     }
-                    domNode.model = this.models[name]
-                    this.inputs[name] = domNode
-                } else if (dummyMode) {
-                    // Nothing is specific specified: Prototyping mode.
+                else if (dummyMode)
+                    // Nothing is specified: Prototyping mode.
                     this.models[name] = {
                         /*
                             NOTE: Will depend on all other available model
@@ -839,17 +790,66 @@ export class AgileForm extends Web {
                         value: null,
                         ...domNode.model
                     }
-                    domNode.model = this.models[name]
-                    this.inputs[name] = domNode
-                } else
-                    // Specification exists but found input isn't found there.
+                else {
+                    /*
+                        Specification exists but corresponding input couldn't
+                        be found.
+                    */
                     this.message =
                         `Given input "${name}" not found in current ` +
                         'configuration. Expected names are: "' +
                         `${this.modelNames.join('", "')}".`
-
+                    continue
+                }
+                if (
+                    domNode.model !== null && typeof domNode.model === 'object'
+                ) {
+                    /*
+                        Found input is specified: Extend existing configuration
+                        with forms specification.
+                    */
+                    // TODO
+                    domNode.model = {...domNode.model, ...this.models[name]}
+                    /*
+                        NOTE: We need a digest loop to allow the components to
+                        extend given model object with their defaults.
+                    */
+                    await Tools.timeout()
+                    console.log('B', name, domNode.model.default)
+                    Object.defineProperty(
+                        this.models,
+                        name,
+                        {
+                            get: ():any => domNode.model,
+                            set: (value:any):void => {
+                                domNode.model = value
+                            }
+                        }
+                    )
+                } else {
+                    Object.defineProperty(
+                        this.models[name],
+                        'value',
+                        {
+                            get: ():any => domNode.value,
+                            set: (value:any):void => {
+                                domNode.value = value
+                            }
+                        }
+                    )
+                    domNode.model = this.models[name]
+                    if (domNode.model.hasOwnProperty('value'))
+                        domNode.value = domNode.model.value
+                    /*
+                        NOTE: We need a digest loop to allow the components to
+                        extend given model object with their defaults.
+                    */
+                    await Tools.timeout()
+                }
+                this.inputs[name] = domNode
+                this.initialData[name] = domNode.value
             } else
-               this.message =
+                this.message =
                     `Missing attribute "name" for ${index}. given input.`
             index += 1
         }
@@ -867,16 +867,6 @@ export class AgileForm extends Web {
                 this.preCompileShowIfExpression(name)
                 this.preCompileDynamicExtendStructure(name)
             }
-        /*
-            NOTE: We need a digest loop to allow the components to extend given
-            model object with their defaults.
-        */
-        await Tools.timeout()
-        for (const domNode of inputs) {
-            const name:null|string = domNode.getAttribute('name')
-            if (name)
-               this.initialData[name] = domNode.value
-        }
         return missingInputs
     }
     /**
