@@ -54,6 +54,7 @@ import {
  * specification keys to their corresponding input field property name (if not
  * equal).
  *
+ * @property clearButtons - Reference to form clear button nodes.
  * @property dependencyMapping - Mapping from each field to their dependent one.
  * @property groups - Mapping from group dom nodes to containing field names
  * and conditional show if expression.
@@ -73,6 +74,8 @@ import {
  * messages.
  * @property submitButtons - Reference to submit button nodes.
  * @property submitted - Indicates whether this form is currently submitted.
+ * @property truncateButtons - Reference to form truncate buttons.
+ * @property urlConfiguration - URL given configurations object.
  */
 export class AgileForm extends Web {
     static baseScopeNames:Array<string> = [
@@ -117,14 +120,15 @@ export class AgileForm extends Web {
         },
         securityResponsePrefix: ")]}',",
         selector: {
-            clearButtons: 'button[clear], [type=button]',
+            clearButtons: 'button[clear]',
             groups: '.agile-form__group',
             // TODO do not allow nested elements
             inputs: 'generic-input, requireable-checkbox',
-            resetButtons: 'button[reset], [type=button], [type=reset]',
+            resetButtons: 'button[reset], [type=reset]',
             spinner: 'circular-spinner',
             statusMessageBoxes: '.agile-form__status-message',
-            submitButtons: 'button[submit], [type=submit]'
+            submitButtons: 'button[submit], [type=submit]',
+            truncateButtons: 'button[truncate]'
         },
         showAll: false,
         tag: {
@@ -221,6 +225,7 @@ export class AgileForm extends Web {
     statusMessageBoxes:Array<AnnotatedDomNode> = []
     submitButtons:Array<AnnotatedDomNode> = []
     submitted:boolean = false
+    truncateButtons:Array<AnnotatedDomNode> = []
     urlConfiguration:null|PlainObject = null
     // region live cycle hooks
     /**
@@ -262,6 +267,8 @@ export class AgileForm extends Web {
             domNode.removeEventListener('click', this.onReset, false)
         for (const domNode of this.submitButtons)
             domNode.removeEventListener('click', this.onSubmit, false)
+        for (const domNode of this.truncateButtons)
+            domNode.removeEventListener('click', this.onTruncate, false)
         this.self.initialized = false
     }
     /**
@@ -295,6 +302,9 @@ export class AgileForm extends Web {
         this.submitButtons = Array.from(this.root.querySelectorAll(
             this.resolvedConfiguration.selector.submitButtons
         ))
+        this.truncateButtons = Array.from(this.root.querySelectorAll(
+            this.resolvedConfiguration.selector.truncateButtons
+        ))
 
         window.addEventListener('keydown', this.onKeyDown)
         for (const domNode of this.clearButtons)
@@ -303,6 +313,8 @@ export class AgileForm extends Web {
             domNode.addEventListener('click', this.onReset, false)
         for (const domNode of this.submitButtons)
             domNode.addEventListener('click', this.onSubmit, false)
+        for (const domNode of this.truncateButtons)
+            domNode.addEventListener('click', this.onTruncate, false)
 
         this.updateMessageBox()
         await this.stopBackgroundProcess()
@@ -557,7 +569,8 @@ export class AgileForm extends Web {
                         (expression:Array<string>):string => expression[0]
                     ),
                     this.modelNames,
-                    'determineStateURL'
+                    'determineStateURL',
+                    'getData'
                 )
             )
             if (typeof template === 'string')
@@ -579,7 +592,8 @@ export class AgileForm extends Web {
                         ...this.modelNames.map((name:string):any =>
                             this.models[name]
                         ),
-                        this.determineStateURL
+                        this.determineStateURL,
+                        this.getData
                     )
                 } catch (error) {
                     console.warn(
@@ -776,8 +790,7 @@ export class AgileForm extends Web {
                         */
                         dependsOn: null,
                         dynamicExtendExpressions: {value: name},
-                        showIfExpression: name,
-                        value: null
+                        showIfExpression: name
                     }
                 else if (dummyMode)
                     // Nothing is specified: Prototyping mode.
@@ -788,7 +801,6 @@ export class AgileForm extends Web {
                         */
                         dependsOn: null,
                         name,
-                        value: null,
                         ...domNode.model
                     }
                 else {
@@ -809,44 +821,49 @@ export class AgileForm extends Web {
                         Found input is specified: Extend existing configuration
                         with forms specification.
                     */
-                    // TODO
-                    domNode.model = {...domNode.model, ...this.models[name]}
+                    this.models[name] = {...domNode.model, ...this.models[name]}
+                    // Control value via "value" property.
+                    delete this.models[name].value
+                    domNode.model = this.models[name]
                     /*
                         NOTE: We need a digest loop to allow the components to
                         extend given model object with their defaults.
                     */
                     await Tools.timeout()
-                    Object.defineProperty(
-                        this.models,
-                        name,
-                        {
-                            get: ():any => domNode.model,
-                            set: (value:any):void => {
-                                domNode.model = value
-                            }
-                        }
-                    )
                 } else {
-                    Object.defineProperty(
-                        this.models[name],
-                        'value',
-                        {
-                            get: ():any => domNode.value,
-                            set: (value:any):void => {
-                                domNode.value = value
-                            }
-                        }
-                    )
                     domNode.model = this.models[name]
-                    if (domNode.model.hasOwnProperty('value'))
-                        domNode.value = domNode.model.value
                     /*
                         NOTE: We need a digest loop to allow the components to
                         extend given model object with their defaults.
                     */
                     await Tools.timeout()
                 }
+                Object.defineProperty(
+                    this.models[name],
+                    'value',
+                    {
+                        get: ():any => domNode.value,
+                        set: (value:any):void => {
+                            domNode.value = value
+                        }
+                    }
+                )
+                /*
+                    NOTE: We have to determine initial value since the
+                    component is already initialized by itself.
+                */
+                if (
+                    !domNode.value &&
+                    (domNode.initialValue || this.models[name].default)
+                )
+                    domNode.value =
+                        domNode.initialValue ?? this.models[name].default
                 this.inputs[name] = domNode
+                /*
+                    NOTE: We need a digest loop to allow the components to
+                    extend given model object with their defaults.
+                */
+                await Tools.timeout()
                 this.initialData[name] = domNode.value
             } else
                 this.message =
@@ -1354,7 +1371,7 @@ export class AgileForm extends Web {
      * @returns A promise resolving to nothing.
      */
     onReset = async (
-        event:MouseEvent, useDefault:boolean = false
+        event:MouseEvent, useDefault:boolean|null = null
     ):Promise<void> => {
         event.preventDefault()
         event.stopPropagation()
@@ -1369,6 +1386,14 @@ export class AgileForm extends Web {
             }
     }
     /**
+     * Empties all given input fields.
+     * @param event - Triggered event object.
+     * @returns A promise resolving to nothing.
+     */
+    onTruncate = (event:MouseEvent):Promise<void> => {
+        return this.onReset(event, null)
+    }
+    /**
      * Sets given input field their initial value.
      * @param name - Name of the field to clear.
      * @param useDefault - Indicates to use default value while resetting.
@@ -1376,13 +1401,13 @@ export class AgileForm extends Web {
      * field name exists.
      */
     async resetInput(
-        name:string, useDefault:boolean = false
+        name:string, useDefault:boolean|null = false
     ):Promise<boolean> {
         if (
             this.inputs.hasOwnProperty(name) &&
             this.models.hasOwnProperty(name)
         ) {
-            if (!useDefault && this.initialData.hasOwnProperty(name))
+            if (useDefault === false && this.initialData.hasOwnProperty(name))
                 this.inputs[name].value = Tools.copy(this.initialData[name])
             else if (useDefault && this.models[name].hasOwnProperty('default'))
                 this.inputs[name].value = Tools.copy(this.models[name].default)
@@ -1426,7 +1451,7 @@ export class AgileForm extends Web {
      * @returns An object containing raw data and a list of invalid input
      * fields.
      */
-    getData():ResponseResult {
+    getData = ():ResponseResult => {
         const data:PlainObject = {}
         const invalidInputNames:Array<string> = []
         for (const name in this.inputs)
@@ -1436,11 +1461,7 @@ export class AgileForm extends Web {
                         this.inputs[name].value
                     ) :
                     this.inputs[name].value
-                if (
-                    this.models[name].shown &&
-                    // TODO validation state not set if disabled (not nullable).
-                    Boolean(this.inputs[name].invalid)
-                )
+                if (this.models[name].shown && this.inputs[name].invalid)
                     invalidInputNames.push(name)
                 if (name && ![null, undefined].includes(value))
                     if (

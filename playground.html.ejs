@@ -112,9 +112,7 @@
 
             <div class="agile-form__group" name="report">
                 Result:
-                <pre>
-                    Name: ${name.value}
-                </pre>
+                <pre>${tools.represent(getData())}</pre>
             </div>
 
             <hr/>
@@ -141,6 +139,7 @@
                 name="legalNotesChecked" description="Check it!"
             ></requireable-checkbox>
 
+            <button truncate>Truncate</button>
             <button clear>Clear</button>
             <button type="reset">Reset</button>
             <button type="submit">OK</button>
