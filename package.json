@@ -5,13 +5,16 @@
   "description": "Reusable form builder with support for (richt-)text, code, selections, numbers, dates and so on.",
   "main": "index.js",
   "files": [
-    "index.ts",
+    "index.bundle.js",
+    "index.bundle.css",
     "index.css",
+    "index.ts",
     "type.ts"
   ],
   "scripts": {
-    "build": "weboptimizer build",
-    "build:export": "weboptimizer build '{__reference__: \"target:export\"}'",
+    "build": "yarn build:plain && yarn build:bundle",
+    "build:bundle": "weboptimizer build '{__reference__: \"target:bundle\"}'",
+    "build:plain": "weboptimizer build",
     "check": "yarn check:types; yarn lint",
     "check:types": "weboptimizer check:types",
     "clear": "weboptimizer clear",
@@ -94,15 +97,6 @@
         ]
       }
     },
-    "development": {
-      "server": {
-        "contentBase": {
-          "__prepend__": {
-            "__evaluate__": "path.resolve(self.path.base, '../../', self.module.directoryNames[0])"
-          }
-        }
-      }
-    },
     "generic": {
       "supportedBrowsers": [
         "IE >= 11",
@@ -112,7 +106,7 @@
     },
     "injection": {
       "entry": {
-        "__evaluate__": "2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2].startsWith('test') ? './test.ts' : 2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2] === 'serve' ? {index: './index', webInputMaterial: 'web-input-material'} : './index'"
+        "__evaluate__": "2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2].startsWith('test') ? './test.ts' : 2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2] === 'serve' ? {index: './index', styles: './index.css', webInputMaterial: 'web-input-material'} : {index: './index', styles: './index.css'}"
       }
     },
     "module": {
@@ -134,7 +128,14 @@
         }
       }
     },
-    "target:export": {
+    "target:bundle": {
+      "files": {
+        "compose": {
+          "javaScript": {
+            "__evaluate__": "`${path.resolve(self.path.target.asset.javaScript, '[name].bundle')}.js`"
+          }
+        }
+      },
       "inPlace": {
         "externalLibrary": {
           "dynamic": true,
