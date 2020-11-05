@@ -108,6 +108,15 @@
 
             <div class="agile-form__status-message"></div>
 
+            <hr/>
+
+            <div class="agile-form__group" name="report">
+                Result:
+                <pre>${tools.represent(getData())}</pre>
+            </div>
+
+            <hr/>
+
             <generic-input
                 declaration="Please fill in your type."
                 description="Type"
@@ -130,6 +139,7 @@
                 name="legalNotesChecked" description="Check it!"
             ></requireable-checkbox>
 
+            <button truncate>Truncate</button>
             <button clear>Clear</button>
             <button type="reset">Reset</button>
             <button type="submit">OK</button>

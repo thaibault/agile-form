@@ -54,6 +54,7 @@ import {
  * specification keys to their corresponding input field property name (if not
  * equal).
  *
+ * @property clearButtons - Reference to form clear button nodes.
  * @property dependencyMapping - Mapping from each field to their dependent one.
  * @property groups - Mapping from group dom nodes to containing field names
  * and conditional show if expression.
@@ -73,6 +74,8 @@ import {
  * messages.
  * @property submitButtons - Reference to submit button nodes.
  * @property submitted - Indicates whether this form is currently submitted.
+ * @property truncateButtons - Reference to form truncate buttons.
+ * @property urlConfiguration - URL given configurations object.
  */
 export class AgileForm extends Web {
     static baseScopeNames:Array<string> = [
@@ -117,13 +120,15 @@ export class AgileForm extends Web {
         },
         securityResponsePrefix: ")]}',",
         selector: {
-            clearButtons: 'button[clear], [type=button]',
-            groups: 'agile-group',
-            inputs: 'generic-input, input, requireable-checkbox',
-            resetButtons: 'button[reset], [type=button], [type=reset]',
+            clearButtons: 'button[clear]',
+            groups: '.agile-form__group',
+            // TODO do not allow nested elements
+            inputs: 'generic-input, requireable-checkbox',
+            resetButtons: 'button[reset], [type=reset]',
             spinner: 'circular-spinner',
             statusMessageBoxes: '.agile-form__status-message',
-            submitButtons: 'button[submit], [type=submit]'
+            submitButtons: 'button[submit], [type=submit]',
+            truncateButtons: 'button[truncate]'
         },
         showAll: false,
         tag: {
@@ -203,10 +208,12 @@ export class AgileForm extends Web {
     dependencyMapping:{[key:string]:Array<string>} = {}
     groups:Map<AnnotatedDomNode, {childNames:Array<string>;showIf?:Function}> =
         new Map()
+    initialData:PlainObject = {}
     initialResponse:any = null
     inputs:{[key:string]:AnnotatedDomNode} = {}
     latestResponse:any = null
     message:string = ''
+    models:PlainObject = {}
     modelNames:Array<string> = []
     onceSubmitted:boolean = false
     pending:boolean = true
@@ -218,20 +225,9 @@ export class AgileForm extends Web {
     statusMessageBoxes:Array<AnnotatedDomNode> = []
     submitButtons:Array<AnnotatedDomNode> = []
     submitted:boolean = false
+    truncateButtons:Array<AnnotatedDomNode> = []
     urlConfiguration:null|PlainObject = null
     // region live cycle hooks
-    /**
-     * Initializes host specific event listener observations.
-     * @returns Nothing.
-     */
-    constructor() {
-        super()
-        // Submit form after pressing the enter button on keyboard.
-        window.addEventListener('keydown', (event:KeyboardEvent):void => {
-            if (Tools.keyCode.ENTER === event.keyCode)
-                this.submit(event)
-        })
-    }
     /**
      * Parses given configuration object and delegates to forward them to
      * nested input nodes.
@@ -253,6 +249,7 @@ export class AgileForm extends Web {
      */
     async connectedCallback():Promise<void> {
         super.connectedCallback()
+
         await this.updateReCaptchaToken()
         this.self.initialized = true
     }
@@ -263,23 +260,31 @@ export class AgileForm extends Web {
     disconnectedCallback():void {
         super.disconnectedCallback()
 
+        window.removeEventListener('keydown', this.onKeyDown)
         for (const domNode of this.clearButtons)
-            domNode.removeEventListener('click', this.clear.bind(this), false)
+            domNode.removeEventListener('click', this.onClear, false)
         for (const domNode of this.resetButtons)
-            domNode.removeEventListener('click', this.reset.bind(this), false)
+            domNode.removeEventListener('click', this.onReset, false)
         for (const domNode of this.submitButtons)
-            domNode.removeEventListener('click', this.submit.bind(this), false)
+            domNode.removeEventListener('click', this.onSubmit, false)
+        for (const domNode of this.truncateButtons)
+            domNode.removeEventListener('click', this.onTruncate, false)
         this.self.initialized = false
     }
     /**
      * Triggered when content projected and nested dom nodes are ready to be
      * traversed. Selects all needed dom nodes.
-     * @returns Nothing.
+     * @returns A promise resolving to nothing.
      */
-    render():void {
+    async render():Promise<void> {
         super.render()
 
-        this.configureContentProjectedInputs()
+        /*
+            NOTE: We need a digest loop to allow the components to extend given
+            model object with their defaults.
+        */
+        await Tools.timeout()
+        await this.configureContentProjectedInputs()
 
         this.spinner = Array.from(this.root.querySelectorAll(
             this.resolvedConfiguration.selector.spinner
@@ -297,13 +302,22 @@ export class AgileForm extends Web {
         this.submitButtons = Array.from(this.root.querySelectorAll(
             this.resolvedConfiguration.selector.submitButtons
         ))
+        this.truncateButtons = Array.from(this.root.querySelectorAll(
+            this.resolvedConfiguration.selector.truncateButtons
+        ))
 
+        window.addEventListener('keydown', this.onKeyDown)
         for (const domNode of this.clearButtons)
-            domNode.addEventListener('click', this.clear.bind(this), false)
+            domNode.addEventListener('click', this.onClear, false)
         for (const domNode of this.resetButtons)
-            domNode.addEventListener('click', this.reset.bind(this), false)
+            domNode.addEventListener('click', this.onReset, false)
         for (const domNode of this.submitButtons)
-            domNode.addEventListener('click', this.submit.bind(this), false)
+            domNode.addEventListener('click', this.onSubmit, false)
+        for (const domNode of this.truncateButtons)
+            domNode.addEventListener('click', this.onTruncate, false)
+
+        this.updateMessageBox()
+        await this.stopBackgroundProcess()
     }
     // endregion
     // region handle visibility states
@@ -415,61 +429,37 @@ export class AgileForm extends Web {
             this.deactivate(domNode)
     }
     /**
-     * Updates all field visibility states.
-     * @returns Nothing.
-     */
-    updateAllInputVisibilities():void {
-        for (const name in this.inputs)
-            if (this.inputs.hasOwnProperty(name))
-                this.updateInputVisibility(name)
-    }
-    /**
      * Updates given field (by name) visibility state.
      * @param name - Field name to update.
-     * @returns Boolean value indicating whether a visibility change has been
-     * happen.
+     * @returns A promise resolving to a boolean value indicating whether a
+     * visibility change has been happen.
      */
-    updateInputVisibility(name:string):boolean {
-        const oldState:boolean|undefined =
-            this.resolvedConfiguration.model[name].shown
+    async updateInputVisibility(name:string):Promise<boolean> {
+        const oldState:boolean|undefined = this.models[name].shown
         this.inputs[name].shown =
-        this.resolvedConfiguration.model[name].shown =
-            !this.resolvedConfiguration.model[name].showIf ||
-            this.resolvedConfiguration.model[name].showIf!()
-        if (this.resolvedConfiguration.model[name].shown !== oldState) {
+        this.models[name].shown =
+            !this.models[name].showIf ||
+            this.models[name].showIf!()
+        if (this.models[name].shown !== oldState) {
             if (this.resolvedConfiguration.debug)
                 if (Boolean(oldState) === oldState)
                     console.debug(
                         `Update input "${name}" visibility state from ` +
                         `"${oldState ? 'show' : 'hide'}" to "` +
-                        (
-                            this.resolvedConfiguration.model[name].shown ?
-                                'show' :
-                                'hide'
-                        ) +
+                        (this.models[name].shown ? 'show' : 'hide') +
                         '".'
                     )
                 else
                     console.debug(
                         `Initialize input "${name}" visibility state to "` +
-                        (
-                            this.resolvedConfiguration.model[name].shown ?
-                                'show' :
-                                'hide'
-                        ) +
+                        (this.models[name].shown ? 'show' : 'hide') +
                         '".'
                     )
-            if (
-                this.resolvedConfiguration.model[name].shown ||
-                this.resolvedConfiguration.showAll
-            )
+            if (this.models[name].shown || this.resolvedConfiguration.showAll)
                 this.activate(this.inputs[name])
             else {
-                if (
-                    this.resolvedConfiguration.model[name].valuePersistence ===
-                        'resetOnHide'
-                )
-                    this.resetInput(name)
+                if (this.models[name].valuePersistence === 'resetOnHide')
+                    await this.resetInput(name)
                 this.deactivate(this.inputs[name])
             }
             return true
@@ -491,7 +481,7 @@ export class AgileForm extends Web {
             specification:{childNames:Array<string>;showIf?:Function},
             domNode:AnnotatedDomNode
         ):void => {
-            const oldState:null|boolean = domNode.shown
+            const oldState:boolean|null = domNode.shown
             domNode.shown = (
                 specification.showIf &&
                 specification.showIf() ||
@@ -499,10 +489,8 @@ export class AgileForm extends Web {
                 (
                     specification.childNames.some((name:string):boolean =>
                         Boolean(
-                            !this.resolvedConfiguration.model.hasOwnProperty(
-                                name
-                            ) ||
-                            this.resolvedConfiguration.model[name].shown
+                            !this.models.hasOwnProperty(name) ||
+                            this.models[name].shown
                         )
                     ) ||
                     specification.childNames.length === 0
@@ -558,12 +546,12 @@ export class AgileForm extends Web {
     updateGroupContent(
         domNode:AnnotatedDomNode, name:string = 'unknown'
     ):void {
-        // NOTE: First two conditions are only for performance.
         const nodeName:string = domNode.nodeName.toLowerCase()
         if (['a', '#text'].includes(nodeName) && !domNode.templateContent) {
             const content:null|string = nodeName === 'a' ?
                 domNode.getAttribute('href') :
                 domNode.textContent
+            // NOTE: First three conditions are only for performance.
             if (
                 typeof content === 'string' &&
                 content.includes('${') &&
@@ -575,13 +563,14 @@ export class AgileForm extends Web {
         }
         if (domNode.templateContent) {
             const [scopeNames, template] = Tools.stringCompile(
-                domNode.templateContent,
+                `\`${domNode.templateContent}\``,
                 this.self.baseScopeNames.concat(
                     this.resolvedConfiguration.expressions.map(
                         (expression:Array<string>):string => expression[0]
                     ),
                     this.modelNames,
-                    'determineStateURL'
+                    'determineStateURL',
+                    'getData'
                 )
             )
             if (typeof template === 'string')
@@ -601,9 +590,10 @@ export class AgileForm extends Web {
                         Tools,
                         ...this.evaluateExpressions(),
                         ...this.modelNames.map((name:string):any =>
-                            this.resolvedConfiguration.model[name]
+                            this.models[name]
                         ),
-                        this.determineStateURL.bind(this)
+                        this.determineStateURL,
+                        this.getData
                     )
                 } catch (error) {
                     console.warn(
@@ -724,27 +714,19 @@ export class AgileForm extends Web {
      */
     async configureContentProjectedInputs():Promise<void> {
         const missingInputs:Mapping<Model> =
-            this.connectSpecificationWithDomNodes()
+            await this.connectSpecificationWithDomNodes()
         // Configure input components to hide validation states first.
         for (const name in this.inputs)
             if (this.inputs.hasOwnProperty(name))
                 this.inputs[name].showInitialValidationState = false
         this.preCompileConfigurationExpressions()
         this.setGroupSpecificConfigurations()
-        /*
-            NOTE: We need a digest loop to allow the components to extend given
-            model object with their defaults.
-        */
-        await Tools.timeout()
         if (Object.keys(missingInputs).length)
             this.message =
                 'Missing input for expected model name "' +
                 `${Object.keys(missingInputs).join('", "')}".`
-        this.updateMessageBox()
         this.createDependencyMapping()
-        this.addEventValueUpdateListener()
         this.addEventListener()
-        await this.stopBackgroundProcess()
     }
     /**
      * Determine all environment variables to ran expressions again. We have to
@@ -753,7 +735,7 @@ export class AgileForm extends Web {
      * @returns Nothing.
      */
     determineModelNames():void {
-        this.modelNames = Object.keys(this.resolvedConfiguration.model)
+        this.modelNames = Object.keys(this.models)
             .filter((name:string):boolean => !name.includes('.'))
             .map((name:string):string =>
                 Tools.stringConvertToValidVariableName(name)
@@ -764,102 +746,127 @@ export class AgileForm extends Web {
      * specification.
      * @returns An object mapping with missing but specified fields.
      */
-    connectSpecificationWithDomNodes():Mapping<Model> {
+    async connectSpecificationWithDomNodes():Promise<Mapping<Model>> {
         const inputs:Array<AnnotatedDomNode> =
             Array.from(this.root.querySelectorAll(
                 this.resolvedConfiguration.selector.inputs
             ))
         // If no input is specified simply consider all provided inputs.
-        const dummyMode:boolean =
-            Object.keys(this.resolvedConfiguration.model).length === 0
+        const dummyMode:boolean = Object.keys(this.models).length === 0
         // Show all inputs in dummy mode.
         if (dummyMode)
             for (const domNode of inputs)
                 this.activate(domNode)
-        const missingInputs:Mapping<Model> =
-            {...this.resolvedConfiguration.model}
+        this.models = {...this.resolvedConfiguration.model}
+        const missingInputs:Mapping<Model> = {...this.models}
         this.determineModelNames()
         this.inputs = {}
+        this.initialData = {}
         let index:number = 0
         /*
             Match all found inputs against existing specified fields or load
             not specified input into the specification (model configuration).
         */
         for (const domNode of inputs) {
-            const name:string|null = domNode.getAttribute('name')
+            const name:null|string = domNode.getAttribute('name')
             if (name) {
                 if (this.resolvedConfiguration.model.hasOwnProperty(name)) {
-                    /*
-                        Found input is specified: Extend existing configuration
-                        with forms specification.
-                        NOTE: We need nested "Tools.extend" calls to control
-                        order of extending.
-                    */
-                    if (
-                        typeof domNode.model === 'object' &&
-                        domNode.model !== null
-                    )
-                        Tools.extend(
-                            true,
-                            this.resolvedConfiguration.model[name],
-                            Tools.extend(
-                                true,
-                                {},
-                                domNode.model,
-                                this.resolvedConfiguration.model[name]
-                            )
-                        )
-                    domNode.model = this.resolvedConfiguration.model[name]
-                    if (domNode.model.hasOwnProperty('value'))
-                        domNode.value = domNode.model.value
+                    this.models[name] = this.resolvedConfiguration.model[name]
                     delete missingInputs[name]
-                    this.inputs[name] = domNode
                     if (
                         this.resolvedConfiguration.debug &&
-                        this.resolvedConfiguration.model[name].showIfExpression
+                        this.models[name].showIfExpression
                     )
                         domNode.setAttribute(
                             'title',
-                            this.resolvedConfiguration.model[name]
-                                .showIfExpression as string
+                            this.models[name].showIfExpression as string
                         )
-                } else if (name.includes('.')) {
+                } else if (name.includes('.'))
                     // Found input is a computable field.
-                    this.resolvedConfiguration.model[name] = {
+                    this.models[name] = {
                         /*
                             NOTE: Will depend on all other available model
                             names.
                         */
                         dependsOn: null,
                         dynamicExtendExpressions: {value: name},
-                        showIfExpression: name,
-                        value: null
+                        showIfExpression: name
                     }
-                    domNode.model = this.resolvedConfiguration.model[name]
-                    this.inputs[name] = domNode
-                } else if (dummyMode) {
-                    // Nothing is specific specified: Prototyping mode.
-                    this.resolvedConfiguration.model[name] = {
+                else if (dummyMode)
+                    // Nothing is specified: Prototyping mode.
+                    this.models[name] = {
                         /*
                             NOTE: Will depend on all other available model
                             names.
                         */
                         dependsOn: null,
                         name,
-                        value: null,
                         ...domNode.model
                     }
-                    domNode.model = this.resolvedConfiguration.model[name]
-                    this.inputs[name] = domNode
-                } else
-                    // Specification exists but found input isn't found there.
+                else {
+                    /*
+                        Specification exists but corresponding input couldn't
+                        be found.
+                    */
                     this.message =
                         `Given input "${name}" not found in current ` +
                         'configuration. Expected names are: "' +
                         `${this.modelNames.join('", "')}".`
-
+                    continue
+                }
+                if (
+                    domNode.model !== null && typeof domNode.model === 'object'
+                ) {
+                    /*
+                        Found input is specified: Extend existing configuration
+                        with forms specification.
+                    */
+                    this.models[name] = {...domNode.model, ...this.models[name]}
+                    // Control value via "value" property.
+                    delete this.models[name].value
+                    domNode.model = this.models[name]
+                    /*
+                        NOTE: We need a digest loop to allow the components to
+                        extend given model object with their defaults.
+                    */
+                    await Tools.timeout()
+                } else {
+                    domNode.model = this.models[name]
+                    /*
+                        NOTE: We need a digest loop to allow the components to
+                        extend given model object with their defaults.
+                    */
+                    await Tools.timeout()
+                }
+                Object.defineProperty(
+                    this.models[name],
+                    'value',
+                    {
+                        get: ():any => domNode.value,
+                        set: (value:any):void => {
+                            domNode.value = value
+                        }
+                    }
+                )
+                /*
+                    NOTE: We have to determine initial value since the
+                    component is already initialized by itself.
+                */
+                if (
+                    !domNode.value &&
+                    (domNode.initialValue || this.models[name].default)
+                )
+                    domNode.value =
+                        domNode.initialValue ?? this.models[name].default
+                this.inputs[name] = domNode
+                /*
+                    NOTE: We need a digest loop to allow the components to
+                    extend given model object with their defaults.
+                */
+                await Tools.timeout()
+                this.initialData[name] = domNode.value
             } else
-               this.message =
+                this.message =
                     `Missing attribute "name" for ${index}. given input.`
             index += 1
         }
@@ -868,14 +875,12 @@ export class AgileForm extends Web {
             Set all environment variables as dependencies for computed fields
             and pre compile them.
         */
-        for (const name in this.resolvedConfiguration.model)
+        for (const name in this.models)
             if (
-                this.resolvedConfiguration.model[name]
-                    .hasOwnProperty('dependsOn') &&
-                this.resolvedConfiguration.model[name].dependsOn === null
+                this.models[name].hasOwnProperty('dependsOn') &&
+                this.models[name].dependsOn === null
             ) {
-                this.resolvedConfiguration.model[name].dependsOn =
-                    this.modelNames
+                this.models[name].dependsOn = this.modelNames
                 this.preCompileShowIfExpression(name)
                 this.preCompileDynamicExtendStructure(name)
             }
@@ -948,7 +953,7 @@ export class AgileForm extends Web {
                                 Tools,
                                 ...this.evaluateExpressions(),
                                 ...this.modelNames.map((name:string):any =>
-                                    this.resolvedConfiguration.model[name]
+                                    this.models[name]
                                 )
                             ))
                         } catch (error) {
@@ -975,11 +980,10 @@ export class AgileForm extends Web {
             if (this.inputs.hasOwnProperty(name)) {
                 if (!this.dependencyMapping.hasOwnProperty(name))
                     this.dependencyMapping[name] = []
-                if (this.resolvedConfiguration.model[name].dependsOn)
+                if (this.models[name].dependsOn)
                     for (
-                        const dependentName of
-                            this.resolvedConfiguration.model[name].dependsOn as
-                                Array<string>
+                        const dependentName of this.models[name].dependsOn as
+                            Array<string>
                     )
                         if (this.dependencyMapping.hasOwnProperty(
                             dependentName
@@ -1001,10 +1005,9 @@ export class AgileForm extends Web {
      * @returns Nothing.
      */
     preCompileTransformerExpression(name:string):void {
-        if (this.resolvedConfiguration.model[name].transformerExpression) {
+        if (this.models[name].transformerExpression) {
             const code:string =
-                this.resolvedConfiguration.model[name].transformerExpression as
-                    string
+                this.models[name].transformerExpression as string
             const [scopeNames, preCompiled] = Tools.stringCompile(
                 code,
                 this.self.baseScopeNames.concat(
@@ -1013,7 +1016,7 @@ export class AgileForm extends Web {
                     this.resolvedConfiguration.expressions.map(
                         (expression:Array<string>):string => expression[0]
                     ),
-                    this.resolvedConfiguration.model[name].dependsOn || []
+                    this.models[name].dependsOn || []
                 )
             )
             if (typeof preCompiled === 'string')
@@ -1021,9 +1024,7 @@ export class AgileForm extends Web {
                     `Failed to compile "transformerExpression" "${name}":`,
                     preCompiled
                 )
-            this.resolvedConfiguration.model[name].transformer = (
-                value:any
-            ):any => {
+            this.models[name].transformer = (value:any):any => {
                 if ([null, undefined].includes(value))
                     return value
                 try {
@@ -1034,15 +1035,11 @@ export class AgileForm extends Web {
                         this.response,
                         this.onceSubmitted,
                         Tools,
-                        this.resolvedConfiguration.model[name],
+                        this.models[name],
                         value,
                         ...this.evaluateExpressions(),
-                        ...(
-                            this.resolvedConfiguration.model[name].dependsOn ||
-                            []
-                        ).map((name:string):any =>
-                            this.resolvedConfiguration.model[name]
-                        )
+                        ...(this.models[name].dependsOn || [])
+                            .map((name:string):any => this.models[name])
                     )
                 } catch (error) {
                     console.warn(
@@ -1062,10 +1059,8 @@ export class AgileForm extends Web {
      * @returns Nothing.
      */
     preCompileShowIfExpression(name:string):void {
-        if (this.resolvedConfiguration.model[name].showIfExpression) {
-            const code:string =
-                this.resolvedConfiguration.model[name].showIfExpression as
-                    string
+        if (this.models[name].showIfExpression) {
+            const code:string = this.models[name].showIfExpression as string
             const [scopeNames, preCompiled] = Tools.stringCompile(
                 code,
                 this.self.baseScopeNames.concat(
@@ -1073,7 +1068,7 @@ export class AgileForm extends Web {
                     this.resolvedConfiguration.expressions.map(
                         (expression:Array<string>):string => expression[0]
                     ),
-                    this.resolvedConfiguration.model[name].dependsOn || []
+                    this.models[name].dependsOn || []
                 )
             )
             if (typeof preCompiled === 'string')
@@ -1081,7 +1076,7 @@ export class AgileForm extends Web {
                     `Failed to compile "showIf" expression "${name}":`,
                     preCompiled
                 )
-            this.resolvedConfiguration.model[name].showIf = ():boolean => {
+            this.models[name].showIf = ():boolean => {
                 try {
                     return Boolean((preCompiled as Function)(
                         this.initialResponse,
@@ -1090,13 +1085,10 @@ export class AgileForm extends Web {
                         this.response,
                         this.onceSubmitted,
                         Tools,
-                        this.resolvedConfiguration.model[name],
+                        this.models[name],
                         ...this.evaluateExpressions(),
-                        ...(
-                            this.resolvedConfiguration.model[name].dependsOn ||
-                            []
-                        ).map((name:string):any =>
-                            this.resolvedConfiguration.model[name]
+                        ...(this.models[name].dependsOn || [])
+                            .map((name:string):any => this.models[name]
                         )
                     ))
                 } catch (error) {
@@ -1117,19 +1109,16 @@ export class AgileForm extends Web {
      * @returns Nothing.
      */
     preCompileDynamicExtendStructure(name:string):void {
-        if (!this.resolvedConfiguration.model[name].dynamicExtendExpressions)
+        if (!this.models[name].dynamicExtendExpressions)
             return
-        this.resolvedConfiguration.model[name].dynamicExtend = {}
-        for (const subName in
-            this.resolvedConfiguration.model[name].dynamicExtendExpressions
-        )
-            if ((
-                this.resolvedConfiguration.model[name]
-                    .dynamicExtendExpressions as Mapping
-            ).hasOwnProperty(subName)) {
+        this.models[name].dynamicExtend = {}
+        for (const subName in this.models[name].dynamicExtendExpressions)
+            if (
+                (this.models[name].dynamicExtendExpressions as Mapping)
+                    .hasOwnProperty(subName)
+            ) {
                 const code:string = (
-                    this.resolvedConfiguration.model[name]
-                        .dynamicExtendExpressions as Mapping
+                    this.models[name].dynamicExtendExpressions as Mapping
                 )[subName]
                 const [scopeNames, preCompiled] = Tools.stringCompile(
                     code,
@@ -1138,7 +1127,7 @@ export class AgileForm extends Web {
                         this.resolvedConfiguration.expressions.map(
                             (expression:Array<string>):string => expression[0]
                         ),
-                        this.resolvedConfiguration.model[name].dependsOn || []
+                        this.models[name].dependsOn || []
                     )
                 )
                 if (typeof preCompiled === 'string')
@@ -1148,8 +1137,7 @@ export class AgileForm extends Web {
                         preCompiled
                     );
                 (
-                    this.resolvedConfiguration.model[name].dynamicExtend as
-                        Mapping<() => any>
+                    this.models[name].dynamicExtend as Mapping<() => any>
                 )[subName] = ():any => {
                     try {
                         return (preCompiled as Function)(
@@ -1159,14 +1147,10 @@ export class AgileForm extends Web {
                             this.response,
                             this.onceSubmitted,
                             Tools,
-                            this.resolvedConfiguration.model[name],
+                            this.models[name],
                             ...this.evaluateExpressions(),
-                            ...(
-                                this.resolvedConfiguration.model[name]
-                                    .dependsOn ||
-                                []
-                            ).map((name:string):any =>
-                                this.resolvedConfiguration.model[name])
+                            ...(this.models[name].dependsOn || [])
+                                .map((name:string):any => this.model[name])
                         )
                     } catch (error) {
                         console.error(
@@ -1220,7 +1204,7 @@ export class AgileForm extends Web {
                             Tools,
                             ...this.evaluateExpressions(),
                             ...this.modelNames.map((name:string):any =>
-                                this.resolvedConfiguration.model[name]
+                                this.models[name]
                             ),
                         )
                     } catch (error) {
@@ -1266,7 +1250,7 @@ export class AgileForm extends Web {
                         Tools,
                         ...this.evaluateExpressions(name),
                         ...this.modelNames.map((name:string):any =>
-                            this.resolvedConfiguration.model[name]
+                            this.models[name]
                         )
                     )
                 } catch (error) {
@@ -1288,12 +1272,10 @@ export class AgileForm extends Web {
     preCompileConfigurationExpressions():void {
         this.preCompileGenericExpressions()
         this.preCompileActionSources()
-        for (const name in this.resolvedConfiguration.model)
-            if (this.resolvedConfiguration.model.hasOwnProperty(name)) {
-                this.resolvedConfiguration.model[name].dependsOn = (
-                    [] as Array<string>
-                ).concat(
-                    this.resolvedConfiguration.model[name].dependsOn || []
+        for (const name in this.models)
+            if (this.models.hasOwnProperty(name)) {
+                this.models[name].dependsOn = ([] as Array<string>).concat(
+                    this.models[name].dependsOn || []
                 )
                 this.preCompileTransformerExpression(name)
                 this.preCompileShowIfExpression(name)
@@ -1377,69 +1359,91 @@ export class AgileForm extends Web {
     /**
      * Sets all given input fields to their initial value.
      * @param event - Triggered event object.
-     * @returns Nothing.
+     * @returns A promise resolving to nothing.
      */
-    clear(event:MouseEvent):void {
-        this.reset(event, false)
+    onClear = (event:MouseEvent):Promise<void> => {
+        return this.onReset(event, true)
     }
     /**
      * Sets all given input fields to their initial value.
      * @param event - Triggered event object.
-     * @param useDefault - Indicates to use default value while reseting.
-     * @returns Nothing.
+     * @param useDefault - Indicates to use default value while resetting.
+     * @returns A promise resolving to nothing.
      */
-    reset(event:MouseEvent, useDefault:boolean = true):void {
-        for (const name in this.inputs)
-            this.resetInput(name, useDefault)
+    onReset = async (
+        event:MouseEvent, useDefault:boolean|null = null
+    ):Promise<void> => {
         event.preventDefault()
+        event.stopPropagation()
+        for (const name in this.inputs)
+            try {
+                await this.resetInput(name, useDefault)
+            } catch (error) {
+                console.warn(
+                    `Failed to reset input "${name}": ` +
+                    Tools.represent(error)
+                )
+            }
+    }
+    /**
+     * Empties all given input fields.
+     * @param event - Triggered event object.
+     * @returns A promise resolving to nothing.
+     */
+    onTruncate = (event:MouseEvent):Promise<void> => {
+        return this.onReset(event, null)
     }
     /**
      * Sets given input field their initial value.
      * @param name - Name of the field to clear.
      * @param useDefault - Indicates to use default value while resetting.
-     * @returns A boolean indicating whether provided field name exists.
+     * @returns A promise resolving to a boolean indicating whether provided
+     * field name exists.
      */
-    resetInput(name:string, useDefault:boolean = true):boolean {
+    async resetInput(
+        name:string, useDefault:boolean|null = false
+    ):Promise<boolean> {
         if (
             this.inputs.hasOwnProperty(name) &&
-            this.resolvedConfiguration.model.hasOwnProperty(name)
+            this.models.hasOwnProperty(name)
         ) {
-            if (
-                useDefault &&
-                this.resolvedConfiguration.model[name].hasOwnProperty(
-                    'default'
-                )
-            )
-                this.inputs[name].value =
-                    this.resolvedConfiguration.model[name].default
-            else if (
-                !useDefault &&
-                this.resolvedConfiguration.model[name].hasOwnProperty(
-                    'initialValue'
-                )
-            )
-                this.inputs[name].value =
-                    this.resolvedConfiguration.model[name].initialValue
+            if (useDefault === false && this.initialData.hasOwnProperty(name))
+                this.inputs[name].value = Tools.copy(this.initialData[name])
+            else if (useDefault && this.models[name].hasOwnProperty('default'))
+                this.inputs[name].value = Tools.copy(this.models[name].default)
             else
                 this.inputs[name].value = null
+            /*
+                NOTE: We need a digest loop to allow the components to extend
+                given model object with their defaults.
+            */
+            await Tools.timeout()
             return true
         }
         return false
     }
     /**
-     * Sets all hidden non persistent input fields to their initial value.
+     * Callback triggered when any keyboard events occur.
+     * @param event - Keboard event object.
      * @returns Nothing.
      */
-    resetAllHiddenNonPersistentInputs():void {
+    onKeyDown = (event:KeyboardEvent):void => {
+        if (Tools.keyCode.ENTER === event.keyCode)
+            this.onSubmit(event)
+    }
+    /**
+     * Sets all hidden non persistent input fields to their initial value.
+     * @returns A promise resolving to nothing.
+     */
+    async resetAllHiddenNonPersistentInputs():Promise<void> {
         for (const name in this.inputs)
             if (
                 this.inputs.hasOwnProperty(name) &&
-                this.resolvedConfiguration.model.hasOwnProperty(name) &&
-                !this.resolvedConfiguration.model[name].shown &&
-                this.resolvedConfiguration.model[name].valuePersistence !==
-                    'persistent'
+                this.models.hasOwnProperty(name) &&
+                !this.models[name].shown &&
+                this.models[name].valuePersistence !== 'persistent'
             )
-                this.resetInput(name)
+                await this.resetInput(name)
     }
     /**
      * Retrieves current raw data from given input fields and retrieves invalid
@@ -1447,38 +1451,29 @@ export class AgileForm extends Web {
      * @returns An object containing raw data and a list of invalid input
      * fields.
      */
-    getData():ResponseResult {
+    getData = ():ResponseResult => {
         const data:PlainObject = {}
         const invalidInputNames:Array<string> = []
         for (const name in this.inputs)
             if (this.inputs.hasOwnProperty(name) && !name.includes('.')) {
-                const value:any =
-                    this.resolvedConfiguration.model[name].transformer ?
-                        (this.resolvedConfiguration.model[name].transformer as
-                            (value:any) => any
-                        )(this.inputs[name].value) :
+                const value:any = this.models[name].transformer ?
+                    (this.models[name].transformer as (value:any) => any)(
                         this.inputs[name].value
-                if (
-                    this.resolvedConfiguration.model[name].shown &&
-                    // TODO validation state not set if disabled (not nullable).
-                    Boolean(this.inputs[name].invalid)
-                )
+                    ) :
+                    this.inputs[name].value
+                if (this.models[name].shown && this.inputs[name].invalid)
                     invalidInputNames.push(name)
                 if (name && ![null, undefined].includes(value))
                     if (
                         typeof value === 'object' &&
-                        this.resolvedConfiguration.model[name].hasOwnProperty(
-                            'dataMapping'
-                        )
+                        this.models[name].hasOwnProperty('dataMapping')
                     ) {
                         if (
-                            typeof this.resolvedConfiguration.model[name]
-                                .dataMapping === 'string'
+                            typeof this.models[name].dataMapping === 'string'
                         ) {
                             const evaluated:EvaluationResult =
                                 Tools.stringEvaluate(
-                                    this.resolvedConfiguration.model[name]
-                                        .dataMapping as string,
+                                    this.models[name].dataMapping as string,
                                     {item: value}
                                 )
                             if (evaluated.error)
@@ -1486,17 +1481,14 @@ export class AgileForm extends Web {
                             data[name] = evaluated.result
                         } else
                             for (const subName in (
-                                this.resolvedConfiguration.model[name]
-                                    .dataMapping as Mapping
+                                this.models[name].dataMapping as Mapping
                             ))
                                 if ((
-                                    this.resolvedConfiguration.model[name]
-                                        .dataMapping as Mapping
+                                    this.models[name].dataMapping as Mapping
                                 ).hasOwnProperty(subName))
                                     data[subName] = value[(
-                                        this.resolvedConfiguration.model[
-                                            name
-                                        ].dataMapping as Mapping
+                                        this.models[name].dataMapping as
+                                            Mapping
                                     )[subName]]
                     } else
                         data[name] = value
@@ -1785,7 +1777,7 @@ export class AgileForm extends Web {
             const target:TargetConfiguration = Tools.evaluateDynamicData(
                 Tools.copy(this.resolvedConfiguration.target),
                 {
-                    determineStateURL: this.determineStateURL.bind(this),
+                    determineStateURL: this.determineStateURL,
                     Tools,
                     ...this.resolvedConfiguration
                 }
@@ -1837,21 +1829,15 @@ export class AgileForm extends Web {
         for (const name in data)
             if (data.hasOwnProperty(name))
                 if (
-                    this.resolvedConfiguration.model.hasOwnProperty(name) &&
-                    this.resolvedConfiguration.model[name]
-                        .hasOwnProperty('target')
+                    this.models.hasOwnProperty(name) &&
+                    this.models[name].hasOwnProperty('target')
                 ) {
                     if (
-                        typeof this.resolvedConfiguration.model[name].target ===
-                            'string' &&
-                        (this.resolvedConfiguration.model[name].target as
-                            string
-                        ).length
+                        typeof this.models[name].target === 'string' &&
+                        (this.models[name].target as string).length
                     )
-                        result[
-                            this.resolvedConfiguration.model[name].target as
-                                keyof PlainObject
-                        ] = data[name]
+                        result[this.models[name].target as keyof PlainObject] =
+                            data[name]
                 } else
                     result[name] = data[name]
         return result
@@ -1862,9 +1848,10 @@ export class AgileForm extends Web {
      * @param event - Triggered event object.
      * @returns Nothing.
      */
-    async submit(event:KeyboardEvent|MouseEvent):Promise<void> {
+    onSubmit = async (event:KeyboardEvent|MouseEvent):Promise<void> => {
         try {
             event.preventDefault()
+            event.stopPropagation()
             if (this.submitted || this.pending)
                 return
             const target:HTMLElement|null = this.submitButtons.length ?
@@ -1877,7 +1864,7 @@ export class AgileForm extends Web {
             this.resolvedConfiguration.reCaptcha.token =
                 this.self.reCaptchaToken
 
-            this.resetAllHiddenNonPersistentInputs()
+            await this.resetAllHiddenNonPersistentInputs()
             const {data, invalidInputNames} = this.getData()
             if (invalidInputNames.length) {
                 // Trigger input components to present their validation state.
@@ -1889,9 +1876,7 @@ export class AgileForm extends Web {
                 this.onceSubmitted = this.submitted = true
                 let valid: boolean = true
                 const fieldValues:Array<any> =
-                    this.modelNames.map((name:string):any =>
-                        this.resolvedConfiguration.model[name]
-                    )
+                    this.modelNames.map((name:string):any => this.models[name])
                 const values:Array<any> = [
                     this.initialResponse,
                     this.latestResponse,
@@ -1951,43 +1936,18 @@ export class AgileForm extends Web {
      */
     addEventListener():void {
         for (const name in this.inputs)
-            if (this.inputs.hasOwnProperty(name))
+            if (this.inputs.hasOwnProperty(name)) {
                 this.inputs[name].addEventListener(
                     (
-                        this.resolvedConfiguration.model[name].hasOwnProperty(
-                            'eventChangedName'
-                        ) ?
-                            this.resolvedConfiguration.model[name].eventChangedName :
-                            'modelChange'
+                        this.models[name].hasOwnProperty('eventChangedName') ?
+                            this.models[name].eventChangedName :
+                            'onChange'
                     ),
                     async ():Promise<void> => {
                         await this.updateInputDependencies(name)
                         this.updateAllGroups()
                     }
-                )
-    }
-    /**
-     * Add all input mode value synchronizing event listener callbacks.
-     * @returns Nothing.
-     */
-    addEventValueUpdateListener():void {
-        for (const name in this.inputs)
-            if (
-                this.inputs.hasOwnProperty(name) &&
-                this.resolvedConfiguration.model[name].hasOwnProperty(
-                    'eventChangedName'
-                )
-            )
-                Object.defineProperty(
-                    this.resolvedConfiguration.model[name],
-                    'value',
-                    {
-                        get: ():any => this.inputs[name].value,
-                        set: (value:any):void => {
-                            this.inputs[name].value = value
-                        }
-                    }
-                )
+                )}
     }
     /**
      * Updates all fields.
@@ -2008,20 +1968,13 @@ export class AgileForm extends Web {
     async updateInput(name:string):Promise<boolean> {
         // We have to check for real state changes to avoid endless loops.
         let changed:boolean = false
-        if (this.resolvedConfiguration.model[name].hasOwnProperty(
-            'dynamicExtend'
-        ))
-            for (
-                const key in
-                    this.resolvedConfiguration.model[name].dynamicExtend
-            ) {
-                const oldValue:any =
-                    this.resolvedConfiguration.model[name][key]
-                const newValue:any =
-                    this.resolvedConfiguration.model[name].dynamicExtend[key]()
+        if (this.models[name].hasOwnProperty('dynamicExtend'))
+            for (const key in this.models[name].dynamicExtend) {
+                const oldValue:any = this.models[name][key]
+                const newValue:any = this.models[name].dynamicExtend[key]()
                 if (oldValue !== newValue) {
                     changed = true
-                    this.resolvedConfiguration.model[name][key] = newValue
+                    this.models[name][key] = newValue
                     if (
                         this.self.specificationToPropertyMapping
                             .hasOwnProperty(key)
@@ -2036,13 +1989,8 @@ export class AgileForm extends Web {
                         this.inputs[name][key] = newValue
                 }
             }
-        if (this.updateInputVisibility(name) || changed) {
-            this.triggerModelUpdate(name)
-            /*
-                NOTE: We should wait a digest loop to ensure all projected
-                components have been initialized.
-            */
-            await Tools.timeout()
+        if ((await this.updateInputVisibility(name)) || changed) {
+            await this.triggerModelUpdate(name)
             await this.updateInputDependencies(name)
         }
         return changed
@@ -2068,13 +2016,19 @@ export class AgileForm extends Web {
     /**
      * Trigger inputs internal change detection.
      * @param name - Field name to update their model.
-     * @returns Nothing.
+     * @returns A promise resolving to nothing.
      */
-    triggerModelUpdate(name:string):void {
+    async triggerModelUpdate(name:string):Promise<void> {
         if (this.inputs.hasOwnProperty(name)) {
-            if ('changeTrigger' in this.inputs[name])
+            if ('changeTrigger' in this.inputs[name]) {
                 this.inputs[name].changeTrigger =
                     !this.inputs[name].changeTrigger
+                /*
+                    NOTE: We should wait a digest loop to ensure all projected
+                    components have been initialized.
+                */
+                await Tools.timeout()
+            }
         } else
             console.warn(
                 `Input node (to update corresponding model) for "${name}" ` +
@@ -2125,22 +2079,22 @@ export class AgileForm extends Web {
      * Determines current state url.
      * @returns URL.
      */
-    determineStateURL():{encoded:string;plain:string} {
+    determineStateURL = ():{encoded:string;plain:string} => {
         let parameter:PlainObject = {
             model: {},
             ...(this.urlConfiguration || {})
         }
-        for (const name in this.resolvedConfiguration.model)
+        for (const name in this.models)
             if (
-                this.resolvedConfiguration.model.hasOwnProperty(name) &&
+                this.models.hasOwnProperty(name) &&
                 (
-                    this.resolvedConfiguration.model[name].state &&
-                    this.resolvedConfiguration.model[name].state.dirty ||
+                    this.models[name].state &&
+                    this.models[name].state.dirty ||
                     // TODO Workaround until state is support by crefo input.
                     name === 'crefo' &&
                     // TODO should use new "?..." syntax when supported.
-                    this.resolvedConfiguration.model.crefo.value &&
-                    this.resolvedConfiguration.model.crefo.value.crefonummer
+                    this.models.crefo.value &&
+                    this.models.crefo.value.crefonummer
                 ) &&
                 /*
                     NOTE: If only a boolean value and two possible states
@@ -2148,48 +2102,39 @@ export class AgileForm extends Web {
                     "false".
                 */
                 !(
-                    !this.resolvedConfiguration.model[name].value &&
-                    !this.resolvedConfiguration.model[name].default &&
-                    this.resolvedConfiguration.model[name].type === 'boolean' &&
+                    !this.models[name].value &&
+                    !this.models[name].default &&
+                    this.models[name].type === 'boolean' &&
                     !(
-                        this.resolvedConfiguration.model[name].selection &&
-                        Array.isArray(
-                            this.resolvedConfiguration.model[name].selection
-                        ) &&
-                        this.resolvedConfiguration.model[name].selection.length > 2 ||
-                        this.resolvedConfiguration.model[name].selection &&
-                        !Array.isArray(
-                            this.resolvedConfiguration.model[name].selection
-                        ) &&
-                        Object.keys(
-                            this.resolvedConfiguration.model[name].selection
-                        ).length > 2
+                        this.models[name].selection &&
+                        Array.isArray(this.models[name].selection) &&
+                        this.models[name].selection.length > 2 ||
+                        this.models[name].selection &&
+                        !Array.isArray(this.models[name].selection) &&
+                        Object.keys(this.models[name].selection).length > 2
                     )
                 )
             )
                 if (parameter.model.hasOwnProperty(name)) {
                     if (
-                        this.resolvedConfiguration.model[name].value !==
-                            parameter.model[name].value
+                        this.models[name].value !== parameter.model[name].value
                     )
                         if (
-                            this.resolvedConfiguration.model[name].value ===
-                                this.resolvedConfiguration.model[name].default
+                            this.models[name].value ===
+                                this.models[name].default
                         ) {
                             delete parameter.model[name].value
                             if (Object.keys(parameter.model[name]) === 0)
                                 delete parameter.model[name]
                         } else
                             parameter.model[name].value =
-                                this.resolvedConfiguration.model[name].value
+                                this.models[name].value
                 } else if (
-                    this.resolvedConfiguration.model[name].value !==
-                        this.resolvedConfiguration.model[name].default
+                    this.models[name].value !== this.models[name].default
                 )
-                    parameter.model[name] = {
-                        value: this.resolvedConfiguration.model[name].value
-                    }
-        parameter = this.maskObject(parameter, this.resolvedConfiguration.urlModelMask)
+                    parameter.model[name] = {value: this.models[name].value}
+        parameter =
+            this.maskObject(parameter, this.resolvedConfiguration.urlModelMask)
         if (Object.keys(parameter.model).length === 0)
             delete parameter.model
         let encodedURL:string = document.URL
