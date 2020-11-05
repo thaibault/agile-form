@@ -131,6 +131,9 @@
     "target:bundle": {
       "files": {
         "compose": {
+          "cascadingStyleSheet": {
+            "__evaluate__": "`${path.resolve(self.path.target.asset.cascadingStyleSheet, '[name].bundle')}.css`"
+          },
           "javaScript": {
             "__evaluate__": "`${path.resolve(self.path.target.asset.javaScript, '[name].bundle')}.js`"
           }
