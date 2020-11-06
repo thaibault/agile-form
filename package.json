@@ -31,7 +31,6 @@
     "watch": "weboptimizer build --watch"
   },
   "devDependencies": {
-    "@babel/preset-react": "*",
     "@rmwc/card": "*",
     "@rmwc/checkbox": "*",
     "@rmwc/circular-progress": "*",
