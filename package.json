@@ -106,7 +106,7 @@
     },
     "injection": {
       "entry": {
-        "__evaluate__": "2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2].startsWith('test') ? './test.ts' : 2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2] === 'serve' ? {index: './index', styles: './index.css', webInputMaterial: 'web-input-material'} : {index: './index', styles: './index.css'}"
+        "__evaluate__": "2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2].startsWith('test') ? './test.ts' : 2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2] === 'serve' ? {index: './index', styles: './index.css', webInputMaterial: 'web-input-material'} : './index'"
       }
     },
     "module": {
@@ -137,6 +137,11 @@
           "javaScript": {
             "__evaluate__": "`${path.resolve(self.path.target.asset.javaScript, '[name].bundle')}.js`"
           }
+        }
+      },
+      "injection": {
+        "entry": {
+          "__evaluate__": "{index: './index', styles: './index.css'}"
         }
       },
       "inPlace": {
