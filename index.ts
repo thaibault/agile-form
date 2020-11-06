@@ -2133,8 +2133,9 @@ export class AgileForm extends Web {
                     this.models[name].value !== this.models[name].default
                 )
                     parameter.model[name] = {value: this.models[name].value}
-        parameter =
-            this.maskObject(parameter, this.resolvedConfiguration.urlModelMask)
+        parameter = Tools.maskObject(
+            parameter, this.resolvedConfiguration.urlModelMask
+        )
         if (Object.keys(parameter.model).length === 0)
             delete parameter.model
         let encodedURL:string = document.URL
