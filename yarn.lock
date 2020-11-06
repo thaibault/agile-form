@@ -3769,9 +3769,9 @@ cli-table3@^0.5.0:
     colors "^1.1.2"
 
 clientnode@*:
-  version "3.0.600"
-  resolved "https://registry.yarnpkg.com/clientnode/-/clientnode-3.0.600.tgz#ee5e58ad7bf4d612317419b037b35448fb963f68"
-  integrity sha512-LSbW5DBki0jyPMfUP3TSWkuWtabD5OfRj2itP9rnJGC+vwQHcKq1GO3M4fv0mX5NWl9yT/RQ3p/fLiPG6TeT6w==
+  version "3.0.601"
+  resolved "https://registry.yarnpkg.com/clientnode/-/clientnode-3.0.601.tgz#9899757cb2a05dcf261b0df833e25362a1711c81"
+  integrity sha512-VUKn9kwGrBDMEgiv2PDZ2bvwpcR8hIIMtnlBos74uHC+210v5aqbUqIu7Eg0SGjn3qTGzxv6xooLQTICx0FNKw==
 
 cliui@^4.0.0:
   version "4.1.0"
@@ -8816,9 +8816,9 @@ react-dom@*:
     scheduler "^0.20.1"
 
 react-input-material@*:
-  version "0.0.85"
-  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.85.tgz#43c79199b0b33dc4cd8db77001fc389a2fd44fc6"
-  integrity sha512-8Yizu4VhCSH9lH8qhM4K70PWegmPaiyg9wTgVSHj16u/sb39NzF+sRZgrucbVubW57BJVh9Aau2Ca8xtQFwuEg==
+  version "0.0.86"
+  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.86.tgz#f1320979cf2c8634e20f09173a72a81dc40b62f1"
+  integrity sha512-tfwPnZHzgYLvKFMcDKFwGBYPc7AzbPbJoX6ZLPfkUxHdTVVZAnzdx4CPLLeDTl+8zZGBsovV4cWOOnUyITeHOw==
 
 react-is@^16.12.0, react-is@^16.8.1:
   version "16.13.1"
@@ -10421,14 +10421,14 @@ wbuf@^1.1.0, wbuf@^1.7.3:
     minimalistic-assert "^1.0.0"
 
 web-component-wrapper@*:
-  version "0.0.93"
-  resolved "https://registry.yarnpkg.com/web-component-wrapper/-/web-component-wrapper-0.0.93.tgz#1ad01446f7d520fbb4e58d7ef11e7beeeab79760"
-  integrity sha512-oiJ1C/GSs+wBqmvo1BUQ6PZDWnE1k1xPTjmLSKHVc2yb8YfeR0a9/6feBnh4/q1oX1u20IijZLVDNNYV68MvsA==
+  version "0.0.94"
+  resolved "https://registry.yarnpkg.com/web-component-wrapper/-/web-component-wrapper-0.0.94.tgz#e0dee9fe070d34185c5675e3ffdd7fa7bef42cc6"
+  integrity sha512-fYpzd1EDls5wti6Y5EAGMKG/NA33jVrBfvyDmv8ym/n0v5k4rcZumqsEYpKBcO4fK5KoI4UJa6r/GZMzPuPymg==
 
 web-input-material@*:
-  version "0.0.36"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.36.tgz#11a6744474fdb584850eb9db7e44035c23b37ab4"
-  integrity sha512-roM55eAwsVnvLd0aCxTlcyejfp4n0DzZBufcfeFxf6srdzoJTaQweVFqJjHSiH2E50qHHodvb7F4P+03TtJGOA==
+  version "0.0.37"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.37.tgz#0cb12462346e3a67c0ea71953dac93334dafb587"
+  integrity sha512-754Sk2ECI77brrwnRPuln2ujjXE/K7uZU9g9cHD1KaB2elyxfrHwmU5McBTjVWlVdGi/43FC7DzJpmfuoH+eiA==
   dependencies:
     react-input-material "*"
     web-component-wrapper "*"
@@ -10444,9 +10444,9 @@ webidl-conversions@^6.1.0:
   integrity sha512-qBIvFLGiBpLjfwmYAaHPXsn+ho5xZnGvyGvsarywGNc8VyQJUMHJ8OBKGGrPER0okBeMDaan4mNBlgBROxuI8w==
 
 weboptimizer@*:
-  version "2.0.826"
-  resolved "https://registry.yarnpkg.com/weboptimizer/-/weboptimizer-2.0.826.tgz#a8cfe6a8acd91d4602d62a635b92adb1c6c97e0c"
-  integrity sha512-j5/L1AyDMSFKbwhOk4pMyRoYLKAacPajMwmuI1DjdhYXARbHxS7tniZPKXeKDObg30Kx6/bWtqd5OpnIVgIZ/Q==
+  version "2.0.827"
+  resolved "https://registry.yarnpkg.com/weboptimizer/-/weboptimizer-2.0.827.tgz#e7d86126a641589014463e64f215e9932753449a"
+  integrity sha512-Bibw/hX2OT3BjE4LmMvMsB+XyJnz4Kz0sNwnlRNOl/lZCkTCWHFP/zYdVEGHoab3hFeISmkjVifDuPYFbGbpgA==
   dependencies:
     "@babel/core" "*"
     "@babel/plugin-proposal-class-properties" "*"
