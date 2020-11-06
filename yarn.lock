@@ -7286,9 +7286,9 @@ mimic-fn@^2.1.0:
   integrity sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==
 
 mini-css-extract-plugin@*:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/mini-css-extract-plugin/-/mini-css-extract-plugin-1.2.1.tgz#30ea7dee632b3002b0c77aeed447790408cb247e"
-  integrity sha512-G3yw7/TQaPfkuiR73MDcyiqhyP8SnbmLhUbpC76H+wtQxA6wfKhMCQOCb6wnPK0dQbjORAeOILQqEesg4/wF7A==
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/mini-css-extract-plugin/-/mini-css-extract-plugin-1.3.0.tgz#bbcba978b68c39f0a9c75822cfb2874f9cf6b018"
+  integrity sha512-4DKmPwFd0XKlwoqvrkLi2X8Mlosh2ey/E/OVAucnPUdzGqrSWHgSqed/p4Ue2Q39JjIvcdSDgmZDO6mir5Ovmw==
   dependencies:
     loader-utils "^2.0.0"
     schema-utils "^3.0.0"
@@ -10426,11 +10426,15 @@ web-component-wrapper@*:
   integrity sha512-fYpzd1EDls5wti6Y5EAGMKG/NA33jVrBfvyDmv8ym/n0v5k4rcZumqsEYpKBcO4fK5KoI4UJa6r/GZMzPuPymg==
 
 web-input-material@*:
-  version "0.0.37"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.37.tgz#0cb12462346e3a67c0ea71953dac93334dafb587"
-  integrity sha512-754Sk2ECI77brrwnRPuln2ujjXE/K7uZU9g9cHD1KaB2elyxfrHwmU5McBTjVWlVdGi/43FC7DzJpmfuoH+eiA==
+  version "0.0.38"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.38.tgz#90484b32c5f53b00a7b951cdbde96e98a7163c5d"
+  integrity sha512-Elm9OBWkg8fK/fRrB4L4zKja5QbSjscFoTnFWcd83OV853T9VH0zT7SZyr6GNKDBMswP0QgyOYkezHfg4MVJ0Q==
   dependencies:
+    prop-types "*"
+    react "*"
+    react-dom "*"
     react-input-material "*"
+    react-transition-group "*"
     web-component-wrapper "*"
 
 webidl-conversions@^5.0.0:
