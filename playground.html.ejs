@@ -62,7 +62,7 @@
                 type: {
                     default: 'A',
                     nullable: false,
-                    selection: ['A', 'B', 'C']
+                    selection: ['A', 'B', 'C', 'D']
                 },
                 name: {
                     default: 'Default Name',
@@ -100,6 +100,7 @@
             <generic-input
                 declaration="Please fill in your type."
                 description="Type"
+                labels="{A: 'Label A', B: 'Label B', C: 'Label C'}"
                 name="type"
             ></generic-input>
             <generic-input
