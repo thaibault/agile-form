@@ -1150,7 +1150,7 @@ export class AgileForm extends Web {
                             this.models[name],
                             ...this.evaluateExpressions(),
                             ...(this.models[name].dependsOn || [])
-                                .map((name:string):any => this.model[name])
+                                .map((name:string):any => this.models[name])
                         )
                     } catch (error) {
                         console.error(
