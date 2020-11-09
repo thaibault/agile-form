@@ -283,7 +283,7 @@ export class AgileForm extends Web {
             NOTE: We need a digest loop to allow the components to extend given
             model object with their defaults.
         */
-        await Tools.timeout()
+        await this.digest()
         await this.configureContentProjectedInputs()
 
         this.spinner = Array.from(this.root.querySelectorAll(
@@ -719,6 +719,7 @@ export class AgileForm extends Web {
         for (const name in this.inputs)
             if (this.inputs.hasOwnProperty(name))
                 this.inputs[name].showInitialValidationState = false
+        await this.digest()
         this.preCompileConfigurationExpressions()
         this.setGroupSpecificConfigurations()
         if (Object.keys(missingInputs).length)
@@ -825,19 +826,9 @@ export class AgileForm extends Web {
                     // Control value via "value" property.
                     delete this.models[name].value
                     domNode.model = this.models[name]
-                    /*
-                        NOTE: We need a digest loop to allow the components to
-                        extend given model object with their defaults.
-                    */
-                    await Tools.timeout()
-                } else {
+                } else
                     domNode.model = this.models[name]
-                    /*
-                        NOTE: We need a digest loop to allow the components to
-                        extend given model object with their defaults.
-                    */
-                    await Tools.timeout()
-                }
+                await this.digest()
                 Object.defineProperty(
                     this.models[name],
                     'value',
@@ -858,12 +849,8 @@ export class AgileForm extends Web {
                 )
                     domNode.value =
                         domNode.initialValue ?? this.models[name].default
+                await this.digest()
                 this.inputs[name] = domNode
-                /*
-                    NOTE: We need a digest loop to allow the components to
-                    extend given model object with their defaults.
-                */
-                await Tools.timeout()
                 this.initialData[name] = domNode.value
             } else
                 this.message =
@@ -885,6 +872,14 @@ export class AgileForm extends Web {
                 this.preCompileDynamicExtendStructure(name)
             }
         return missingInputs
+    }
+    /**
+     * Whenever a component is re-configured a digest is needed to ensure that
+     * its internal state has been reflected.
+     * @returns A promise resolving when digest hast been finished.
+    */
+    digest():ReturnType<Tools.timeout> {
+         return Tools.timeout()
     }
     /**
      * Finds all groups and connects them with their corresponding compiled
@@ -1413,11 +1408,7 @@ export class AgileForm extends Web {
                 this.inputs[name].value = Tools.copy(this.models[name].default)
             else
                 this.inputs[name].value = null
-            /*
-                NOTE: We need a digest loop to allow the components to extend
-                given model object with their defaults.
-            */
-            await Tools.timeout()
+            await this.digest()
             return true
         }
         return false
@@ -1987,6 +1978,7 @@ export class AgileForm extends Web {
                                 newValue
                     else
                         this.inputs[name][key] = newValue
+                    await this.digest()
                 }
             }
         if ((await this.updateInputVisibility(name)) || changed) {
@@ -2023,11 +2015,7 @@ export class AgileForm extends Web {
             if ('changeTrigger' in this.inputs[name]) {
                 this.inputs[name].changeTrigger =
                     !this.inputs[name].changeTrigger
-                /*
-                    NOTE: We should wait a digest loop to ensure all projected
-                    components have been initialized.
-                */
-                await Tools.timeout()
+                await this.digest()
             }
         } else
             console.warn(
