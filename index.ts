@@ -122,7 +122,8 @@ export class AgileForm extends Web {
         selector: {
             clearButtons: 'button[clear]',
             groups: '.agile-form__group',
-            // TODO do not allow nested elements
+            // TODO do not allow nested elements, as long as not supported
+            // prefer high-level inputs over native "<input />"
             inputs: 'generic-input, requireable-checkbox',
             resetButtons: 'button[reset], [type=reset]',
             spinner: 'circular-spinner',
@@ -277,8 +278,6 @@ export class AgileForm extends Web {
      * @returns A promise resolving to nothing.
      */
     async render():Promise<void> {
-        super.render()
-
         /*
             NOTE: We need a digest loop to allow the components to extend given
             model object with their defaults.
@@ -316,7 +315,6 @@ export class AgileForm extends Web {
         for (const domNode of this.truncateButtons)
             domNode.addEventListener('click', this.onTruncate, false)
 
-        this.updateMessageBox()
         await this.stopBackgroundProcess()
     }
     // endregion
@@ -627,7 +625,9 @@ export class AgileForm extends Web {
      * Updates current error message box state.
      * @returns Nothing.
      */
-    updateMessageBox():void {
+    updateMessageBox(message?:string):void {
+        if (message)
+            this.message = message
         for (const domNode of this.statusMessageBoxes)
             if (this.message) {
                 domNode.style.display = 'block'
@@ -723,9 +723,10 @@ export class AgileForm extends Web {
         this.preCompileConfigurationExpressions()
         this.setGroupSpecificConfigurations()
         if (Object.keys(missingInputs).length)
-            this.message =
+            this.updateMessageBox(
                 'Missing input for expected model name "' +
                 `${Object.keys(missingInputs).join('", "')}".`
+            )
         this.createDependencyMapping()
         this.addEventListener()
     }
@@ -818,16 +819,13 @@ export class AgileForm extends Web {
                 if (
                     domNode.model !== null && typeof domNode.model === 'object'
                 ) {
-                    /*
-                        Found input is specified: Extend existing configuration
-                        with forms specification.
-                    */
-                    this.models[name] = {...domNode.model, ...this.models[name]}
+                    // Do not control "state"  from the outside.
+                    delete this.models[name].state
                     // Control value via "value" property.
                     delete this.models[name].value
-                    domNode.model = this.models[name]
+                    domNode.model = Tools.copy(this.models[name])
                 } else
-                    domNode.model = this.models[name]
+                    domNode.model = Tools.copy(this.models[name])
                 await this.digest()
                 Object.defineProperty(
                     this.models[name],
@@ -1509,10 +1507,10 @@ export class AgileForm extends Web {
     handleInvalidSubmittedInput(
         data:PlainObject, invalidInputNames:Array<string>
     ):void {
-        this.message =
+        this.updateMessageBox(
             'The following inputs are invalid "' +
             `${invalidInputNames.join('", "')}".`
-        this.updateMessageBox()
+        )
         const invalidInputs:Array<AnnotatedDomNode> = Array.from(
             this.root.querySelectorAll(
                 `[name="${invalidInputNames.join('"], [name="')}"]`
@@ -1760,7 +1758,6 @@ export class AgileForm extends Web {
     async handleValidSubmittedInput(
         data:PlainObject, newWindow:boolean = false
     ):Promise<void> {
-        this.message = 'Sende Daten...'
         if (this.resolvedConfiguration.target && this.resolvedConfiguration.target.url) {
             // region prepare request
             this.resolvedConfiguration.data = data
@@ -1896,22 +1893,20 @@ export class AgileForm extends Web {
                     if (evaluatedConstraint.error)
                         throw new Error(evaluatedConstraint.error)
                     if (!evaluatedConstraint.result) {
-                        this.message = constraint.description
+                        this.updateMessageBox(constraint.description)
                         valid = false
                         break
                     }
                 }
                 if (valid)
                     await this.handleValidSubmittedInput(data, newWindow)
-                else {
+                else
                     this.track({
                         event: 'jobRadFormInputInvalid',
                         eventType: 'inputInvalid',
                         label: 'inputInvalid',
                         reference: data
                     })
-                    this.updateMessageBox()
-                }
                 this.submitted = false
             }
         } catch (error) {
@@ -2075,14 +2070,12 @@ export class AgileForm extends Web {
         for (const name in this.models)
             if (
                 this.models.hasOwnProperty(name) &&
+                this.inputs.hasOwnProperty(name) &&
                 (
-                    this.models[name].state &&
-                    this.models[name].state.dirty ||
+                    this.inputs[name].dirty ||
                     // TODO Workaround until state is support by crefo input.
                     name === 'crefo' &&
-                    // TODO should use new "?..." syntax when supported.
-                    this.models.crefo.value &&
-                    this.models.crefo.value.crefonummer
+                    this.models.crefo.value?.crefonummer
                 ) &&
                 /*
                     NOTE: If only a boolean value and two possible states
@@ -2090,37 +2083,44 @@ export class AgileForm extends Web {
                     "false".
                 */
                 !(
-                    !this.models[name].value &&
-                    !this.models[name].default &&
-                    this.models[name].type === 'boolean' &&
+                    !this.inputs[name].value &&
+                    !this.inputs[name].default &&
+                    !this.inputs[name].initialValue &&
+                    this.inputs[name].type === 'boolean' &&
                     !(
-                        this.models[name].selection &&
-                        Array.isArray(this.models[name].selection) &&
-                        this.models[name].selection.length > 2 ||
-                        this.models[name].selection &&
-                        !Array.isArray(this.models[name].selection) &&
-                        Object.keys(this.models[name].selection).length > 2
+                        this.inputs[name].selection &&
+                        Array.isArray(this.inputs[name].selection) &&
+                        this.inputs[name].selection.length > 2 ||
+                        this.inputs[name].selection &&
+                        !Array.isArray(this.inputs[name].selection) &&
+                        Object.keys(this.inputs[name].selection).length > 2
                     )
                 )
             )
                 if (parameter.model.hasOwnProperty(name)) {
                     if (
-                        this.models[name].value !== parameter.model[name].value
+                        this.inputs[name].value !== parameter.model[name].value
                     )
                         if (
-                            this.models[name].value ===
-                                this.models[name].default
+                            this.inputs[name].initialValue &&
+                            this.inputs[name].initialValue ===
+                                this.inputs[name].value ||
+                            this.inputs[name].value ===
+                                this.inputs[name].default
                         ) {
                             delete parameter.model[name].value
                             if (Object.keys(parameter.model[name]) === 0)
                                 delete parameter.model[name]
                         } else
                             parameter.model[name].value =
-                                this.models[name].value
-                } else if (
-                    this.models[name].value !== this.models[name].default
-                )
-                    parameter.model[name] = {value: this.models[name].value}
+                                this.inputs[name].value
+                } else if (!(
+                    this.inputs[name].initialValue &&
+                    this.inputs[name].initialValue ===
+                        this.inputs[name].value ||
+                    this.inputs[name].value === this.inputs[name].default
+                ))
+                    parameter.model[name] = {value: this.inputs[name].value}
         parameter = Tools.maskObject(
             parameter, this.resolvedConfiguration.urlModelMask
         )
