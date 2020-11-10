@@ -50,7 +50,10 @@
                         component.register()
                     }
                 )
-                agileForm.index.api.register()
+
+                setTimeout(() =>
+                    agileForm.index.api.register()
+                )
             }
         </script>
         <!--endregion-->
@@ -88,9 +91,9 @@
 
             <div class="agile-form__status-message"></div>
 
-            <hr/>
+            <hr class="agile-form__group" name="report" show-if="submitted"/>
 
-            <div class="agile-form__group" name="report">
+            <div class="agile-form__group" name="report" show-if="submitted">
                 Result:
                 <pre>${tools.represent(getData())}</pre>
             </div>
