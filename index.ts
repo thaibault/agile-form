@@ -324,6 +324,8 @@ export class AgileForm extends Web {
         this.updateMessageBox()
 
         await this.stopBackgroundProcess()
+
+        await this.refreshInputs()
     }
     // endregion
     // region handle visibility states
@@ -833,16 +835,15 @@ export class AgileForm extends Web {
                         `${this.modelNames.join('", "')}".`
                     continue
                 }
-                if (
-                    domNode.model !== null && typeof domNode.model === 'object'
-                ) {
-                    // Do not control "state"  from the outside.
-                    delete this.models[name].state
+                // Do not control "state" from the outside.
+                delete this.models[name].state
+                if (this.models[name].hasOwnProperty('value')) {
                     // Control value via "value" property.
+                    this.models[name].initialValue =
+                        this.models[name].value
                     delete this.models[name].value
-                    domNode.model = Tools.copy(this.models[name])
-                } else
-                    domNode.model = Tools.copy(this.models[name])
+                }
+                domNode.model = Tools.copy(this.models[name])
                 await this.digest()
                 Object.defineProperty(
                     this.models[name],
@@ -2063,6 +2064,21 @@ export class AgileForm extends Web {
         return scope
     }
     /**
+      * Triggers re-rendering of an input via a hack. It set value to null
+      * waits a digest loop and resets the value back.
+      * @returns A promise resolving to nothing when re-rendering has been
+      * finished.
+      */
+    async refreshInputs():Promise<void> {
+        for (const name in this.inputs)
+            if (this.inputs.hasOwnProperty(name)) {
+                const value = this.inputs[name].value
+                this.inputs[name].value = null
+                await this.digest()
+                this.inputs[name].value = value
+            }
+    }
+    /**
      * Indicates a background running process. Sets "pending" property and
      * triggers a loading spinner.
      * @returns A Promise resolving when all items render updates has been
@@ -2158,7 +2174,19 @@ export class AgileForm extends Web {
         let url:string = document.URL
         if (Object.keys(parameter).length) {
             encodedURL = url = url.replace(/[?&]jForm=[^&]*/g, '')
-            const value:string = JSON.stringify(parameter)
+
+            // Ensure normalized urls via recursive property sorting.
+            const keys:Array<string> = []
+            JSON.stringify(
+                parameter,
+                (key:string, value:any):any => {
+                    keys.push(key)
+                    return value
+                }
+            )
+            keys.sort()
+            const value:string = JSON.stringify(parameter, keys, '')
+
             const encodedQueryParameter:string =
                 `jForm=${encodeURIComponent(value)}`
             const queryParameter:string = `jForm=${value}`
