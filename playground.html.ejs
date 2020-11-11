@@ -85,6 +85,10 @@
                         nullable: false,
                         regularExpressionPattern: '[a-zA-Z0-9]+'
                     },
+                    feelsGood: {
+                        nullable: false,
+                        type: boolean
+                    },
                     anotherName: {}
                 }
             }"
@@ -127,6 +131,13 @@
                 editor="text"
                 name="message"
                 placeholder="Please type in a message..."
+            ></generic-input>
+
+            <generic-input
+                declaration="Do you feel good?"
+                labels="{true: 'Yess!', false: 'Oh noo I am sad...'}"
+                name="feelsGood"
+                type="boolean"
             ></generic-input>
 
             <requireable-checkbox
