@@ -838,9 +838,8 @@ export class AgileForm extends Web {
                 // Do not control "state" from the outside.
                 delete this.models[name].state
                 if (this.models[name].hasOwnProperty('value')) {
-                    // Control value via "value" property.
-                    this.models[name].initialValue =
-                        this.models[name].value
+                    // Control value via "value" property in dom node.
+                    domNode.initialValue = this.models[name].value
                     delete this.models[name].value
                 }
                 domNode.model = Tools.copy(this.models[name])
