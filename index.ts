@@ -189,7 +189,7 @@ export class AgileForm extends Web {
         version: 1
     }
     static initialized:boolean|Promise<void> = false
-    static propertyTypes:PropertyTypes = {
+    static propertyTypes:Mapping<ValueOf<typeof PropertyTypes>> = {
         baseConfiguration: object,
         configuration: object,
         dynamicConfiguration: object
@@ -646,10 +646,12 @@ export class AgileForm extends Web {
         this.resolvedConfiguration =
             Tools.copy(this.self.defaultConfiguration) as Configuration
 
-        for (const name of Object.keys(this.self.propertyTypes))
-            Tools.extend(
-                true, this.resolvedConfiguration, this[name as keyof AgileForm]
-            )
+        for (const configuration of [
+            this.baseConfigration || {},
+            this.configuration || {},
+            this.dynamicConfiguration || {}
+        ])
+            Tools.extend(true, this.resolvedConfiguration, configuration)
 
         this.extendConfigurationByGivenURLParameter()
 

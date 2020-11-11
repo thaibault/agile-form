@@ -60,32 +60,42 @@
     </head>
     <!--endregion-->
     <body>
-        <agile-form configuration="{
-            model: {
-                type: {
-                    default: 'A',
-                    nullable: false,
-                    selection: ['A', 'B', 'C', 'D']
-                },
-                name: {
-                    default: 'Default Name',
-                    maximumLength: 15,
-                    minimumLength: 2,
-                    nullable: false,
-                    regularExpressionPattern: '[a-zA-Z]+'
-                },
-                message: {
-                    maximumLength: 50,
-                    minimumLength: 10,
-                    nullable: false,
-                    regularExpressionPattern: '[a-zA-Z0-9]+'
-                },
-                legalNotesChecked: {
-                    nullable: false
-                },
-                anotherName: {}
-            }
-        }">
+        <agile-form
+            base-configuration="{
+                model: {
+                    type: {
+                        default: 'A',
+                        nullable: false,
+                        selection: ['A', 'B', 'C', 'D']
+                    }
+                }
+            }"
+            configuration="{
+                model: {
+                    name: {
+                        default: 'Default Name',
+                        maximumLength: 15,
+                        minimumLength: 2,
+                        nullable: false,
+                        regularExpressionPattern: '[a-zA-Z]+'
+                    },
+                    message: {
+                        maximumLength: 50,
+                        minimumLength: 10,
+                        nullable: false,
+                        regularExpressionPattern: '[a-zA-Z0-9]+'
+                    },
+                    anotherName: {}
+                }
+            }"
+            dynamic-configuration="{
+                model: {
+                    legalNotesChecked: {
+                        nullable: false
+                    }
+                }
+            }"
+        >
 
             <circular-spinner size="'xlarge'"></circular-spinner>
 
