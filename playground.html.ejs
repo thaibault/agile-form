@@ -62,6 +62,7 @@
     <body>
         <agile-form
             base-configuration="{
+                debug: true,
                 model: {
                     type: {
                         default: 'A',
@@ -81,13 +82,13 @@
                     },
                     message: {
                         maximumLength: 50,
-                        minimumLength: 10,
+                        minimumLength: 4,
                         nullable: false,
                         regularExpressionPattern: '[a-zA-Z0-9]+'
                     },
                     feelsGood: {
                         nullable: false,
-                        type: boolean
+                        type: 'boolean'
                     },
                     anotherName: {}
                 }
@@ -105,14 +106,22 @@
 
             <div class="agile-form__status-message"></div>
 
-            <hr class="agile-form__group" name="report" show-if="submitted"/>
+            <hr
+                class="agile-form__group"
+                name="message-divider"
+                show-if="stateMessage"
+            />
 
             <div class="agile-form__group" name="report" show-if="submitted">
                 Result:
                 <pre>${tools.represent(getData())}</pre>
             </div>
 
-            <hr/>
+            <hr
+                class="agile-form__group"
+                name="result-message-divider"
+                show-if="submitted"
+            />
 
             <generic-input
                 declaration="Please fill in your type."
@@ -134,9 +143,11 @@
             ></generic-input>
 
             <generic-input
+                description="How do you feel?"
                 declaration="Do you feel good?"
                 labels="{true: 'Yess!', false: 'Oh noo I am sad...'}"
                 name="feelsGood"
+                placeholder="Please select your feeling"
                 type="boolean"
             ></generic-input>
 
