@@ -647,7 +647,7 @@ export class AgileForm extends Web {
             Tools.copy(this.self.defaultConfiguration) as Configuration
 
         for (const configuration of [
-            this.baseConfigration || {},
+            this.baseConfiguration || {},
             this.configuration || {},
             this.dynamicConfiguration || {}
         ])
