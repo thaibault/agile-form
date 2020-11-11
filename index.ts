@@ -81,6 +81,7 @@ export class AgileForm extends Web {
     static baseScopeNames:Array<string> = [
         'initialResponse',
         'latestResponse',
+        'stateMessage',
         'pending',
         'response',
         'submitted',
@@ -315,6 +316,12 @@ export class AgileForm extends Web {
             domNode.addEventListener('click', this.onSubmit, false)
         for (const domNode of this.truncateButtons)
             domNode.addEventListener('click', this.onTruncate, false)
+
+        /*
+            Show potentially grabbed messages coming from the initialisation
+            phase.
+        */
+        this.updateMessageBox()
 
         await this.stopBackgroundProcess()
     }
@@ -583,6 +590,7 @@ export class AgileForm extends Web {
                     output = template(
                         this.initialResponse,
                         this.latestResponse,
+                        this.message,
                         this.pending,
                         this.response,
                         this.onceSubmitted,
@@ -626,9 +634,11 @@ export class AgileForm extends Web {
      * Updates current error message box state.
      * @returns Nothing.
      */
-    updateMessageBox(message?:string):void {
-        if (message)
+    updateMessageBox(message?:null|string):void {
+        if (typeof message === 'string')
             this.message = message
+        else if (message === null)
+            this.message = ''
         for (const domNode of this.statusMessageBoxes)
             if (this.message) {
                 domNode.style.display = 'block'
@@ -726,7 +736,11 @@ export class AgileForm extends Web {
         this.preCompileConfigurationExpressions()
         this.setGroupSpecificConfigurations()
         if (Object.keys(missingInputs).length)
-            this.updateMessageBox(
+            /*
+                NOTE: Message node may not be registered yet so do not render
+                message directly.
+            */
+            this.message = (
                 'Missing input for expected model name "' +
                 `${Object.keys(missingInputs).join('", "')}".`
             )
@@ -943,6 +957,7 @@ export class AgileForm extends Web {
                             return Boolean(preCompiled(
                                 this.initialResponse,
                                 this.latestResponse,
+                                this.message,
                                 this.pending,
                                 this.response,
                                 this.onceSubmitted,
@@ -1027,6 +1042,7 @@ export class AgileForm extends Web {
                     return (preCompiled as Function)(
                         this.initialResponse,
                         this.latestResponse,
+                        this.message,
                         this.pending,
                         this.response,
                         this.onceSubmitted,
@@ -1077,6 +1093,7 @@ export class AgileForm extends Web {
                     return Boolean((preCompiled as Function)(
                         this.initialResponse,
                         this.latestResponse,
+                        this.message,
                         this.pending,
                         this.response,
                         this.onceSubmitted,
@@ -1139,6 +1156,7 @@ export class AgileForm extends Web {
                         return (preCompiled as Function)(
                             this.initialResponse,
                             this.latestResponse,
+                            this.message,
                             this.pending,
                             this.response,
                             this.onceSubmitted,
@@ -1194,6 +1212,7 @@ export class AgileForm extends Web {
                         return (preCompiled as Function)(
                             this.initialResponse,
                             this.latestResponse,
+                            this.message,
                             this.pending,
                             this.response,
                             this.onceSubmitted,
@@ -1240,6 +1259,7 @@ export class AgileForm extends Web {
                     return (preCompiled as Function)(
                         this.initialResponse,
                         this.latestResponse,
+                        this.message,
                         this.pending,
                         this.response,
                         this.onceSubmitted,
@@ -1874,6 +1894,7 @@ export class AgileForm extends Web {
                 const values:Array<any> = [
                     this.initialResponse,
                     this.latestResponse,
+                    this.message,
                     this.pending,
                     this.response,
                     this.onceSubmitted,
@@ -1904,9 +1925,10 @@ export class AgileForm extends Web {
                         break
                     }
                 }
-                if (valid)
+                if (valid) {
+                    this.updateMessageBox(null)
                     await this.handleValidSubmittedInput(data, newWindow)
-                else
+                } else
                     this.track({
                         event: 'jobRadFormInputInvalid',
                         eventType: 'inputInvalid',
