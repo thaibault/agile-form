@@ -270,6 +270,7 @@ export class AgileForm extends Web {
             domNode.removeEventListener('click', this.onSubmit, false)
         for (const domNode of this.truncateButtons)
             domNode.removeEventListener('click', this.onTruncate, false)
+
         this.self.initialized = false
     }
     /**
@@ -1760,7 +1761,10 @@ export class AgileForm extends Web {
     async handleValidSubmittedInput(
         data:PlainObject, newWindow:boolean = false
     ):Promise<void> {
-        if (this.resolvedConfiguration.target && this.resolvedConfiguration.target.url) {
+        if (
+            this.resolvedConfiguration.target &&
+            this.resolvedConfiguration.target.url
+        ) {
             // region prepare request
             this.resolvedConfiguration.data = data
             this.resolvedConfiguration.targetData = this.mapTargetNames(data)
