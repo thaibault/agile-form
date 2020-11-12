@@ -2071,10 +2071,35 @@ export class AgileForm extends Web {
     async refreshInputs():Promise<void> {
         for (const name in this.inputs)
             if (this.inputs.hasOwnProperty(name)) {
-                const value = this.inputs[name].value
-                this.inputs[name].value = null
+                const domNode:HTMLElement = this.inputs[name]
+                const value = domNode.value
+                if (value === null) {
+                    if (domNode.selection) {
+                        if (
+                            Array.isArray(domNode.selection) &&
+                            domNode.selection.length
+                        )
+                            domNode.value = (
+                                Tools.isPlainObject(domNode.selection[0]) &&
+                                domNode.selection[0].hasOwnProperty('value')
+                            ) ?
+                                domNode.selection[0].value :
+                                domNode.selection[0]
+                        else if (Object.keys(domNode.selection).length)
+                            domNode.value = Object.keys(domNode.selection)[0]
+                    }
+                    /* Avoid changing touch states:
+                    else if (['string', 'text'].includes(domNode.type))
+                        domNode.value = 'DUMMY'
+                    else if (['float', 'integer', 'number'].includes(
+                        domNode.type
+                    ))
+                        domNode.value = 0
+                    */
+                } else
+                    domNode.value = null
                 await this.digest()
-                this.inputs[name].value = value
+                domNode.value = value
             }
     }
     /**
@@ -2118,7 +2143,7 @@ export class AgileForm extends Web {
                     this.inputs[name].dirty ||
                     // TODO Workaround until state is support by crefo input.
                     name === 'crefo' &&
-                    this.models.crefo.value?.crefonummer
+                    this.inputs.crefo.value?.crefonummer
                 ) &&
                 /*
                     NOTE: If only a boolean value and two possible states
@@ -2127,8 +2152,6 @@ export class AgileForm extends Web {
                 */
                 !(
                     !this.inputs[name].value &&
-                    !this.inputs[name].default &&
-                    !this.inputs[name].initialValue &&
                     this.inputs[name].type === 'boolean' &&
                     !(
                         this.inputs[name].selection &&
@@ -2145,8 +2168,13 @@ export class AgileForm extends Web {
                         this.inputs[name].value !== parameter.model[name].value
                     )
                         if (
-                            this.inputs[name].initialValue &&
-                            this.inputs[name].initialValue ===
+                            /*
+                                NOTE: Do not compare to dom nodes initial value
+                                because it could be derived from given model
+                                value specification.
+                            */
+                            this.models[name].initialValue &&
+                            this.models[name].initialValue ===
                                 this.inputs[name].value ||
                             this.inputs[name].value ===
                                 this.inputs[name].default
@@ -2158,8 +2186,13 @@ export class AgileForm extends Web {
                             parameter.model[name].value =
                                 this.inputs[name].value
                 } else if (!(
-                    this.inputs[name].initialValue &&
-                    this.inputs[name].initialValue ===
+                    /*
+                        NOTE: Do not compare to dom nodes initial value
+                        because it could be derived from given model value
+                        specification.
+                    */
+                    this.models[name].initialValue &&
+                    this.models[name].initialValue ===
                         this.inputs[name].value ||
                     this.inputs[name].value === this.inputs[name].default
                 ))
