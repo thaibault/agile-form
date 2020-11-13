@@ -843,6 +843,7 @@ export class AgileForm extends Web {
                     delete this.models[name].value
                 }
                 domNode.model = Tools.copy(this.models[name])
+                this.models[name].domNode = domNode
                 await this.digest()
                 Object.defineProperty(
                     this.models[name],
@@ -2139,12 +2140,7 @@ export class AgileForm extends Web {
             if (
                 this.models.hasOwnProperty(name) &&
                 this.inputs.hasOwnProperty(name) &&
-                (
-                    this.inputs[name].dirty ||
-                    // TODO Workaround until state is support by crefo input.
-                    name === 'crefo' &&
-                    this.inputs.crefo.value?.crefonummer
-                ) &&
+                this.inputs[name].dirty &&
                 /*
                     NOTE: If only a boolean value and two possible states
                     possible we do not have to save an implicit default
