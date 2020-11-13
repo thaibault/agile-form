@@ -2072,19 +2072,19 @@ export class AgileForm extends Web {
                 const domNode:HTMLElement = this.inputs[name]
                 const value = domNode.value
                 if (value === null) {
-                    if (domNode.selection) {
-                        if (
-                            Array.isArray(domNode.selection) &&
-                            domNode.selection.length
-                        )
+                    const selection = domNode.selection ?
+                        domNode.selection :
+                        domNode.labels ?
+                            domNode.labels :
+                            null
+                    if (selection) {
+                        if (Array.isArray(selection) && selection.length)
                             domNode.value = (
-                                Tools.isPlainObject(domNode.selection[0]) &&
-                                domNode.selection[0].hasOwnProperty('value')
-                            ) ?
-                                domNode.selection[0].value :
-                                domNode.selection[0]
-                        else if (Object.keys(domNode.selection).length)
-                            domNode.value = Object.keys(domNode.selection)[0]
+                                Tools.isPlainObject(selection[0]) &&
+                                selection[0].hasOwnProperty('value')
+                            ) ? selection[0].value : selection[0]
+                        else if (Object.keys(selection).length)
+                            domNode.value = Object.keys(selection)[0]
                     }
                     /* Avoid changing touch states:
                     else if (['string', 'text'].includes(domNode.type))
