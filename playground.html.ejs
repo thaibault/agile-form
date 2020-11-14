@@ -95,13 +95,13 @@
                 model: {
                     legalNotesChecked: {
                         dynamicExtendExpression: {
-                            nullable: iDontCare.value,
+                            nullable: 'iDontCare.value',
                             value: 'iDontCare.value ? false : self.value'
                         }
                     },
                     iDontCare: {
                         dynamicExtendExpression: {
-                            nullable: legalNotesChecked.value,
+                            nullable: 'legalNotesChecked.value',
                             value: 'legalNotesChecked.value ? false : self.value'
                         }
                     }
