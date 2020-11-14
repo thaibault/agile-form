@@ -94,7 +94,16 @@
             dynamic-configuration="{
                 model: {
                     legalNotesChecked: {
-                        nullable: false
+                        dynamicExtendExpression: {
+                            nullable: iDontCare.value,
+                            value: 'iDontCare.value ? false : self.value'
+                        }
+                    },
+                    iDontCare: {
+                        dynamicExtendExpression: {
+                            nullable: legalNotesChecked.value,
+                            value: 'legalNotesChecked.value ? false : self.value'
+                        }
                     }
                 }
             }"
