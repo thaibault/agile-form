@@ -55,6 +55,8 @@ import {
  * equal).
  *
  * @property clearButtons - Reference to form clear button nodes.
+ * @property currentChangeTriggerName - Input name which triggered current
+ * dependency change cycle.
  * @property dependencyMapping - Mapping from each field to their dependent one.
  * @property groups - Mapping from group dom nodes to containing field names
  * and conditional show if expression.
@@ -207,6 +209,7 @@ export class AgileForm extends Web {
     ]
 
     clearButtons:Array<AnnotatedDomNode> = []
+    currentChangeTriggerName:null|string = null
     dependencyMapping:{[key:string]:Array<string>} = {}
     groups:Map<AnnotatedDomNode, {childNames:Array<string>;showIf?:Function}> =
         new Map()
@@ -324,8 +327,6 @@ export class AgileForm extends Web {
         this.updateMessageBox()
 
         await this.stopBackgroundProcess()
-
-        await this.refreshInputs()
     }
     // endregion
     // region handle visibility states
@@ -994,8 +995,9 @@ export class AgileForm extends Web {
                     this.dependencyMapping[name] = []
                 if (this.models[name].dependsOn)
                     for (
-                        const dependentName of this.models[name].dependsOn as
-                            Array<string>
+                        const dependentName of ([] as Array<string>).concat(
+                            this.models[name].dependsOn as Array<string>
+                        )
                     )
                         if (this.dependencyMapping.hasOwnProperty(
                             dependentName
@@ -1137,6 +1139,7 @@ export class AgileForm extends Web {
                 const [scopeNames, preCompiled] = Tools.stringCompile(
                     code,
                     this.self.baseScopeNames.concat(
+                        'currentChangeTriggerName',
                         'self',
                         this.resolvedConfiguration.expressions.map(
                             (expression:Array<string>):string => expression[0]
@@ -1162,6 +1165,7 @@ export class AgileForm extends Web {
                             this.response,
                             this.onceSubmitted,
                             Tools,
+                            this.currentChangeTriggerName,
                             this.models[name],
                             ...this.evaluateExpressions(),
                             ...(this.models[name].dependsOn || [])
@@ -1956,8 +1960,10 @@ export class AgileForm extends Web {
                             'onChange'
                     ),
                     async ():Promise<void> => {
+                        this.currentChangeTriggerName = name
                         await this.updateInputDependencies(name)
                         this.updateAllGroups()
+                        this.currentChangeTriggerName = null
                     }
                 )}
     }
@@ -2059,46 +2065,6 @@ export class AgileForm extends Web {
             scope.push(evaluation[1]())
         }
         return scope
-    }
-    /**
-      * Triggers re-rendering of an input via a hack. It set value to null
-      * waits a digest loop and resets the value back.
-      * @returns A promise resolving to nothing when re-rendering has been
-      * finished.
-      */
-    async refreshInputs():Promise<void> {
-        for (const name in this.inputs)
-            if (this.inputs.hasOwnProperty(name)) {
-                const domNode:HTMLElement = this.inputs[name]
-                const value = domNode.value
-                if (value === null) {
-                    const selection = domNode.selection ?
-                        domNode.selection :
-                        domNode.labels ?
-                            domNode.labels :
-                            null
-                    if (selection) {
-                        if (Array.isArray(selection) && selection.length)
-                            domNode.value = (
-                                Tools.isPlainObject(selection[0]) &&
-                                selection[0].hasOwnProperty('value')
-                            ) ? selection[0].value : selection[0]
-                        else if (Object.keys(selection).length)
-                            domNode.value = Object.keys(selection)[0]
-                    }
-                    /* Avoid changing touch states:
-                    else if (['string', 'text'].includes(domNode.type))
-                        domNode.value = 'DUMMY'
-                    else if (['float', 'integer', 'number'].includes(
-                        domNode.type
-                    ))
-                        domNode.value = 0
-                    */
-                } else
-                    domNode.value = null
-                await this.digest()
-                domNode.value = value
-            }
     }
     /**
      * Indicates a background running process. Sets "pending" property and
