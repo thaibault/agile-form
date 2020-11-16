@@ -1970,16 +1970,9 @@ export class AgileForm extends Web {
                             'onChange'
                     ),
                     async (event:Event):Promise<void> => {
-                        if (this.locked)
-                            return
-                        this.locked = true
-
-                        console.log(name, event.target.value)
-
+                        await this.digest()
                         await this.updateInputDependencies(name, event)
                         this.updateAllGroups()
-
-                        this.locked = false
                     }
                 )
     }
@@ -2011,7 +2004,8 @@ export class AgileForm extends Web {
                     this.models[name].dynamicExtend[key](event)
                 if (oldValue !== newValue) {
                     changed = true
-                    this.models[name][key] = newValue
+                    if (key !== 'value')
+                        this.models[name][key] = newValue
                     if (
                         this.self.specificationToPropertyMapping
                             .hasOwnProperty(key)
