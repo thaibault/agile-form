@@ -55,10 +55,6 @@ import {
  * equal).
  *
  * @property clearButtons - Reference to form clear button nodes.
- * @property currentChangeTriggerName - Input name which triggered current
- * dependency change (sub-)cycle.
- * @property currentMasterChangeTriggerName - Input name which triggered
- * current change cycle at root.
  * @property dependencyMapping - Mapping from each field to their dependent one.
  * @property groups - Mapping from group dom nodes to containing field names
  * and conditional show if expression.
@@ -212,8 +208,6 @@ export class AgileForm extends Web {
     ]
 
     clearButtons:Array<AnnotatedDomNode> = []
-    currentChangeTriggerName:null|string = null
-    currentMasterChangeTriggerName:null|string = null
     dependencyMapping:{[key:string]:Array<string>} = {}
     groups:Map<HTMLElement, {
         childNames:Array<string>
@@ -333,7 +327,7 @@ export class AgileForm extends Web {
         */
         this.updateMessageBox()
 
-        await this.stopBackgroundProcess()
+        await this.stopBackgroundProcess(new Event('render'))
     }
     // endregion
     // region handle visibility states
@@ -1150,8 +1144,9 @@ export class AgileForm extends Web {
                 const [scopeNames, preCompiled] = Tools.stringCompile(
                     code,
                     this.self.baseScopeNames.concat(
-                        'currentChangeTriggerName',
-                        'currentMasterChangeTriggerName',
+                        'event',
+                        'eventName',
+                        'selfName',
                         'self',
                         this.resolvedConfiguration.expressions.map(
                             (expression:Array<string>):string => expression[0]
@@ -1167,23 +1162,25 @@ export class AgileForm extends Web {
                     );
                 (
                     this.models[name].dynamicExtend as Mapping<() => any>
-                )[subName] = ():any => {
+                )[subName] = (event:Event):any => {
+                    const context:Array<any> = [
+                        this.initialResponse,
+                        this.latestResponse,
+                        this.message,
+                        this.pending,
+                        this.response,
+                        this.onceSubmitted,
+                        Tools,
+                        event,
+                        this.determineEventName(event),
+                        name,
+                        this.models[name],
+                        ...this.evaluateExpressions(),
+                        ...(this.models[name].dependsOn || [])
+                            .map((name:string):any => this.models[name])
+                    ]
                     try {
-                        return (preCompiled as Function)(
-                            this.initialResponse,
-                            this.latestResponse,
-                            this.message,
-                            this.pending,
-                            this.response,
-                            this.onceSubmitted,
-                            Tools,
-                            this.currentChangeTriggerName,
-                            this.currentMasterChangeTriggerName,
-                            this.models[name],
-                            ...this.evaluateExpressions(),
-                            ...(this.models[name].dependsOn || [])
-                                .map((name:string):any => this.models[name])
-                        )
+                        return (preCompiled as Function)(...context)
                     } catch (error) {
                         console.error(
                             `Failed running "dynamicExtendExpression" "` +
@@ -1325,20 +1322,18 @@ export class AgileForm extends Web {
      */
     async handleInitializeAction():Promise<void> {
         if (this.resolvedConfiguration.actions.hasOwnProperty('initialize')) {
-            if (
-                this.resolvedConfiguration.initializeTarget &&
-                this.resolvedConfiguration.initializeTarget.url
-            ) {
+            const event:Event = new Event('initialize')
+            if (this.resolvedConfiguration.initializeTarget?.url) {
                 const target:TargetConfiguration =
                     Tools.evaluateDynamicData(
                         Tools.copy(this.resolvedConfiguration.initializeTarget),
                         {Tools, ...this.resolvedConfiguration}
                     )
-                await this.startBackgroundProcess()
+                await this.startBackgroundProcess(event)
                 this.initialResponse = this.latestResponse =
                     await this.doRequest(target)
                 if (!this.initialResponse) {
-                    await this.stopBackgroundProcess()
+                    await this.stopBackgroundProcess(event)
                     return
                 }
             }
@@ -1348,7 +1343,7 @@ export class AgileForm extends Web {
             if (typeof target === 'string')
                 location.href = target
             else if (this.pending)
-                await this.stopBackgroundProcess()
+                await this.stopBackgroundProcess(event)
         }
     }
     /**
@@ -1791,13 +1786,14 @@ export class AgileForm extends Web {
     }
     /**
      * Send given data to server und interpret response.
+     * @param event - Triggering event object.
      * @param data - Valid data given by the form.
      * @param newWindow - Indicates whether action targets should be opened
      * in a new window.
      * @returns Promise holding nothing.
      */
     async handleValidSubmittedInput(
-        data:PlainObject, newWindow:boolean = false
+        event:Event, data:PlainObject, newWindow:boolean = false
     ):Promise<void> {
         if (this.resolvedConfiguration.target?.url) {
             // region prepare request
@@ -1823,7 +1819,7 @@ export class AgileForm extends Web {
                 value: this.resolvedConfiguration.conversionValue.submit
             })
             this.latestResponse = this.response = null
-            await this.startBackgroundProcess()
+            await this.startBackgroundProcess(event)
             // region trigger request
             this.latestResponse =
             this.response =
@@ -1840,13 +1836,12 @@ export class AgileForm extends Web {
                     */
                     return
             // endregion
-            await this.stopBackgroundProcess()
         } else {
-            await this.startBackgroundProcess()
+            await this.startBackgroundProcess(event)
             if (this.resolvedConfiguration.debug)
                 console.debug('Retrieved data:', Tools.represent(data))
-            await this.stopBackgroundProcess()
         }
+        await this.stopBackgroundProcess(event)
     }
     /**
      * Maps given field names to endpoint's expected ones.
@@ -1942,7 +1937,9 @@ export class AgileForm extends Web {
                 }
                 if (valid) {
                     this.updateMessageBox(null)
-                    await this.handleValidSubmittedInput(data, newWindow)
+                    await this.handleValidSubmittedInput(
+                        event, data, newWindow
+                    )
                 } else
                     this.track({
                         event: 'jobRadFormInputInvalid',
@@ -1965,50 +1962,53 @@ export class AgileForm extends Web {
      */
     addEventListener():void {
         for (const name in this.inputs)
-            if (this.inputs.hasOwnProperty(name)) {
+            if (this.inputs.hasOwnProperty(name))
                 this.inputs[name].addEventListener(
                     (
                         this.models[name].hasOwnProperty('eventChangedName') ?
                             this.models[name].eventChangedName :
                             'onChange'
                     ),
-                    async ():Promise<void> => {
-                        const master:boolean =
-                            this.currentMasterChangeTriggerName === null
-                        if (master)
-                            this.currentMasterChangeTriggerName = name
-                        this.currentChangeTriggerName = name
-                        await this.updateInputDependencies(name)
+                    async (event:Event):Promise<void> => {
+                        if (this.locked)
+                            return
+                        this.locked = true
+
+                        console.log(name, event.target.value)
+
+                        await this.updateInputDependencies(name, event)
                         this.updateAllGroups()
-                        this.currentChangeTriggerName = null
-                        if (master)
-                            this.currentMasterChangeTriggerName = null
+
+                        this.locked = false
                     }
-                )}
+                )
     }
     /**
      * Updates all fields.
+     * @param event - Triggering event object.
      * @returns Promise holding nothing.
      */
-    async updateAllInputs():Promise<void> {
+    async updateAllInputs(event:Event):Promise<void> {
         for (const name in this.inputs)
             if (this.inputs.hasOwnProperty(name))
-                await this.updateInput(name)
+                await this.updateInput(name, event)
     }
     /**
      * Updates given input (by name) dynamic expression and its visibility
      * state.
      * @param name - Field name to update.
+     * @param event - Triggering event object.
      * @returns A Promise resolving to a boolean indicator whether a state
      * changed happened or not.
      */
-    async updateInput(name:string):Promise<boolean> {
+    async updateInput(name:string, event:Event):Promise<boolean> {
         // We have to check for real state changes to avoid endless loops.
         let changed:boolean = false
         if (this.models[name].hasOwnProperty('dynamicExtend'))
             for (const key in this.models[name].dynamicExtend) {
                 const oldValue:any = this.models[name][key]
-                const newValue:any = this.models[name].dynamicExtend[key]()
+                const newValue:any =
+                    this.models[name].dynamicExtend[key](event)
                 if (oldValue !== newValue) {
                     changed = true
                     this.models[name][key] = newValue
@@ -2029,27 +2029,18 @@ export class AgileForm extends Web {
             }
         if ((await this.updateInputVisibility(name)) || changed) {
             await this.triggerModelUpdate(name)
-            await this.updateInputDependencies(name)
+            await this.updateInputDependencies(name, event)
         }
         return changed
-    }
-    /**
-     * Updates all field dependencies.
-     * @returns Promise holding nothing.
-     */
-    async updateAllInputDependencies():Promise<void> {
-        for (const name in this.inputs)
-            if (this.inputs.hasOwnProperty(name))
-                await this.updateInputDependencies(name)
     }
     /**
      * Updates all related fields for given field name.
      * @param name - Field to check their dependent fields.
      * @returns Promise holding nothing.
      */
-    async updateInputDependencies(name:string):Promise<void> {
+    async updateInputDependencies(name:string, event:Event):Promise<void> {
         for (const dependentName of this.dependencyMapping[name])
-            await this.updateInput(dependentName)
+            await this.updateInput(dependentName, event)
     }
     /**
      * Trigger inputs internal change detection.
@@ -2072,6 +2063,28 @@ export class AgileForm extends Web {
     // / endregion
     // / region utility
     /**
+     * Derives event name from given event.
+     * @param event - Event to derive name from.
+     * @return Derived name.
+     */
+    determineEventName(event:Event):string {
+        if (event.detail) {
+            if (
+                Array.isArray(event.detail.parameter) &&
+                event.detail.parameter.length
+            )
+                if (event.detail.parameter.length > 1) {
+                    if (typeof event.detail.parameter[1].type === 'string')
+                        return event.detail.parameter[1].type
+                    if (typeof event.detail.parameter[0].type === 'string')
+                        return event.detail.parameter[0].type
+                }
+            if (typeof event.detail.type === 'string')
+                return event.detail.type
+        }
+        return typeof event.type === 'string' ? event.type : 'unknown'
+    }
+    /**
      * Generates scope based on generic expressions.
      * @param current - Current evaluation (to ignore).
      * @returns Evaluated scope.
@@ -2088,24 +2101,26 @@ export class AgileForm extends Web {
     /**
      * Indicates a background running process. Sets "pending" property and
      * triggers a loading spinner.
+     * @param event - Triggering event object.
      * @returns A Promise resolving when all items render updates has been
      * done.
      */
-    async startBackgroundProcess():Promise<void> {
+    async startBackgroundProcess(event:Event):Promise<void> {
         this.showSpinner()
         this.pending = true
-        await this.updateAllInputs()
+        await this.updateAllInputs(event)
         this.updateAllGroups()
     }
     /**
      * Stops indicating a background running process. Sets "pending" property
      * and stop showing a loading spinner.
+     * @param event - Triggering event object.
      * @returns A Promise resolving when all items render updates has been
      * done.
      */
-    async stopBackgroundProcess():Promise<void> {
+    async stopBackgroundProcess(event:Event):Promise<void> {
         this.pending = false
-        await this.updateAllInputs()
+        await this.updateAllInputs(event)
         this.updateAllGroups()
         this.hideSpinner()
     }
