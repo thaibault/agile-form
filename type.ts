@@ -118,7 +118,6 @@ export type AnnotatedDomNode<Type = any> = HTMLElement & {
     model:Model<Type>
     showInitialValidationState:boolean
     shown:boolean
-    templateContent?:string
     valid:boolean
     value:any
 }

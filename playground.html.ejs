@@ -94,7 +94,17 @@
             dynamic-configuration="{
                 model: {
                     legalNotesChecked: {
-                        nullable: false
+                        nullableTODO: 'iDontCare.value',
+                        dependsOn: 'iDontCare',
+                        dynamicExtendExpressions: {
+                            value: 'console.log(\'legal sees\', iDontCare.value, currentChangeTriggerName) || iDontCare.value ? false : self.value'
+                        }
+                    },
+                    iDontCare: {
+                        dependsOn: 'legalNotesChecked',
+                        dynamicExtendExpressions: {
+                            value: 'console.log(\'i don.. sees\', legalNotesChecked.value, currentChangeTriggerName) || legalNotesChecked.value ? false : self.value'
+                        }
                     }
                 }
             }"
@@ -151,6 +161,9 @@
 
             <requireable-checkbox
                 name="legalNotesChecked" description="Check it!"
+            ></requireable-checkbox>
+            <requireable-checkbox
+                name="iDontCare" description="Do not check it :-)"
             ></requireable-checkbox>
 
             <button truncate>Truncate</button>

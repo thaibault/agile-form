@@ -55,9 +55,14 @@ import {
  * equal).
  *
  * @property clearButtons - Reference to form clear button nodes.
+ * @property currentChangeTriggerName - Input name which triggered current
+ * dependency change (sub-)cycle.
+ * @property currentMasterChangeTriggerName - Input name which triggered
+ * current change cycle at root.
  * @property dependencyMapping - Mapping from each field to their dependent one.
  * @property groups - Mapping from group dom nodes to containing field names
  * and conditional show if expression.
+ * @property groupTemplateCache - Cache of group template contents.
  * @property inputs - Mapping from field names to their corresponding input
  * dom node.
  * @property message - Current error message about unsatisfied given
@@ -207,9 +212,14 @@ export class AgileForm extends Web {
     ]
 
     clearButtons:Array<AnnotatedDomNode> = []
+    currentChangeTriggerName:null|string = null
+    currentMasterChangeTriggerName:null|string = null
     dependencyMapping:{[key:string]:Array<string>} = {}
-    groups:Map<AnnotatedDomNode, {childNames:Array<string>;showIf?:Function}> =
-        new Map()
+    groups:Map<HTMLElement, {
+        childNames:Array<string>
+        showIf?:Function
+    }> = new Map()
+    groupTemplateCache:Map<HTMLElement, string> = new Map()
     initialData:PlainObject = {}
     initialResponse:any = null
     inputs:{[key:string]:AnnotatedDomNode} = {}
@@ -324,8 +334,6 @@ export class AgileForm extends Web {
         this.updateMessageBox()
 
         await this.stopBackgroundProcess()
-
-        await this.refreshInputs()
     }
     // endregion
     // region handle visibility states
@@ -486,9 +494,13 @@ export class AgileForm extends Web {
      */
     updateAllGroups():void {
         this.groups.forEach((
-            specification:{childNames:Array<string>;showIf?:Function},
+            specification:{
+                childNames:Array<string>
+                showIf?:Function
+            },
             domNode:AnnotatedDomNode
         ):void => {
+            const name:string = domNode.getAttribute('name') ?? 'unknown'
             const oldState:boolean|null = domNode.shown
             domNode.shown = (
                 specification.showIf &&
@@ -512,11 +524,7 @@ export class AgileForm extends Web {
                 )
                 */
                 if (domNode.shown)
-                    domNode.getAttribute('name') ?
-                        this.updateGroupContent(
-                            domNode, domNode.getAttribute('name') as string
-                        ) :
-                        this.updateGroupContent(domNode)
+                    this.updateGroupContent(domNode, name)
                 return
             }
             if (this.resolvedConfiguration.debug)
@@ -537,11 +545,7 @@ export class AgileForm extends Web {
                 domNode.style.opacity = '0'
                 domNode.style.display = 'block'
                 if (domNode.shown)
-                    domNode.getAttribute('name') ?
-                        this.updateGroupContent(
-                            domNode, domNode.getAttribute('name') as string
-                        ) :
-                        this.updateGroupContent(domNode)
+                    this.updateGroupContent(domNode, name)
                 this.fade(domNode)
             } else
                 this.fade(domNode, 0)
@@ -549,13 +553,18 @@ export class AgileForm extends Web {
     }
     /**
      * Evaluate dynamic text content.
+     * @param domNode - Dom node to render its content.
+     * @param name - Name describing this node.
      * @returns Nothing.
      */
     updateGroupContent(
         domNode:AnnotatedDomNode, name:string = 'unknown'
     ):void {
         const nodeName:string = domNode.nodeName.toLowerCase()
-        if (['a', '#text'].includes(nodeName) && !domNode.templateContent) {
+        if (
+            ['a', '#text'].includes(nodeName) &&
+            !this.groupTemplateCache.has(domNode)
+        ) {
             const content:null|string = nodeName === 'a' ?
                 domNode.getAttribute('href') :
                 domNode.textContent
@@ -566,12 +575,13 @@ export class AgileForm extends Web {
                 content.includes('}') &&
                 /\$\{.+\}/.test(content)
             )
-                domNode.templateContent =
-                    content.replace(/&nbsp;/g, ' ').trim()
+                this.groupTemplateCache.set(
+                    domNode, content.replace(/&nbsp;/g, ' ').trim()
+                )
         }
-        if (domNode.templateContent) {
+        if (this.groupTemplateCache.has(domNode)) {
             const [scopeNames, template] = Tools.stringCompile(
-                `\`${domNode.templateContent}\``,
+                `\`${this.groupTemplateCache.get(domNode)}\``,
                 this.self.baseScopeNames.concat(
                     this.resolvedConfiguration.expressions.map(
                         (expression:Array<string>):string => expression[0]
@@ -607,8 +617,9 @@ export class AgileForm extends Web {
                 } catch (error) {
                     console.warn(
                         'Error occured when running "' +
-                        `${domNode.templateContent}": for "${name}" with ` +
-                        `bound names "${scopeNames.join('", "')}": "` +
+                        `${this.groupTemplateCache.get(domNode)}": for "` +
+                        `${name}" with bound names "` +
+                        `${scopeNames.join('", "')}": "` +
                         `${Tools.represent(error)}".`
                     )
                 }
@@ -619,9 +630,10 @@ export class AgileForm extends Web {
                         domNode.textContent = output
              }
         }
+        // Render content of each nested node.
         let currentDomNode:ChildNode|null = domNode.firstChild
         while (currentDomNode) {
-            // NOTE: Nested groups should be rendered by their direct parent.
+            // NOTE: Avoid updating nested nodes which are groups by their own.
             if (
                 currentDomNode.nodeName.toLowerCase() !==
                 this.resolvedConfiguration.selector.groups
@@ -994,8 +1006,9 @@ export class AgileForm extends Web {
                     this.dependencyMapping[name] = []
                 if (this.models[name].dependsOn)
                     for (
-                        const dependentName of this.models[name].dependsOn as
-                            Array<string>
+                        const dependentName of ([] as Array<string>).concat(
+                            this.models[name].dependsOn as Array<string>
+                        )
                     )
                         if (this.dependencyMapping.hasOwnProperty(
                             dependentName
@@ -1137,6 +1150,8 @@ export class AgileForm extends Web {
                 const [scopeNames, preCompiled] = Tools.stringCompile(
                     code,
                     this.self.baseScopeNames.concat(
+                        'currentChangeTriggerName',
+                        'currentMasterChangeTriggerName',
                         'self',
                         this.resolvedConfiguration.expressions.map(
                             (expression:Array<string>):string => expression[0]
@@ -1162,6 +1177,8 @@ export class AgileForm extends Web {
                             this.response,
                             this.onceSubmitted,
                             Tools,
+                            this.currentChangeTriggerName,
+                            this.currentMasterChangeTriggerName,
                             this.models[name],
                             ...this.evaluateExpressions(),
                             ...(this.models[name].dependsOn || [])
@@ -1956,8 +1973,16 @@ export class AgileForm extends Web {
                             'onChange'
                     ),
                     async ():Promise<void> => {
+                        const master:boolean =
+                            this.currentMasterChangeTriggerName === null
+                        if (master)
+                            this.currentMasterChangeTriggerName = name
+                        this.currentChangeTriggerName = name
                         await this.updateInputDependencies(name)
                         this.updateAllGroups()
+                        this.currentChangeTriggerName = null
+                        if (master)
+                            this.currentMasterChangeTriggerName = null
                     }
                 )}
     }
@@ -2059,46 +2084,6 @@ export class AgileForm extends Web {
             scope.push(evaluation[1]())
         }
         return scope
-    }
-    /**
-      * Triggers re-rendering of an input via a hack. It set value to null
-      * waits a digest loop and resets the value back.
-      * @returns A promise resolving to nothing when re-rendering has been
-      * finished.
-      */
-    async refreshInputs():Promise<void> {
-        for (const name in this.inputs)
-            if (this.inputs.hasOwnProperty(name)) {
-                const domNode:HTMLElement = this.inputs[name]
-                const value = domNode.value
-                if (value === null) {
-                    const selection = domNode.selection ?
-                        domNode.selection :
-                        domNode.labels ?
-                            domNode.labels :
-                            null
-                    if (selection) {
-                        if (Array.isArray(selection) && selection.length)
-                            domNode.value = (
-                                Tools.isPlainObject(selection[0]) &&
-                                selection[0].hasOwnProperty('value')
-                            ) ? selection[0].value : selection[0]
-                        else if (Object.keys(selection).length)
-                            domNode.value = Object.keys(selection)[0]
-                    }
-                    /* Avoid changing touch states:
-                    else if (['string', 'text'].includes(domNode.type))
-                        domNode.value = 'DUMMY'
-                    else if (['float', 'integer', 'number'].includes(
-                        domNode.type
-                    ))
-                        domNode.value = 0
-                    */
-                } else
-                    domNode.value = null
-                await this.digest()
-                domNode.value = value
-            }
     }
     /**
      * Indicates a background running process. Sets "pending" property and
