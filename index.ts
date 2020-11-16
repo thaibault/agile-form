@@ -2066,13 +2066,19 @@ export class AgileForm extends Web {
             if (
                 Array.isArray(event.detail.parameter) &&
                 event.detail.parameter.length
-            )
-                if (event.detail.parameter.length > 1) {
-                    if (typeof event.detail.parameter[1].type === 'string')
-                        return event.detail.parameter[1].type
-                    if (typeof event.detail.parameter[0].type === 'string')
-                        return event.detail.parameter[0].type
-                }
+            ) {
+                if (
+                    event.detail.parameter.length > 1 &&
+                    event.detail.parameter[1] &&
+                    typeof event.detail.parameter[1].type === 'string'
+                )
+                    return event.detail.parameter[1].type
+                if (
+                    event.detail.parameter[0] &&
+                    typeof event.detail.parameter[0].type === 'string'
+                )
+                    return event.detail.parameter[0].type
+            }
             if (typeof event.detail.type === 'string')
                 return event.detail.type
         }
