@@ -94,16 +94,17 @@
             dynamic-configuration="{
                 model: {
                     legalNotesChecked: {
-                        nullableTODO: 'iDontCare.value',
                         dependsOn: 'iDontCare',
                         dynamicExtendExpressions: {
-                            value: 'console.log(\'legal sees\', iDontCare.value, currentChangeTriggerName) || iDontCare.value ? false : self.value'
+                            nullable: 'iDontCare.value',
+                            value: '(eventName === \'change\' && event.target?.name === \'iDontCare\' && iDontCare.value) ? false : self.value'
                         }
                     },
                     iDontCare: {
                         dependsOn: 'legalNotesChecked',
                         dynamicExtendExpressions: {
-                            value: 'console.log(\'i don.. sees\', legalNotesChecked.value, currentChangeTriggerName) || legalNotesChecked.value ? false : self.value'
+                            nullable: 'legalNotesChecked.value',
+                            value: '(eventName === \'change\' && event.target?.name === \'legalNotesChecked\' && legalNotesChecked.value) ? false : self.value'
                         }
                     }
                 }
