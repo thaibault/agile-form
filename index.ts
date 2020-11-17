@@ -1971,10 +1971,11 @@ export class AgileForm extends Web {
                     ),
                     async (event:Event):Promise<void> => {
                         await this.digest()
-                        await Tools.acquireLock('digest')
+                        const tools:Tools = new Tools()
+                        await tools.acquireLock('digest')
                         await this.updateInputDependencies(name, event)
                         this.updateAllGroups()
-                        await Tools.releaseLock('digest')
+                        await tools.releaseLock('digest')
                     }
                 )
     }
