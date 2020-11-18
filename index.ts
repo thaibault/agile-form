@@ -67,6 +67,10 @@ import {
  * @property onceSubmitted - Indicates whether this form was submitted once
  * already.
  * @property pending - Indicates whether a request is currently running.
+ * @property reCaptchaFallbackInput - Reference to render re-captcha fallback
+ * into.
+ * @property reCaptchaFallbackRendered - Indicates whether a fallback
+ * re-captcha inputs was already rendered.
  * @property resetButtons - Reference to form reset button nodes.
  * @property resolvedConfiguration - Holds given configuration object.
  * @property response - Current parsed response from send form data.
@@ -108,7 +112,10 @@ export class AgileForm extends Web {
         model: {},
         offsetInPixel: 85,
         reCaptcha: {
-            key: '',
+            key: {
+                v2: '',
+                v3: ''
+            },
             options: {
                 action: 'jForm'
             },
@@ -127,6 +134,7 @@ export class AgileForm extends Web {
             // TODO do not allow nested elements, as long as not supported
             // prefer high-level inputs over native "<input />"
             inputs: 'generic-input, requireable-checkbox',
+            reCaptchaFallbackInput: '.agile-form__re-captcha-fallback',
             resetButtons: 'button[reset], [type=reset]',
             spinner: 'circular-spinner',
             statusMessageBoxes: '.agile-form__status-message',
@@ -223,6 +231,8 @@ export class AgileForm extends Web {
     modelNames:Array<string> = []
     onceSubmitted:boolean = false
     pending:boolean = true
+    reCaptchaFallbackInput:HTMLElement|null = null
+    reCaptchaFallbackRendered:boolean = false
     resetButtons:Array<AnnotatedDomNode> = []
     resolvedConfiguration:Configuration = {} as Configuration
     response:any = null
@@ -291,9 +301,16 @@ export class AgileForm extends Web {
         await this.digest()
         await this.configureContentProjectedInputs()
 
+        this.reCaptchaFallbackInput = this.root.querySelector(
+            this.resolvedConfiguration.selector.reCaptchaFallbackInput
+        )
+        if (this.reCaptchaFallbackInput)
+            this.deactivate(this.reCaptchaFallbackInput)
+
         this.spinner = Array.from(this.root.querySelectorAll(
             this.resolvedConfiguration.selector.spinner
         ))
+
         this.statusMessageBoxes = Array.from(this.root.querySelectorAll(
             this.resolvedConfiguration.selector.statusMessageBoxes
         ))
@@ -2255,6 +2272,40 @@ export class AgileForm extends Web {
             })
     }
     /**
+     * Renders user interaction re-captcha version if corresponding placeholder
+     * is available.
+     * @returns Nothing.
+     */
+    renderReCaptchaFallback():void {
+        if (this.reCaptchaFallbackInput) {
+            this.reCaptchaFallbackInput.removeAttribute('valid')
+            this.reCaptchaFallbackInput.setAttribute('invalid', '')
+            if (!this.reCaptchaFallbackRendered)
+                this.reCaptchaFallbackInput.setAttribute('pristine', '')
+            this.reCaptchaFallbackRendered = true
+            /*
+                NOTE: We do not have to wait for the re-captcha ready event
+                since re-captcha 3 is always triggered first so we can assume
+                it is already there.
+            */
+            window.grecaptcha!.render(
+                this.reCaptchaFallbackInput,
+                {
+                    callback: (token:string):void => {
+                        this.reCaptchaFallbackInput.removeAttribute('invalid')
+                        this.reCaptchaFallbackInput.setAttribute('valid')
+                        this.reCaptchaFallbackInput.removeAttribute('pristine')
+                        this.reCaptchaFallbackInput.setAttribute('dirty', '')
+                        this.self.reCaptchaToken = token
+                    },
+                    sitekey : this.resolvedConfiguration.reCaptcha.key.v2
+                }
+            )
+            this.activate(this.reCaptchaFallbackInput)
+            this.scrollAndFocus(this.reCaptchaFallbackInput)
+        }
+    }
+    /**
      * Updates internal saved re-captcha token.
      * @returns Promise resolving to nothing.
      */
@@ -2265,7 +2316,7 @@ export class AgileForm extends Web {
                     resolve:Function, reject:Function
                 ):void => window.grecaptcha!.ready(async ():Promise<void> =>
                     resolve(await window.grecaptcha.execute(
-                        this.resolvedConfiguration.reCaptcha.key,
+                        this.resolvedConfiguration.reCaptcha.key.v3,
                         this.resolvedConfiguration.reCaptcha.options
                     ))
                 ))
