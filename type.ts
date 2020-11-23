@@ -77,7 +77,10 @@ export type Configuration = {
     model:Mapping<Model>
     offsetInPixel:number
     reCaptcha:{
-        key:string
+        key:{
+            v2:string
+            v3:string
+        }
         options:PlainObject
         secret:string
         skip:boolean
