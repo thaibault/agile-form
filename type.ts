@@ -35,8 +35,8 @@ export type Model<Type = any> =
     {
         dataMapping?:Mapping|string
         dependsOn:Array<string>|null
-        dynamicExtend?:Mapping<() => any>
-        dynamicExtendExpressions?:Mapping
+        dynamicExtend?:Mapping<(event:Event) => any>
+        dynamicExtendExpressions?:Mapping<((event:Event, scope:any) => any)|string>
         eventChangedName:string
         showIf?:() => boolean
         showIfExpression?:string
