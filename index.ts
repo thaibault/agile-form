@@ -1158,34 +1158,39 @@ export class AgileForm extends Web {
         this.models[name].dynamicExtend = {}
         for (const subName in this.models[name].dynamicExtendExpressions)
             if (
-                (this.models[name].dynamicExtendExpressions as Mapping)
+                this.models[name].dynamicExtendExpressions!
                     .hasOwnProperty(subName)
             ) {
-                const code:string = (
+                const code:((event:Event, scope:any) => any)|string = (
                     this.models[name].dynamicExtendExpressions as Mapping
                 )[subName]
-                const [scopeNames, preCompiled] = Tools.stringCompile(
-                    code,
-                    this.self.baseScopeNames.concat(
-                        'event',
-                        'eventName',
-                        'selfName',
-                        'self',
-                        this.resolvedConfiguration.expressions.map(
-                            (expression:Array<string>):string => expression[0]
-                        ),
-                        this.models[name].dependsOn || []
-                    )
+                let scopeNames = this.self.baseScopeNames.concat(
+                    'event',
+                    'eventName',
+                    'scope',
+                    'selfName',
+                    'self',
+                    this.resolvedConfiguration.expressions.map(
+                        (expression:Array<string>):string => expression[0]
+                    ),
+                    this.models[name].dependsOn || []
                 )
-                if (typeof preCompiled === 'string')
-                    console.error(
-                        `Failed to compile "dynamicExtendExpression" for ` +
-                        `property "${subName}" in field "${name}":`,
-                        preCompiled
-                    );
-                (
-                    this.models[name].dynamicExtend as Mapping<() => any>
-                )[subName] = (event:Event):any => {
+                let preCompiled:Function|null|string = null
+                if (typeof code === 'string') {
+                    [scopeNames, preCompiled] = Tools.stringCompile(
+                        code, scopeNames
+                    )
+                    if (typeof preCompiled === 'string')
+                        console.error(
+                            `Failed to compile "dynamicExtendExpression" for` +
+                            ` property "${subName}" in field "${name}":`,
+                            preCompiled
+                        )
+                }
+                this.models[name].dynamicExtend![subName] = (
+                    event:Event
+                ):any => {
+                    const scope:Mapping<any> = {}
                     const context:Array<any> = [
                         this.determineStateURL,
                         this.getData,
@@ -1198,14 +1203,22 @@ export class AgileForm extends Web {
                         Tools,
                         event,
                         this.determineEventName(event),
+                        scope,
                         name,
                         this.models[name],
                         ...this.evaluateExpressions(),
                         ...(this.models[name].dependsOn || [])
                             .map((name:string):any => this.models[name])
                     ]
+                    let index:number = 0
+                    for (const name of scopeNames) {
+                        scope[name] = context[index]
+                        index += 1
+                    }
                     try {
-                        return (preCompiled as Function)(...context)
+                        return Tools.isFunction(code) ?
+                            code(event, scope) :
+                            (preCompiled as Function)(...context)
                     } catch (error) {
                         console.error(
                             `Failed running "dynamicExtendExpression" "` +
