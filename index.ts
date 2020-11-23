@@ -84,11 +84,13 @@ import {
  */
 export class AgileForm extends Web {
     static baseScopeNames:Array<string> = [
+        'determineStateURL',
+        'getData',
         'initialResponse',
         'latestResponse',
-        'stateMessage',
         'pending',
         'response',
+        'stateMessage',
         'submitted',
         'tools'
     ]
@@ -597,9 +599,7 @@ export class AgileForm extends Web {
                     this.resolvedConfiguration.expressions.map(
                         (expression:Array<string>):string => expression[0]
                     ),
-                    this.modelNames,
-                    'determineStateURL',
-                    'getData'
+                    this.modelNames
                 )
             )
             if (typeof template === 'string')
@@ -611,19 +611,19 @@ export class AgileForm extends Web {
                 let output:null|string = null
                 try {
                     output = template(
+                        this.determineStateURL,
+                        this.getData,
                         this.initialResponse,
                         this.latestResponse,
-                        this.message,
                         this.pending,
                         this.response,
+                        this.message,
                         this.onceSubmitted,
                         Tools,
                         ...this.evaluateExpressions(),
                         ...this.modelNames.map((name:string):any =>
                             this.models[name]
-                        ),
-                        this.determineStateURL,
-                        this.getData
+                        )
                     )
                 } catch (error) {
                     console.warn(
@@ -979,11 +979,13 @@ export class AgileForm extends Web {
                     specification.showIf = ():boolean => {
                         try {
                             return Boolean(preCompiled(
+                                this.determineStateURL,
+                                this.getData,
                                 this.initialResponse,
                                 this.latestResponse,
-                                this.message,
                                 this.pending,
                                 this.response,
+                                this.message,
                                 this.onceSubmitted,
                                 Tools,
                                 ...this.evaluateExpressions(),
@@ -1065,11 +1067,13 @@ export class AgileForm extends Web {
                     return value
                 try {
                     return (preCompiled as Function)(
+                        this.determineStateURL,
+                        this.getData,
                         this.initialResponse,
                         this.latestResponse,
-                        this.message,
                         this.pending,
                         this.response,
+                        this.message,
                         this.onceSubmitted,
                         Tools,
                         this.models[name],
@@ -1116,11 +1120,13 @@ export class AgileForm extends Web {
             this.models[name].showIf = ():boolean => {
                 try {
                     return Boolean((preCompiled as Function)(
+                        this.determineStateURL,
+                        this.getData,
                         this.initialResponse,
                         this.latestResponse,
-                        this.message,
                         this.pending,
                         this.response,
+                        this.message,
                         this.onceSubmitted,
                         Tools,
                         this.models[name],
@@ -1181,11 +1187,13 @@ export class AgileForm extends Web {
                     this.models[name].dynamicExtend as Mapping<() => any>
                 )[subName] = (event:Event):any => {
                     const context:Array<any> = [
+                        this.determineStateURL,
+                        this.getData,
                         this.initialResponse,
                         this.latestResponse,
-                        this.message,
                         this.pending,
                         this.response,
+                        this.message,
                         this.onceSubmitted,
                         Tools,
                         event,
@@ -1242,11 +1250,13 @@ export class AgileForm extends Web {
                 ):any => {
                     try {
                         return (preCompiled as Function)(
+                            this.determineStateURL,
+                            this.getData,
                             this.initialResponse,
                             this.latestResponse,
-                            this.message,
                             this.pending,
                             this.response,
+                            this.message,
                             this.onceSubmitted,
                             Tools,
                             ...this.evaluateExpressions(),
@@ -1289,11 +1299,13 @@ export class AgileForm extends Web {
             this.resolvedConfiguration.evaluations.push([name, ():any => {
                 try {
                     return (preCompiled as Function)(
+                        this.determineStateURL,
+                        this.getData,
                         this.initialResponse,
                         this.latestResponse,
-                        this.message,
                         this.pending,
                         this.response,
+                        this.message,
                         this.onceSubmitted,
                         Tools,
                         ...this.evaluateExpressions(name),
@@ -1919,11 +1931,13 @@ export class AgileForm extends Web {
                 const fieldValues:Array<any> =
                     this.modelNames.map((name:string):any => this.models[name])
                 const values:Array<any> = [
+                    this.determineStateURL,
+                    this.getData,
                     this.initialResponse,
                     this.latestResponse,
-                    this.message,
                     this.pending,
                     this.response,
+                    this.message,
                     this.onceSubmitted,
                     Tools,
                     ...fieldValues
