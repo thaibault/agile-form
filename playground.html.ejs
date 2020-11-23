@@ -103,7 +103,7 @@
                     iDontCare: {
                         dependsOn: 'legalNotesChecked',
                         dynamicExtendExpressions: {
-                            nullable: 'legalNotesChecked.value',
+                            nullable: function(event, scope) { return scope.legalNotesChecked.value },
                             value: '(eventName === \'change\' && event.target?.name === \'legalNotesChecked\' && legalNotesChecked.value) ? false : self.value'
                         }
                     }
