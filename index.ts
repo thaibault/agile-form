@@ -1161,9 +1161,8 @@ export class AgileForm extends Web {
                 this.models[name].dynamicExtendExpressions!
                     .hasOwnProperty(subName)
             ) {
-                const code:((event:Event, scope:any) => any)|string = (
-                    this.models[name].dynamicExtendExpressions as Mapping
-                )[subName]
+                const code:((event:Event, scope:any) => any)|string =
+                    this.models[name].dynamicExtendExpressions![subName]
                 let scopeNames = this.self.baseScopeNames.concat(
                     'event',
                     'eventName',
