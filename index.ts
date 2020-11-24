@@ -46,40 +46,56 @@ import {
 /**
  * Form handler which accepts a various number of content projected dom nodes
  * to interact with them following a given specification object.
+ * @property static:baseScopeNames - List of generic scope names available in
+ * all evaluations environments.
  * @property static:defaultConfiguration - Holds default extendable
  * configuration object.
- * @property static:initialized - Indicates whether nested components have been
- * initialized yet.
  * @property static:specificationToPropertyMapping - Mapping model
  * specification keys to their corresponding input field property name (if not
  * equal).
  *
  * @property clearButtons - Reference to form clear button nodes.
- * @property dependencyMapping - Mapping from each field to their dependent one.
- * @property groups - Mapping from group dom nodes to containing field names
- * and conditional show if expression.
- * @property groupTemplateCache - Cache of group template contents.
  * @property inputs - Mapping from field names to their corresponding input
  * dom node.
- * @property message - Current error message about unsatisfied given
- * specification.
- * @property modelNames - Specified transformer environment variable names.
- * @property onceSubmitted - Indicates whether this form was submitted once
- * already.
- * @property pending - Indicates whether a request is currently running.
- * @property reCaptchaFallbackInput - Reference to render re-captcha fallback
- * into.
- * @property reCaptchaFallbackRendered - Indicates whether a fallback
- * re-captcha inputs was already rendered.
  * @property resetButtons - Reference to form reset button nodes.
- * @property resolvedConfiguration - Holds given configuration object.
- * @property response - Current parsed response from send form data.
  * @property spinner - Reference to a spinner dom node.
  * @property statusMessageBoxes - Reference to dom node which holds status
  * messages.
  * @property submitButtons - Reference to submit button nodes.
- * @property submitted - Indicates whether this form is currently submitted.
  * @property truncateButtons - Reference to form truncate buttons.
+
+ * @property dependencyMapping - Mapping from each field to their dependent one.
+
+ * @property groups - Mapping from group dom nodes to containing field names
+ * and conditional show if expression.
+ * @property groupTemplateCache - Cache of group template contents.
+
+ * @property initialData - Initialed form input values.
+ * @property initialResponse - Initialisation server response.
+ * @property latestResponse - Last seen server response.
+ * @property message - Current error message about unsatisfied given
+ * specification.
+ * @property response - Current parsed response from send form data.
+
+ * @property models - Mapping from field name to corresponding configuration.
+ * @property modelNames - Specified transformer environment variable names.
+
+ * @property onceSubmitted - Indicates whether this form was submitted once
+ * already.
+ * @property pending - Indicates whether a request is currently running.
+ * @property submitted - Indicates whether this form state was submitted
+ * already.
+
+ * @property reCaptchaFallbackInput - Reference to render re-captcha fallback
+ * into.
+ * @property reCaptchaFallbackRendered - Indicates whether a fallback
+ * re-captcha inputs was already rendered.
+ * @property reCaptchaPromise - Reference to re-captcha initialisation promise.
+ * @property reCaptchaPromiseResolver - Reference to re-captcha initialisation
+ * @property reCaptchaToken - Last challenge result token.
+ * promise resolver.
+
+ * @property resolvedConfiguration - Holds given configuration object.
  * @property urlConfiguration - URL given configurations object.
  */
 export class AgileForm extends Web {
@@ -106,12 +122,24 @@ export class AgileForm extends Web {
         data: null,
         debug: false,
         evaluations: [],
+        eventNameMapping: {
+            inputInvalid: 'formInputInvalid',
+            name: 'AgileForm',
+            reCaptchaCheckFailed: 'formReCaptchaCheckFailed',
+            reCaptchaFallbackCheckFailed: 'formReCaptchaFallbackCheckFailed',
+            serverAuthenticationInvalid: 'formServerAuthenticationInvalid',
+            serverEMailAddressInvalid: 'formServerEMailAddressInvalid',
+            serverUnexpected: 'formServerUnexpected',
+            submit: 'formSubmit',
+            submitSuccessful: 'formSubmitSuccessful'
+        },
         expressions: [],
         initializeTarget: {
             options: {method: 'GET'},
             url: ''
         },
         model: {},
+        name: 'aForm',
         offsetInPixel: 85,
         reCaptcha: {
             key: {
@@ -119,7 +147,7 @@ export class AgileForm extends Web {
                 v3: ''
             },
             options: {
-                action: 'jForm'
+                action: 'aForm'
             },
             secret: '',
             skip: false,
@@ -157,7 +185,7 @@ export class AgileForm extends Web {
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
-                    'Re-Captcha': {
+                    'Re-Captcha-Response': {
                         __evaluate__: 'reCaptcha.token'
                     },
                     'Re-Captcha-Skip': {
@@ -165,15 +193,6 @@ export class AgileForm extends Web {
                     },
                     'Re-Captcha-Skip-Secret': {
                         __evaluate__: 'reCaptcha.secret '
-                    },
-                    'JobRad-Form-Register-Contact-Version': {
-                        __evaluate__: 'version'
-                    },
-                    'JobRad-Form-Register-Contact-Tags': {
-                        __evaluate__: 'tag.values.join()'
-                    },
-                    'JobRad-Form-Register-Contact-Tag-Secret': {
-                        __evaluate__: 'tag.secret'
                     }
                 },
                 // NOTE: Not yet supported by chrome: keepalive: keepalive
@@ -200,13 +219,11 @@ export class AgileForm extends Web {
         },
         version: 1
     }
-    static initialized:boolean|Promise<void> = false
     static propertyTypes:Mapping<ValueOf<typeof PropertyTypes>> = {
         baseConfiguration: object,
         configuration: object,
         dynamicConfiguration: object
     }
-    static reCaptchaToken:string
     static specificationToPropertyMapping:PlainObject = {
         nullable: {
             invert: true,
@@ -218,33 +235,49 @@ export class AgileForm extends Web {
     ]
 
     clearButtons:Array<AnnotatedDomNode> = []
+    inputs:{[key:string]:AnnotatedDomNode} = {}
+    resetButtons:Array<AnnotatedDomNode> = []
+    spinner:Array<AnnotatedDomNode> = []
+    statusMessageBoxes:Array<AnnotatedDomNode> = []
+    submitButtons:Array<AnnotatedDomNode> = []
+    truncateButtons:Array<AnnotatedDomNode> = []
+
     dependencyMapping:{[key:string]:Array<string>} = {}
+
     groups:Map<HTMLElement, {
         childNames:Array<string>
         showIf?:Function
     }> = new Map()
     groupTemplateCache:Map<HTMLElement, string> = new Map()
+
     initialData:PlainObject = {}
     initialResponse:any = null
-    inputs:{[key:string]:AnnotatedDomNode} = {}
     latestResponse:any = null
     message:string = ''
+    response:any = null
+
     models:PlainObject = {}
     modelNames:Array<string> = []
+
     onceSubmitted:boolean = false
     pending:boolean = true
+    submitted:boolean = false
+
     reCaptchaFallbackInput:HTMLElement|null = null
     reCaptchaFallbackRendered:boolean = false
-    resetButtons:Array<AnnotatedDomNode> = []
+    reCaptchaPromise:Promise<null|string> = new Promise(
+        (resolve:(result:null|string) => void):void => {
+            this.reCaptchaPromiseResolver = resolve
+        }
+    )
+    // NOTE: Will be initialized when promise is created.
+    // reCaptchaPromiseResolver:(result:null|string) => void
+    reCaptchaPromiseToken:null|string = null
+
     resolvedConfiguration:Configuration = {} as Configuration
-    response:any = null
-    readonly self:typeof AgileForm = AgileForm
-    spinner:Array<AnnotatedDomNode> = []
-    statusMessageBoxes:Array<AnnotatedDomNode> = []
-    submitButtons:Array<AnnotatedDomNode> = []
-    submitted:boolean = false
-    truncateButtons:Array<AnnotatedDomNode> = []
     urlConfiguration:null|PlainObject = null
+
+    readonly self:typeof AgileForm = AgileForm
     // region live cycle hooks
     /**
      * Parses given configuration object and delegates to forward them to
@@ -265,11 +298,10 @@ export class AgileForm extends Web {
      * Registers new re-captcha token.
      * @returns Nothing.
      */
-    async connectedCallback():Promise<void> {
+    connectedCallback():void {
         super.connectedCallback()
 
-        await this.updateReCaptchaToken()
-        this.self.initialized = true
+        this.updateReCaptchaToken()
     }
     /**
      * De-registers all needed event listener.
@@ -288,7 +320,7 @@ export class AgileForm extends Web {
         for (const domNode of this.truncateButtons)
             domNode.removeEventListener('click', this.onTruncate, false)
 
-        this.self.initialized = false
+        this.initialized = false
     }
     /**
      * Triggered when content projected and nested dom nodes are ready to be
@@ -716,7 +748,10 @@ export class AgileForm extends Web {
      * @param name - URL parameter name to interpret.
      * @returns Nothing.
      */
-    extendConfigurationByGivenURLParameter(name:string = 'jForm'):void {
+    extendConfigurationByGivenURLParameter(name?:string):void {
+        if (!name)
+            name = this.resolvedConfiguration.name
+
         const parameter:Array<string>|null|string =
             Tools.stringGetURLParameter(name)
         if (typeof parameter === 'string') {
@@ -1634,7 +1669,8 @@ export class AgileForm extends Web {
      */
     handleValidSentData(data:PlainObject, newWindow:boolean = false):string {
         this.track({
-            event: 'jobRadFormSubmitSuccessful',
+            event:
+                this.resolvedConfiguration.eventNameMapping.submitSuccessful,
             eventType: 'formSubmitSuccessful',
             label: 'formSubmitSuccessful',
             reference: {
@@ -1689,7 +1725,9 @@ export class AgileForm extends Web {
         if (response && response.status === 406)
             // NOTE: We have an invalid e-mail address.
             this.track({
-                event: 'jobRadFormServerEMailAddressInvalid',
+                event:
+                    this.resolvedConfiguration.eventNameMapping
+                        .serverEMailAddressInvalid,
                 eventType: 'serverInvalidEMailAddress',
                 label: 'serverInvalidEMailAddress',
                 reference: {
@@ -1700,7 +1738,9 @@ export class AgileForm extends Web {
         else if (response && [401, 403].includes(response.status))
             // NOTE: We have an unauthenticated request.
             this.track({
-                event: 'jobRadFormServerAuthenticationInvalid',
+                event:
+                    this.resolvedConfiguration.eventNameMapping
+                        .serverAuthenticationInvalid,
                 eventType: 'serverAuthenticationInvalid',
                 label: 'serverAuthenticationInvalid',
                 reference: {
@@ -1708,21 +1748,39 @@ export class AgileForm extends Web {
                     response: response.data
                 }
             })
-        else if (response && response.status === 420)
-            // NOTE: We have an invalid re-captcha.
-            this.track({
-                event: 'jobRadFormReCaptchaCheckFailed',
-                eventType: 'serverReCaptchaCheckFailed',
-                label: 'serverReCaptchaCheckFailed',
-                reference: {
-                    request: rawData,
-                    response: response.data
-                }
-            })
-        else if (response && response.status === 428)
+        else if (response && response.status === 420) {
+            this.updateReCaptchaFallbackToken()
+            if (this.reCaptchaFallbackRendered)
+                // NOTE: We had an unsuccessful re-captcha challenge.
+                this.track({
+                    event:
+                        this.resolvedConfiguration.eventNameMapping
+                            .reCaptchaFallbackCheckFailed,
+                    eventType: 'serverReCaptchaFallbackCheckFailed',
+                    label: 'serverReCaptchaFallbackCheckFailed',
+                    reference: {
+                        request: rawData,
+                        response: response.data
+                    }
+                })
+            else
+                this.track({
+                    event:
+                        this.resolvedConfiguration.eventNameMapping
+                            .reCaptchaCheckFailed,
+                    eventType: 'serverReCaptchaCheckFailed',
+                    label: 'serverReCaptchaCheckFailed',
+                    reference: {
+                        request: rawData,
+                        response: response.data
+                    }
+                })
+        } else if (response && response.status === 428)
             // NOTE: We have sent an outdated form.
             this.track({
-                event: 'jobRadFormServerFormOutdated',
+                event:
+                    this.resolvedConfiguration.eventNameMapping
+                        .serverFormOutdated,
                 eventType: 'serverFormOutdated',
                 label: 'serverFormOutdated',
                 reference: {
@@ -1733,7 +1791,9 @@ export class AgileForm extends Web {
         else
             // NOTE: Unexpected server error.
             this.track({
-                event: 'jobRadFormServerUnexpected',
+                event:
+                    this.resolvedConfiguration.eventNameMapping
+                        .serverUnexpected,
                 eventType: 'serverReCaptchaCheckFailed',
                 label: 'serverReCaptchaCheckFailed',
                 reference: {
@@ -1774,25 +1834,18 @@ export class AgileForm extends Web {
         }
         // endregion
         let result:null|Response = null
-        const promises:Array<Promise<void>> = []
         try {
-            // Sent data to server and update re-captcha token in parallel.
-            promises.push(fetch(target.url, target.options || {}).then(
-                (response:Response):void => {
-                    result = response
-                }
-            ))
-            promises.push(this.updateReCaptchaToken())
-            await Promise.all(promises)
+            this.updateReCaptchaToken()
+            result = await fetch(target.url, target.options || {})
             let responseString:string = await (result as Response).text()
             if (responseString.startsWith(
                 this.resolvedConfiguration.securityResponsePrefix
             ))
                 responseString = responseString.substring(
                     this.resolvedConfiguration.securityResponsePrefix.length
-                );
-            (result as Response).data = JSON.parse(responseString);
-            (result as Response).data = Tools.getSubstructure(
+                )
+            ;(result as Response).data = JSON.parse(responseString)
+            ;(result as Response).data = Tools.getSubstructure(
                 (result as Response).data,
                 this.resolvedConfiguration.responseDataWrapperSelector.path,
                 this.resolvedConfiguration.responseDataWrapperSelector.optional
@@ -1811,7 +1864,9 @@ export class AgileForm extends Web {
                 )
                     // NOTE: We have an unauthenticated request.
                     this.track({
-                        event: 'jobRadFormServerAuthenticationInvalid',
+                        event:
+                            this.resolvedConfiguration.eventNameMapping
+                                .serverAuthenticationInvalid,
                         eventType: 'serverAuthenticationInvalid',
                         label: 'serverAuthenticationInvalid',
                         reference: {
@@ -1852,7 +1907,7 @@ export class AgileForm extends Web {
                 target.options.body = JSON.stringify(target.options.body)
             // endregion
             this.track({
-                event: 'jobRadFormSubmit',
+                event: this.resolvedConfiguration.eventNameMapping.submit,
                 eventType: 'formSubmit',
                 label: 'formSubmit',
                 reference: data,
@@ -1917,19 +1972,26 @@ export class AgileForm extends Web {
         try {
             event.preventDefault()
             event.stopPropagation()
+
             if (this.submitted || this.pending)
                 return
+
             const target:HTMLElement|null = this.submitButtons.length ?
                 this.submitButtons[0] :
                 event.target as HTMLElement
             const newWindow:boolean = target ?
                 target.getAttribute('target') === '_blank' :
                 false
+
             this.setAttribute('submitted', '')
+            if (this.reCaptchaFallbackRendered)
+                this.setAttribute('re-captcha-fallback-rendered', '')
+
             this.resolvedConfiguration.reCaptcha.token =
-                this.self.reCaptchaToken
+                await this.reCaptchaPromise
 
             await this.resetAllHiddenNonPersistentInputs()
+
             const {data, invalidInputNames} = this.getData()
             if (invalidInputNames.length) {
                 // Trigger input components to present their validation state.
@@ -1937,9 +1999,16 @@ export class AgileForm extends Web {
                     if (this.inputs.hasOwnProperty(name))
                         this.inputs[name].showInitialValidationState = true
                 this.handleInvalidSubmittedInput(data, invalidInputNames)
+            } else if (
+                this.reCaptchaFallbackRendered &&
+                this.reCaptchaFallbackInput.hasAttribute('invalid')
+            ) {
+                this.updateMessageBox('Please do the re-captcha challenge.')
+                this.scrollAndFocus(this.reCaptchaFallbackInput)
             } else {
                 this.onceSubmitted = this.submitted = true
                 let valid: boolean = true
+
                 const fieldValues:Array<any> =
                     this.modelNames.map((name:string):any => this.models[name])
                 const values:Array<any> = [
@@ -1965,6 +2034,7 @@ export class AgileForm extends Web {
                         },
                         {}
                     )
+
                 for (
                     const constraint of this.resolvedConfiguration.constraints
                 ) {
@@ -1978,6 +2048,7 @@ export class AgileForm extends Web {
                         break
                     }
                 }
+
                 if (valid) {
                     this.updateMessageBox(null)
                     await this.handleValidSubmittedInput(
@@ -1985,11 +2056,14 @@ export class AgileForm extends Web {
                     )
                 } else
                     this.track({
-                        event: 'jobRadFormInputInvalid',
+                        event:
+                            this.resolvedConfiguration.eventNameMapping
+                                .inputInvalid,
                         eventType: 'inputInvalid',
                         label: 'inputInvalid',
                         reference: data
                     })
+
                 this.submitted = false
             }
         } catch (error) {
@@ -2183,24 +2257,7 @@ export class AgileForm extends Web {
             if (
                 this.models.hasOwnProperty(name) &&
                 this.inputs.hasOwnProperty(name) &&
-                this.inputs[name].dirty &&
-                /*
-                    NOTE: If only a boolean value and two possible states
-                    possible we do not have to save an implicit default
-                    "false".
-                */
-                !(
-                    !this.inputs[name].value &&
-                    this.inputs[name].type === 'boolean' &&
-                    !(
-                        this.inputs[name].selection &&
-                        Array.isArray(this.inputs[name].selection) &&
-                        this.inputs[name].selection.length > 2 ||
-                        this.inputs[name].selection &&
-                        !Array.isArray(this.inputs[name].selection) &&
-                        Object.keys(this.inputs[name].selection).length > 2
-                    )
-                )
+                this.inputs[name].dirty
             )
                 if (parameter.model.hasOwnProperty(name)) {
                     if (
@@ -2216,10 +2273,29 @@ export class AgileForm extends Web {
                             this.models[name].initialValue ===
                                 this.inputs[name].value ||
                             this.inputs[name].value ===
-                                this.inputs[name].default
+                                this.inputs[name].default ||
+                            !this.inputs[name].default &&
+                            /*
+                                NOTE: If only a boolean value and two possible
+                                states possible we do not have to save an
+                                implicit default "false".
+                            */
+                            !this.inputs[name].value &&
+                            this.inputs[name].type === 'boolean' &&
+                            !(
+                                this.inputs[name].selection &&
+                                Array.isArray(this.inputs[name].selection) &&
+                                this.inputs[name].selection.length > 2 ||
+                                this.inputs[name].selection &&
+                                !Array.isArray(this.inputs[name].selection) &&
+                                Object.keys(this.inputs[name].selection)
+                                    .length > 2
+                            )
                         ) {
                             delete parameter.model[name].value
-                            if (Object.keys(parameter.model[name]) === 0)
+                            if (
+                                Object.keys(parameter.model[name]).length === 0
+                            )
                                 delete parameter.model[name]
                         } else
                             parameter.model[name].value =
@@ -2239,12 +2315,17 @@ export class AgileForm extends Web {
         parameter = Tools.maskObject(
             parameter, this.resolvedConfiguration.urlModelMask
         )
-        if (Object.keys(parameter.model).length === 0)
+        if (parameter.model && Object.keys(parameter.model).length === 0)
             delete parameter.model
         let encodedURL:string = document.URL
         let url:string = document.URL
         if (Object.keys(parameter).length) {
-            encodedURL = url = url.replace(/[?&]jForm=[^&]*/g, '')
+            encodedURL = url = url.replace(
+                new RegExp(
+                    `[?&]${this.resolvedConfiguration.name}=[^&]*`, 'g'
+                ),
+                ''
+            )
 
             // Ensure normalized urls via recursive property sorting.
             const keys:Array<string> = []
@@ -2259,8 +2340,10 @@ export class AgileForm extends Web {
             const value:string = JSON.stringify(parameter, keys, '')
 
             const encodedQueryParameter:string =
-                `jForm=${encodeURIComponent(value)}`
-            const queryParameter:string = `jForm=${value}`
+                `${this.resolvedConfiguration.name}=` +
+                encodeURIComponent(value)
+            const queryParameter:string =
+                `${this.resolvedConfiguration.name}=${value}`
             if (url.includes('?')) {
                 if (!(url.endsWith('?') || url.endsWith('&'))) {
                     encodedURL += '&'
@@ -2281,7 +2364,7 @@ export class AgileForm extends Web {
      * @returns Nothing.
      */
     track(data:PlainObject):void {
-        if (Array.isArray(window.dataLayer))
+        if (Array.isArray(window.dataLayer)) {
             /*
                 NOTE: We should forwarded runtime data to avoid unexpected
                 behavior if gtm or configured tracking tool manipulates given
@@ -2289,71 +2372,120 @@ export class AgileForm extends Web {
             */
             if (data.hasOwnProperty('reference'))
                 data.reference = Tools.copy(data.reference)
+
             window.dataLayer.push({
                 context: location.pathname,
-                subject: 'jobRadForm',
+                subject: this.resolvedConfiguration.eventNameMapping.name,
                 value: 0,
                 userInteraction: false,
                 ...data
             })
+        }
     }
     /**
      * Renders user interaction re-captcha version if corresponding placeholder
      * is available.
      * @returns Nothing.
      */
-    renderReCaptchaFallback():void {
-        if (this.reCaptchaFallbackInput) {
+    updateReCaptchaFallbackToken():void {
+        this.reCaptchaPromise =
+            new Promise((resolve:(result:null|string) => void):void => {
+                this.reCaptchaPromiseResolver = resolve
+            })
+
+        if (
+            window.grecaptcha &&
+            this.reCaptchaFallbackInput &&
+            this.resolvedConfiguration.reCaptcha?.key?.v2 &&
+            this.resolvedConfiguration.target?.url
+        ) {
             this.reCaptchaFallbackInput.removeAttribute('valid')
             this.reCaptchaFallbackInput.setAttribute('invalid', '')
-            if (!this.reCaptchaFallbackRendered)
+
+            if (this.reCaptchaFallbackRendered)
+                window.grecaptcha!.reset()
+            else {
+                this.reCaptchaFallbackInput.removeAttribute('dirty')
                 this.reCaptchaFallbackInput.setAttribute('pristine', '')
-            this.reCaptchaFallbackRendered = true
-            /*
-                NOTE: We do not have to wait for the re-captcha ready event
-                since re-captcha 3 is always triggered first so we can assume
-                it is already there.
-            */
-            window.grecaptcha!.render(
-                this.reCaptchaFallbackInput,
-                {
-                    callback: (token:string):void => {
-                        this.reCaptchaFallbackInput.removeAttribute('invalid')
-                        this.reCaptchaFallbackInput.setAttribute('valid')
-                        this.reCaptchaFallbackInput.removeAttribute('pristine')
-                        this.reCaptchaFallbackInput.setAttribute('dirty', '')
-                        this.self.reCaptchaToken = token
-                    },
-                    sitekey : this.resolvedConfiguration.reCaptcha.key.v2
-                }
-            )
-            this.activate(this.reCaptchaFallbackInput)
-            this.scrollAndFocus(this.reCaptchaFallbackInput)
+
+                this.reCaptchaFallbackRendered = true
+                /*
+                    NOTE: We do not have to wait for the re-captcha ready event
+                    since re-captcha 3 is always triggered first so we can
+                    assume it is already there.
+                */
+                window.grecaptcha!.render(
+                    this.reCaptchaFallbackInput,
+                    {
+                        callback: (token:string):void => {
+                            this.reCaptchaToken = token
+                            this.reCaptchaPromiseResolver(this.reCaptchaToken)
+
+                            this.reCaptchaFallbackInput
+                                .removeAttribute('invalid')
+                            this.reCaptchaFallbackInput
+                                .setAttribute('valid', '')
+
+                            this.reCaptchaFallbackInput
+                                .removeAttribute('pristine')
+                            this.reCaptchaFallbackInput
+                                .setAttribute('dirty', '')
+                        },
+                        sitekey : this.resolvedConfiguration.reCaptcha.key.v2
+                    }
+                )
+                this.activate(this.reCaptchaFallbackInput)
+                this.scrollAndFocus(this.reCaptchaFallbackInput)
+            }
         }
     }
     /**
      * Updates internal saved re-captcha token.
-     * @returns Promise resolving to nothing.
+     * @returns Promise resolving to challenge token or null if initialisation
+     * was unsuccessful.
      */
-    async updateReCaptchaToken():Promise<void> {
-        if (window.grecaptcha && this.resolvedConfiguration.target?.url)
+    updateReCaptchaToken():Promise<null|string> {
+        if (this.reCaptchaFallbackRendered)
+            return this.updateReCaptchaFallbackToken()
+
+        if (this.reCaptchaToken) {
+            // NOTE: If called second time reset initializing promise.
+            this.reCaptchaToken = null
+            this.reCaptchaPromise =
+                new Promise((resolve:(result:null|string) => void):void => {
+                    this.reCaptchaPromiseResolver = resolve
+                })
+        }
+
+        if (
+            window.grecaptcha &&
+            this.resolvedConfiguration.reCaptcha?.key?.v3 &&
+            this.resolvedConfiguration.target?.url
+        )
             try {
-                this.self.reCaptchaToken = await new Promise((
-                    resolve:Function, reject:Function
-                ):void => window.grecaptcha!.ready(async ():Promise<void> =>
-                    resolve(await window.grecaptcha.execute(
-                        this.resolvedConfiguration.reCaptcha.key.v3,
-                        this.resolvedConfiguration.reCaptcha.options
-                    ))
-                ))
+                window.grecaptcha!.ready(async ():Promise<void> => {
+                    try {
+                        this.reCaptchaToken = await window.grecaptcha.execute(
+                            this.resolvedConfiguration.reCaptcha.key.v3,
+                            this.resolvedConfiguration.reCaptcha.options
+                        )
+                        this.reCaptchaPromiseResolver(this.reCaptchaToken)
+                    } catch (error) {
+                        this.reCaptchaToken = null
+                        this.reCaptchaPromiseResolver(this.reCaptchaToken)
+                    }
+                })
             } catch (error) {
                 console.warn(
                     `Could not retrieve a re-captcha token: "` +
                     `${Tools.represent(error)}".`
                 )
             }
-        else
-            await Tools.timeout()
+        else {
+            this.reCaptchaToken = null
+            this.reCaptchaPromiseResolver(this.reCaptchaToken)
+        }
+        return this.reCaptchaPromise
     }
     // / endregion
     // endregion

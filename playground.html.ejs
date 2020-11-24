@@ -43,8 +43,33 @@
         %>
         <!--endregion-->
         <!--region script-->
+        <script src="https://www.google.com/recaptcha/api.js?render=6LdvN-sZAAAAAHv2Ko2_g_8EHrIRbNffZoGHseSS"></script>
         <script>
             window.onload = function() {
+                /* region fetch mock */
+                window.fetch = function(url, options) {
+                    const headers = {}
+                    for (const [key, value] of options.headers.entries())
+                        headers[key] = value
+                    options.headers = headers
+
+                    console.info(`Send mock request to ${url} with:`, options)
+                    return new Promise(function(resolve) {
+                        resolve({
+                            ok: document.querySelector(
+                                '[name="reCaptchaV3Challenge"]'
+                            ).value,
+                            status: document.querySelector(
+                                '[name="reCaptchaV3Challenge"]'
+                            ).value ? 200 : 420,
+                            text: function() {
+                                return ')]}\',{}'
+                            }
+                        })
+                    })
+                }
+                /* endregion */
+
                 Object.values(agileForm.webInputMaterial.components).map(
                     function(component) {
                         component.register()
@@ -67,7 +92,15 @@
                         nullable: false,
                         selection: ['A', 'B', 'C', 'D']
                     }
-                }
+                },
+                reCaptcha: {
+                    key: {
+                        v2: '6LcUiyUTAAAAAPHLNbtoP6v-FHsPSyZ4ZqLnbThf',
+                        v3: '6LdvN-sZAAAAAHv2Ko2_g_8EHrIRbNffZoGHseSS'
+                    }
+                },
+                target: {url: 'http://localhost:8080'},
+                urlModelMask: {include: true}
             }"
             configuration="{
                 model: {
@@ -94,13 +127,13 @@
             dynamic-configuration="{
                 model: {
                     legalNotesChecked: {
-                        dependsOn: 'iDontCare',
+                        dependsOn: 'reCaptchaV3Challenge',
                         dynamicExtendExpressions: {
-                            nullable: 'iDontCare.value',
-                            value: '(eventName === \'change\' && event.target?.name === \'iDontCare\' && iDontCare.value) ? false : self.value'
+                            nullable: 'reCaptchaV3Challenge.value',
+                            value: '(eventName === \'change\' && event.target?.name === \'reCaptchaV3Challenge\' && reCaptchaV3Challenge.value) ? false : self.value'
                         }
                     },
-                    iDontCare: {
+                    reCaptchaV3Challenge: {
                         dependsOn: 'legalNotesChecked',
                         dynamicExtendExpressions: {
                             nullable: function(event, scope) { return scope.legalNotesChecked.value },
@@ -121,9 +154,21 @@
                 show-if="stateMessage"
             />
 
-            <div class="agile-form__group" name="report" show-if="submitted">
-                Result:
+            <div
+                class="agile-form__group"
+                name="send-report"
+                show-if="submitted"
+            >
+                Form-Result:
                 <pre>${tools.represent(getData())}</pre>
+            </div>
+            <div
+                class="agile-form__group"
+                name="response-report"
+                show-if="latestResponse"
+            >
+                Response (Status: ${latestResponse.status}):
+                <pre>${tools.represent(latestResponse.data)}</pre>
             </div>
 
             <hr
@@ -161,18 +206,29 @@
             ></generic-input>
 
             <requireable-checkbox
-                name="legalNotesChecked" description="Check it!"
+                description="Check it!" name="legalNotesChecked"
             ></requireable-checkbox>
             <requireable-checkbox
-                name="iDontCare" description="Do not check it :-)"
+                name="reCaptchaV3Challenge"
+                description="Re-CAPTCHA v3 challenge works."
             ></requireable-checkbox>
+
+            <div class="agile-form__re-captcha-fallback"></div>
 
             <button truncate>Truncate</button>
             <button clear>Clear</button>
             <button type="reset">Reset</button>
             <button type="submit">OK</button>
 
-            <div class="agile-form__re-captcha-fallback"></div>
+
+            <hr/>
+
+            <div class="agile-form__group" name="url">
+                State-URL:
+                <a href="${determineStateURL().encoded}">
+                    ${determineStateURL().plain}
+                </a>
+            </div>
 
         </agile-form>
     </body>
