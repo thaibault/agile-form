@@ -2445,7 +2445,7 @@ export class AgileForm extends Web {
      * was unsuccessful.
      */
     updateReCaptchaToken():Promise<null|string> {
-        if (this.reCaptchaFallbackRendered)
+        if (this.reCaptchaFallbackRendered || this.resolvedConfiguration.debug)
             return this.updateReCaptchaFallbackToken()
 
         if (this.reCaptchaToken) {
