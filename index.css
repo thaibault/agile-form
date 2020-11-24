@@ -8,11 +8,33 @@ This library written by Torben Sickert stand under a creative commons naming
 3.0 unported license. see http://creativecommons.org/licenses/by/3.0/deed.de
 endregion */
 @import 'react-input-material/index.styles.css';
+
 .agile-form__group,
 .agile-form__re-captcha-fallback,
 generic-checkbox,
 generic-input {
     display: none;
+}
+
+.agile-form__re-captcha-fallback {
+    margin-bottom: 10px;
+}
+
+.agile-form__re-captcha-fallback > div > div {
+    border: 2px solid transparent;
+    border-radius: 4px;
+    height: 76px;
+    width: 302px;
+}
+
+[submitted][re-captcha-fallback-rendered] [invalid].agile-form__re-captcha-fallback > div > div {
+    border-color: #b00020 !important;
+    border-color: var(--mdc-theme-error, #b00020) !important;
+}
+
+[dirty][invalid].agile-form__re-captcha-fallback > div > div {
+    border-color: #b00020 !important;
+    border-color: var(--mdc-theme-error, #b00020) !important;
 }
 /* region vim modline
 vim: set tabstop=4 shiftwidth=4 expandtab:
