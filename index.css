@@ -27,11 +27,7 @@ generic-input {
     width: 302px;
 }
 
-[submitted][re-captcha-fallback-rendered] [invalid].agile-form__re-captcha-fallback > div > div {
-    border-color: #b00020 !important;
-    border-color: var(--mdc-theme-error, #b00020) !important;
-}
-
+[submitted][re-captcha-fallback-rendered] [invalid].agile-form__re-captcha-fallback > div > div,
 [dirty][invalid].agile-form__re-captcha-fallback > div > div {
     border-color: #b00020 !important;
     border-color: var(--mdc-theme-error, #b00020) !important;
