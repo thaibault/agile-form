@@ -338,8 +338,12 @@ export class AgileForm extends Web {
         this.reCaptchaFallbackInput = this.root.querySelector(
             this.resolvedConfiguration.selector.reCaptchaFallbackInput
         )
-        if (this.reCaptchaFallbackInput)
+        if (this.reCaptchaFallbackInput) {
             this.deactivate(this.reCaptchaFallbackInput)
+
+            if (this.resolvedConfiguration.debug)
+                this.updateReCaptchaFallbackToken()
+        }
 
         this.spinner = Array.from(this.root.querySelectorAll(
             this.resolvedConfiguration.selector.spinner
@@ -2445,7 +2449,7 @@ export class AgileForm extends Web {
      * was unsuccessful.
      */
     updateReCaptchaToken():Promise<null|string> {
-        if (this.reCaptchaFallbackRendered || this.resolvedConfiguration.debug)
+        if (this.reCaptchaFallbackRendered)
             return this.updateReCaptchaFallbackToken()
 
         if (this.reCaptchaToken) {
