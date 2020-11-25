@@ -185,13 +185,13 @@ export class AgileForm extends Web {
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
-                    'Re-Captcha-Response': {
+                    'G-Recaptcha-Response': {
                         __evaluate__: 'reCaptcha.token'
                     },
-                    'Re-Captcha-Skip': {
+                    'G-Recaptcha-Skip': {
                         __evaluate__: 'reCaptcha.skip'
                     },
-                    'Re-Captcha-Skip-Secret': {
+                    'G-Recaptcha-Skip-Secret': {
                         __evaluate__: 'reCaptcha.secret '
                     }
                 },
