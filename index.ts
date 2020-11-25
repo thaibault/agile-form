@@ -1991,9 +1991,6 @@ export class AgileForm extends Web {
             if (this.reCaptchaFallbackRendered)
                 this.setAttribute('re-captcha-fallback-rendered', '')
 
-            this.resolvedConfiguration.reCaptcha.token =
-                await this.reCaptchaPromise
-
             await this.resetAllHiddenNonPersistentInputs()
 
             const {data, invalidInputNames} = this.getData()
@@ -2010,6 +2007,9 @@ export class AgileForm extends Web {
                 this.updateMessageBox('Please do the re-captcha challenge.')
                 this.scrollAndFocus(this.reCaptchaFallbackInput)
             } else {
+                this.resolvedConfiguration.reCaptcha.token =
+                    await this.reCaptchaPromise
+
                 this.onceSubmitted = this.submitted = true
                 let valid: boolean = true
 
