@@ -339,7 +339,10 @@ export class AgileForm extends Web {
             this.resolvedConfiguration.selector.reCaptchaFallbackInput
         )
         if (this.reCaptchaFallbackInput) {
-            this.deactivate(this.reCaptchaFallbackInput)
+            if (this.resolvedConfiguration.showAll)
+                this.activate(this.reCaptchaFallbackInput)
+            else
+                this.deactivate(this.reCaptchaFallbackInput)
 
             if (this.resolvedConfiguration.debug)
                 this.updateReCaptchaFallbackToken()
