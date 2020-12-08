@@ -922,8 +922,11 @@ export class AgileForm extends Web {
                     component is already initialized by itself.
                 */
                 if (
-                    !domNode.value &&
-                    (domNode.initialValue || this.models[name].default)
+                    [null, undefined].includes(domNode.value) &&
+                    !(
+                        [null, undefined].includes(domNode.initialValue) &&
+                        [null, undefined].includes(this.models[name].default)
+                    )
                 )
                     domNode.value =
                         domNode.initialValue ?? this.models[name].default
