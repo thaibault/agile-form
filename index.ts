@@ -904,7 +904,19 @@ export class AgileForm extends Web {
                     domNode.initialValue = this.models[name].value
                     delete this.models[name].value
                 }
-                domNode.model = Tools.copy(this.models[name])
+                let model:PlainObject = Tools.copy(this.models[name])
+                if (domNode.hasAttribute('model')) {
+                    const result:EvaluationResult =
+                        Tools.stringEvaluate(domNode.getAttribute('model'))
+                    if (result.error)
+                        console.warn(
+                            'Failed to evaluate field model configuration "' +
+                            `${domNode.getAttribute('model')} for field "` +
+                            `${name}".`
+                        )
+                    model = Tools.extend(true, result.result, model)
+                }
+                domNode.model = model
                 this.models[name].domNode = domNode
                 await this.digest()
                 Object.defineProperty(
@@ -922,14 +934,20 @@ export class AgileForm extends Web {
                     component is already initialized by itself.
                 */
                 if (
-                    [null, undefined].includes(domNode.value) &&
+                    (
+                        [null, undefined].includes(domNode.value) ||
+                        domNode.pristine
+                    ) &&
                     !(
                         [null, undefined].includes(domNode.initialValue) &&
-                        [null, undefined].includes(this.models[name].default)
+                        [null, undefined].includes(model.default) &&
+                        [null, undefined].includes(model.value)
                     )
                 )
                     domNode.value =
-                        domNode.initialValue ?? this.models[name].default
+                        model.value ??
+                        domNode.initialValue ??
+                        model.default
                 await this.digest()
                 this.inputs[name] = domNode
                 this.initialData[name] = domNode.value
