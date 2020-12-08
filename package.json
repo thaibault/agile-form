@@ -3,6 +3,7 @@
   "version": "0.0.40",
   "license": "CC-BY-3.0",
   "description": "Reusable form builder with support for (richt-)text, code, selections, numbers, dates and so on.",
+  "homepage": "https://torben.website/agile-form",
   "main": "index.js",
   "files": [
     "index.bundle.js",
@@ -11,6 +12,17 @@
     "index.ts",
     "type.ts"
   ],
+  "keywords": [
+    "component",
+    "form",
+    "react",
+    "web",
+    "web-component"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thaibault/agile-form"
+  },
   "scripts": {
     "build": "yarn build:plain && yarn build:bundle",
     "build:bundle": "weboptimizer build '{__reference__: \"target:bundle\"}'",
