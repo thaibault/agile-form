@@ -104,6 +104,11 @@
             }"
             configuration="{
                 model: {
+                    anotherName: {},
+                    feelsGood: {
+                        nullable: false,
+                        type: 'boolean'
+                    },
                     name: {
                         default: 'Default Name',
                         maximumLength: 15,
@@ -116,12 +121,7 @@
                         minimumLength: 4,
                         nullable: false,
                         regularExpressionPattern: '[a-zA-Z0-9]+'
-                    },
-                    feelsGood: {
-                        nullable: false,
-                        type: 'boolean'
-                    },
-                    anotherName: {}
+                    }
                 }
             }"
             dynamic-configuration="{
@@ -202,7 +202,6 @@
                 labels="{true: 'Yess!', false: 'Oh noo I am sad...'}"
                 name="feelsGood"
                 placeholder="Please select your feeling"
-                type="boolean"
             ></generic-input>
 
             <requireable-checkbox
