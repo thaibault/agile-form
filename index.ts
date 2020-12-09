@@ -2426,8 +2426,11 @@ export class AgileForm extends Web {
         if (
             window.grecaptcha &&
             this.reCaptchaFallbackInput &&
-            this.resolvedConfiguration.reCaptcha?.key?.v2 &&
-            this.resolvedConfiguration.target?.url
+            (
+                this.resolvedConfiguration.showAll ||
+                this.resolvedConfiguration.reCaptcha?.key?.v2 &&
+                this.resolvedConfiguration.target?.url
+            )
         ) {
             this.reCaptchaFallbackInput.removeAttribute('valid')
             this.reCaptchaFallbackInput.setAttribute('invalid', '')
