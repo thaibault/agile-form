@@ -80,11 +80,13 @@ import {
  * @property models - Mapping from field name to corresponding configuration.
  * @property modelNames - Specified transformer environment variable names.
 
+ * @property invalid - Indicates whether this form has invalid input.
  * @property onceSubmitted - Indicates whether this form was submitted once
  * already.
  * @property pending - Indicates whether a request is currently running.
  * @property submitted - Indicates whether this form state was submitted
  * already.
+ * @property valid - Indicates whether this form has valid input.
 
  * @property reCaptchaFallbackInput - Reference to render re-captcha fallback
  * into.
@@ -103,12 +105,14 @@ export class AgileForm extends Web {
         'determineStateURL',
         'getData',
         'initialResponse',
+        'invalid',
         'latestResponse',
         'pending',
         'response',
         'stateMessage',
         'submitted',
-        'tools'
+        'tools',
+        'valid'
     ]
     static content:string = '<form novalidate><slot></slot></form>'
     static defaultConfiguration:RecursiveEvaluateable<Configuration> = {
@@ -259,9 +263,11 @@ export class AgileForm extends Web {
     models:PlainObject = {}
     modelNames:Array<string> = []
 
+    invalid:boolean|null = null
     onceSubmitted:boolean = false
     pending:boolean = true
     submitted:boolean = false
+    valid:boolean|null = null
 
     reCaptchaFallbackInput:HTMLElement|null = null
     reCaptchaFallbackRendered:boolean = false
@@ -653,12 +659,14 @@ export class AgileForm extends Web {
                         this.determineStateURL,
                         this.getData,
                         this.initialResponse,
+                        this.invalid,
                         this.latestResponse,
                         this.pending,
                         this.response,
                         this.message,
                         this.onceSubmitted,
                         Tools,
+                        this.valid,
                         ...this.evaluateExpressions(),
                         ...this.modelNames.map((name:string):any =>
                             this.models[name]
@@ -1045,12 +1053,14 @@ export class AgileForm extends Web {
                                 this.determineStateURL,
                                 this.getData,
                                 this.initialResponse,
+                                this.invalid,
                                 this.latestResponse,
                                 this.pending,
                                 this.response,
                                 this.message,
                                 this.onceSubmitted,
                                 Tools,
+                                this.valid,
                                 ...this.evaluateExpressions(),
                                 ...this.modelNames.map((name:string):any =>
                                     this.models[name]
@@ -1133,12 +1143,14 @@ export class AgileForm extends Web {
                         this.determineStateURL,
                         this.getData,
                         this.initialResponse,
+                        this.invalid,
                         this.latestResponse,
                         this.pending,
                         this.response,
                         this.message,
                         this.onceSubmitted,
                         Tools,
+                        this.valid,
                         this.models[name],
                         value,
                         ...this.evaluateExpressions(),
@@ -1186,12 +1198,14 @@ export class AgileForm extends Web {
                         this.determineStateURL,
                         this.getData,
                         this.initialResponse,
+                        this.invalid,
                         this.latestResponse,
                         this.pending,
                         this.response,
                         this.message,
                         this.onceSubmitted,
                         Tools,
+                        this.valid,
                         this.models[name],
                         ...this.evaluateExpressions(),
                         ...(this.models[name].dependsOn || [])
@@ -1257,12 +1271,14 @@ export class AgileForm extends Web {
                         this.determineStateURL,
                         this.getData,
                         this.initialResponse,
+                        this.invalid,
                         this.latestResponse,
                         this.pending,
                         this.response,
                         this.message,
                         this.onceSubmitted,
                         Tools,
+                        this.valid,
                         event,
                         this.determineEventName(event),
                         scope,
@@ -1328,12 +1344,14 @@ export class AgileForm extends Web {
                             this.determineStateURL,
                             this.getData,
                             this.initialResponse,
+                            this.invalid,
                             this.latestResponse,
                             this.pending,
                             this.response,
                             this.message,
                             this.onceSubmitted,
                             Tools,
+                            this.valid,
                             ...this.evaluateExpressions(),
                             ...this.modelNames.map((name:string):any =>
                                 this.models[name]
@@ -1377,12 +1395,14 @@ export class AgileForm extends Web {
                         this.determineStateURL,
                         this.getData,
                         this.initialResponse,
+                        this.invalid,
                         this.latestResponse,
                         this.pending,
                         this.response,
                         this.message,
                         this.onceSubmitted,
                         Tools,
+                        this.valid,
                         ...this.evaluateExpressions(name),
                         ...this.modelNames.map((name:string):any =>
                             this.models[name]
@@ -2006,6 +2026,9 @@ export class AgileForm extends Web {
             if (this.submitted || this.pending)
                 return
 
+            this.invalid = true
+            this.valid = !this.invalid
+
             const target:HTMLElement|null = this.submitButtons.length ?
                 this.submitButtons[0] :
                 event.target as HTMLElement
@@ -2037,7 +2060,9 @@ export class AgileForm extends Web {
                     await this.reCaptchaPromise
 
                 this.onceSubmitted = this.submitted = true
-                let valid: boolean = true
+
+                this.invalid = false
+                this.valid = !this.invalid
 
                 const fieldValues:Array<any> =
                     this.modelNames.map((name:string):any => this.models[name])
@@ -2045,12 +2070,14 @@ export class AgileForm extends Web {
                     this.determineStateURL,
                     this.getData,
                     this.initialResponse,
+                    this.invalid,
                     this.latestResponse,
                     this.pending,
                     this.response,
                     this.message,
                     this.onceSubmitted,
                     Tools,
+                    this.valid,
                     ...fieldValues
                 ]
                 const scope:Mapping<any> = this.self.baseScopeNames
@@ -2074,12 +2101,15 @@ export class AgileForm extends Web {
                         throw new Error(evaluatedConstraint.error)
                     if (!evaluatedConstraint.result) {
                         this.updateMessageBox(constraint.description)
-                        valid = false
+
+                        this.invalid = true
+                        this.valid = !this.invalid
+
                         break
                     }
                 }
 
-                if (valid) {
+                if (this.valid) {
                     this.updateMessageBox(null)
                     await this.handleValidSubmittedInput(
                         event, data, newWindow
