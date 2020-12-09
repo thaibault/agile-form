@@ -1778,6 +1778,8 @@ export class AgileForm extends Web {
             })
         else if (response && response.status === 420) {
             this.updateReCaptchaFallbackToken()
+            this.scrollAndFocus(this.reCaptchaFallbackInput)
+
             if (this.reCaptchaFallbackRendered)
                 // NOTE: We had an unsuccessful re-captcha challenge.
                 this.track({
@@ -2424,8 +2426,11 @@ export class AgileForm extends Web {
         if (
             window.grecaptcha &&
             this.reCaptchaFallbackInput &&
-            this.resolvedConfiguration.reCaptcha?.key?.v2 &&
-            this.resolvedConfiguration.target?.url
+            (
+                this.resolvedConfiguration.showAll ||
+                this.resolvedConfiguration.reCaptcha?.key?.v2 &&
+                this.resolvedConfiguration.target?.url
+            )
         ) {
             this.reCaptchaFallbackInput.removeAttribute('valid')
             this.reCaptchaFallbackInput.setAttribute('invalid', '')
@@ -2463,7 +2468,6 @@ export class AgileForm extends Web {
                     }
                 )
                 this.activate(this.reCaptchaFallbackInput)
-                this.scrollAndFocus(this.reCaptchaFallbackInput)
             }
         }
     }
