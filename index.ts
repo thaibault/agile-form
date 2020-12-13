@@ -19,7 +19,7 @@
 // region imports
 import Tools, {globalContext} from 'clientnode'
 import {
-    EvaluationResult, Mapping, PlainObject, RecursiveEvaluateable
+    EvaluationResult, Mapping, PlainObject, RecursiveEvaluateable, ValueOf
 } from 'clientnode/type'
 import {object} from 'clientnode/property-types'
 import Web from 'web-component-wrapper/Web'
@@ -186,6 +186,11 @@ export class AgileForm extends Web {
                     __evaluate__: 'targetData'
                 },
                 cache: 'no-store',
+                /*
+                    NOTE: Send user credentials (cookies, basic http auth,
+                    etc..), even for cross-origin calls.
+                */
+                credentials: 'include',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
@@ -198,7 +203,7 @@ export class AgileForm extends Web {
                     'G-Recaptcha-Skip-Secret': {
                         __evaluate__: 'reCaptcha.secret '
                     }
-                },
+                } as unknown as Mapping,
                 // NOTE: Not yet supported by chrome: keepalive: keepalive
                 method: 'PUT',
                 mode: 'cors',
@@ -223,7 +228,7 @@ export class AgileForm extends Web {
         },
         version: 1
     }
-    static propertyTypes:Mapping<ValueOf<typeof PropertyTypes>> = {
+    static propertyTypes:Mapping<ValueOf<PropertyTypes>> = {
         baseConfiguration: object,
         configuration: object,
         dynamicConfiguration: object
@@ -269,7 +274,7 @@ export class AgileForm extends Web {
     submitted:boolean = false
     valid:boolean|null = null
 
-    reCaptchaFallbackInput:HTMLElement|null = null
+    reCaptchaFallbackInput:AnnotatedDomNode|null = null
     reCaptchaFallbackRendered:boolean = false
     reCaptchaPromise:Promise<null|string> = new Promise(
         (resolve:(result:null|string) => void):void => {
@@ -325,8 +330,6 @@ export class AgileForm extends Web {
             domNode.removeEventListener('click', this.onSubmit, false)
         for (const domNode of this.truncateButtons)
             domNode.removeEventListener('click', this.onTruncate, false)
-
-        this.initialized = false
     }
     /**
      * Triggered when content projected and nested dom nodes are ready to be
