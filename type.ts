@@ -21,7 +21,11 @@ import {
     Mapping, ObjectMaskConfiguration, PlainObject, RecursivePartial, ValueOf
 } from 'clientnode/type'
 import {
-    RequestInit as FetchOptions, Response as FetchResponse
+    RequestInit as FetchOptions,
+    Response as FetchResponse,
+    RequestCache,
+    RequestCredentials,
+    RequestMode
 } from 'node-fetch'
 import {Model as BaseModel} from 'web-input-material/type'
 // endregion
@@ -58,7 +62,12 @@ export type Constraint = {
     evaluation:string
 }
 export type TargetConfiguration = {
-    options:FetchOptions & {headers?:Mapping}
+    options:FetchOptions & Partial<{
+        cache:RequestCache
+        credentials:RequestCredentials
+        headers:Mapping
+        mode:RequestMode
+    }>
     url:string
 }
 export type Configuration = {
@@ -76,6 +85,7 @@ export type Configuration = {
     expressions:Array<[string, string]>
     initializeTarget:TargetConfiguration
     model:Mapping<Model>
+    name:string
     offsetInPixel:number
     reCaptcha:{
         key:{
@@ -94,11 +104,14 @@ export type Configuration = {
     securityResponsePrefix:string
     selector:{
         clearButtons:string
+        groups:string
         inputs:string
+        reCaptchaFallbackInput:string
         resetButtons:string
         spinner:string
         statusMessageBoxes:string
         submitButtons:string
+        truncateButtons:string
     }
     showAll:boolean
     tag:{
