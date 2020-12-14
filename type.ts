@@ -18,8 +18,15 @@
 // region imports
 import PropertyTypes from 'clientnode/property-types'
 import {
-    Mapping, ObjectMaskConfiguration, PlainObject, RecursivePartial, ValueOf
+    Mapping,
+    ObjectMaskConfiguration,
+    PlainObject,
+    ProcedureFunction,
+    RecursiveEvaluateable,
+    RecursivePartial,
+    ValueOf
 } from 'clientnode/type'
+import 'grecaptcha'
 import {
     RequestInit as FetchOptions,
     Response as FetchResponse,
@@ -34,23 +41,47 @@ declare global {
         dataLayer:Array<any>
     }
 }
+export type IndicatorFunction = () => boolean
 export type Model<Type = any> =
     Omit<RecursivePartial<BaseModel<Type>>, 'value'> &
     {
         dataMapping?:Mapping|string
-        dependsOn:Array<string>|null
+        dependsOn?:Array<string>|null
+        domNode?:AnnotatedDomNode
         dynamicExtend?:Mapping<(event:Event) => any>
         dynamicExtendExpressions?:Mapping<((event:Event, scope:any) => any)|string>
-        eventChangedName:string
-        showIf?:() => boolean
+        eventChangedName?:string
+        showIf?:IndicatorFunction
         showIfExpression?:string
         shown?:boolean
         target?:string
         transformer?:(value:any) => any
         transformerExpression?:string
-        value:null|Type
+        value?:null|Type
         valuePersistence?:'persistent'|'resetOnHide'
     }
+export type Annotation = {
+    clearFading?:ProcedureFunction
+    showIf?:IndicatorFunction
+    shown:boolean
+}
+export type ModelAnnotation<Type = any> = {
+    changeTrigger?:any
+    default:Type
+    dirty:boolean
+    initialValue?:Type
+    invalid:boolean
+    model:Model<Type>
+    pristine:boolean
+    selection:Array<Type>
+    showInitialValidationState:boolean
+    type:string
+    valid:boolean
+    value:Type
+}
+export type AnnotatedDomNode = HTMLElement & Annotation
+export type AnnotatedModelDomNode<Type = any> =
+    AnnotatedDomNode & ModelAnnotation<Type>
 export type Action = {
     code:string
     indicator:() => any
@@ -65,7 +96,7 @@ export type TargetConfiguration = {
     options:FetchOptions & Partial<{
         cache:RequestCache
         credentials:RequestCredentials
-        headers:Mapping
+        headers:Headers|Mapping
         mode:RequestMode
     }>
     url:string
@@ -88,11 +119,11 @@ export type Configuration = {
     name:string
     offsetInPixel:number
     reCaptcha:{
+        action:ReCaptchaV2.Action
         key:{
-            v2:string
+            v2:ReCaptchaV2.Parameters['sitekey']
             v3:string
         }
-        options:PlainObject
         secret:string
         skip:boolean
         token:string
@@ -118,7 +149,7 @@ export type Configuration = {
         secret:string
         values:Array<string>
     }
-    target:TargetConfiguration
+    target:RecursiveEvaluateable<TargetConfiguration>
     targetData:null|PlainObject
     urlModelMask:ObjectMaskConfiguration
     version:number
@@ -127,16 +158,6 @@ export type PropertyTypes = {
     baseConfiguration:ValueOf<typeof PropertyTypes>
     configuration:ValueOf<typeof PropertyTypes>
     dynamicConfiguration:ValueOf<typeof PropertyTypes>
-}
-export type AnnotatedDomNode<Type = any> = HTMLElement & {
-    changeTrigger?:Function
-    clearFading?:Function
-    invalid:boolean
-    model:Model<Type>
-    showInitialValidationState:boolean
-    shown:boolean
-    valid:boolean
-    value:any
 }
 export type Response = FetchResponse & {data:PlainObject}
 export type ResponseResult = {data:PlainObject;invalidInputNames:Array<string>}

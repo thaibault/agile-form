@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="dummyDistributionBundle1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/node_modules/web-input-material/node_modules/web-component-wrapper/node_modules/clientnode/node_modules/documentation-website/source/dummyDistributionBundle.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
