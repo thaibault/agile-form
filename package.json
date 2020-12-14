@@ -4,6 +4,18 @@
   "license": "CC-BY-3.0",
   "description": "Reusable form builder with support for (richt-)text, code, selections, numbers, dates and so on.",
   "homepage": "https://torben.website/agile-form",
+  "documentationWebsite": {
+    "tagline": "Build flexible agnostic forms.",
+    "trackingCode": "TODO"
+  },
+  "keywords": [
+    "component",
+    "form",
+    "react",
+    "web",
+    "webcomponent",
+    "web-component"
+  ],
   "main": "index.js",
   "files": [
     "index.bundle.js",
@@ -11,13 +23,6 @@
     "index.css",
     "index.ts",
     "type.ts"
-  ],
-  "keywords": [
-    "component",
-    "form",
-    "react",
-    "web",
-    "web-component"
   ],
   "repository": {
     "type": "git",
@@ -73,6 +78,7 @@
     "@webcomponents/webcomponentsjs": "*",
     "babel-eslint": "*",
     "clientnode": "*",
+    "documentation-website": "*",
     "css-loader": "*",
     "cssnano": "*",
     "eslint": "*",

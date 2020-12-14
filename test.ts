@@ -14,11 +14,19 @@
     endregion
 */
 // region imports
-import api from './index'
+import api, {AgileForm} from './index'
 // endregion
 describe('agile-form', ():void => {
     test('api', ():void => {
         expect(api).toBeDefined()
+        expect(api).toHaveProperty('component', AgileForm)
+    })
+    test('AgileForm', ():void => {
+        customElements.define('test-form', AgileForm)
+        document.body.appendChild(document.createElement('test-form'))
+        const form:AgileForm = document.querySelector('test-form')
+
+        expect(form).toHaveProperty('inputs', {})
     })
 })
 // region vim modline

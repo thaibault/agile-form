@@ -277,20 +277,22 @@ export class AgileForm extends Web {
 
     reCaptchaFallbackInput:AnnotatedDomNode|null = null
     reCaptchaFallbackRendered:boolean = false
+    /*
+        NOTE: Will be finally initialized when promise is created so do not
+        change order here.
+    */
+    reCaptchaPromiseResolver:(result:null|string) => void =
+        (result:null|string) => {}
     reCaptchaPromise:Promise<null|string> = new Promise(
         (resolve:(result:null|string) => void):void => {
             this.reCaptchaPromiseResolver = resolve
         }
     )
-    // NOTE: Will be initialized when promise is created.
-    // reCaptchaPromiseResolver:(result:null|string) => void
     reCaptchaToken:null|string = null
 
-    /* TODO overwrites determined one!
-    baseConfiguration:Partial<Configuration>|undefined
-    configuration:Partial<Configuration>|undefined
-    dynamicConfiguration:Partial<Configuration>|undefined
-    */
+    baseConfiguration:Partial<Configuration>|undefined = undefined
+    configuration:Partial<Configuration>|undefined = undefined
+    dynamicConfiguration:Partial<Configuration>|undefined = undefined
     resolvedConfiguration:Configuration = {} as Configuration
     urlConfiguration:null|PlainObject = null
 
@@ -2210,7 +2212,7 @@ export class AgileForm extends Web {
                         this.self.specificationToPropertyMapping
                             .hasOwnProperty(key)
                     )
-                        ;(
+                        (
                             this.inputs[name][
                                 this.self.specificationToPropertyMapping[
                                     key
@@ -2223,7 +2225,7 @@ export class AgileForm extends Web {
                                     newValue
                         )
                     else
-                        ;(
+                        (
                             this.inputs[name][key as keyof ModelAnnotation] as
                                 ValueOf<ModelAnnotation>
                         ) = newValue
@@ -2595,7 +2597,7 @@ export class AgileForm extends Web {
     // endregion
 }
 // endregion
-export const api:WebComponentAPI<AgileForm> = {
+export const api:WebComponentAPI<typeof AgileForm> = {
     component: AgileForm,
     register: (tagName:string = 'agile-form'):void =>
         customElements.define(tagName, AgileForm)
