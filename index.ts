@@ -226,6 +226,9 @@ export class AgileForm extends Web {
         },
         version: 1
     }
+    static observedAttributes:Array<string> = [
+        'base-configuration', 'configuration', 'dynamic-configuration'
+    ]
     static propertyTypes:Mapping<ValueOf<PropertyTypes>> = {
         baseConfiguration: object,
         configuration: object,
@@ -240,9 +243,6 @@ export class AgileForm extends Web {
             name: 'required'
         }
     }
-    static observedAttributes:Array<string> = [
-        'base-configuration', 'configuration', 'dynamic-configuration'
-    ]
 
     clearButtons:Array<AnnotatedDomNode> = []
     inputs:{[key:string]:AnnotatedModelDomNode} = {}
@@ -290,14 +290,25 @@ export class AgileForm extends Web {
     )
     reCaptchaToken:null|string = null
 
-    baseConfiguration:Partial<Configuration>|undefined = undefined
-    configuration:Partial<Configuration>|undefined = undefined
-    dynamicConfiguration:Partial<Configuration>|undefined = undefined
+    baseConfiguration:Partial<Configuration>|undefined
+    configuration:Partial<Configuration>|undefined
+    dynamicConfiguration:Partial<Configuration>|undefined
     resolvedConfiguration:Configuration = {} as Configuration
     urlConfiguration:null|PlainObject = null
 
     readonly self:typeof AgileForm = AgileForm
     // region live cycle hooks
+    constructor() {
+        super()
+        /*
+            Babels property declaration transformation overwrites defined
+            properties at the end of an implicit constructor. So we have to
+            redefined them as long as we want to declare expected component
+            interface properties to enable static type checks.
+        */
+        this.defineGetterAndSetterInterface()
+        this.resolveConfiguration()
+    }
     /**
      * Parses given configuration object and delegates to forward them to
      * nested input nodes.
@@ -940,7 +951,9 @@ export class AgileForm extends Web {
                 }
                 domNode.model = model
                 this.models[name].domNode = domNode
+
                 await this.digest()
+                console.log('TODO', name, this.models[name])
                 Object.defineProperty(
                     this.models[name],
                     'value',
@@ -2345,6 +2358,40 @@ export class AgileForm extends Web {
         this.hideSpinner()
     }
     /**
+     * Determines whether the current value state can be derived by given
+     * configuration or has to be saved.
+     * @param name - Model name to derive from.
+     * @returns A boolean indicating the neediness.
+     */
+    determinedStateValueIsUnneeded(name:string):boolean {
+        return (
+            this.inputs[name].initialValue &&
+            this.inputs[name].initialValue === this.inputs[name].value ||
+            this.inputs[name].initialValue !== undefined &&
+            this.inputs[name].value === this.inputs[name].default ||
+            /*
+                NOTE: If only a boolean value we do not have to save an
+                explicit or implicit default.
+            */
+            !this.inputs[name].default &&
+            !this.inputs[name].value &&
+            this.inputs[name].type === 'boolean' &&
+            /*
+                NOTE: If only one possible state exists we do not have to save
+                that state.
+            */
+            !(
+                this.inputs[name].selection &&
+                (
+                    Array.isArray(this.inputs[name].selection) &&
+                    this.inputs[name].selection.length > 2 ||
+                    !Array.isArray(this.inputs[name].selection) &&
+                    Object.keys(this.inputs[name].selection).length > 2
+                )
+            )
+        )
+    }
+    /**
      * Determines current state url.
      * @returns URL.
      */
@@ -2365,35 +2412,11 @@ export class AgileForm extends Web {
                             parameter.model![name as keyof Model].value
                     )
                         /*
-                            NOTE: Initial values derived from existing state url
-                            shouldn't be a problem because of the prior
+                            NOTE: Initial values derived from existing state
+                            url shouldn't be a problem because of the prior
                             condition.
                          */
-                        if (
-                            this.inputs[name].initialValue &&
-                            this.inputs[name].initialValue ===
-                                this.inputs[name].value ||
-                            this.inputs[name].initialValue !== undefined &&
-                            this.inputs[name].value ===
-                                this.inputs[name].default ||
-                            /*
-                                NOTE: If only a boolean value and two possible
-                                states possible we do not have to save an
-                                implicit default "false".
-                            */
-                            !this.inputs[name].default &&
-                            !this.inputs[name].value &&
-                            this.inputs[name].type === 'boolean' &&
-                            !(
-                                this.inputs[name].selection &&
-                                Array.isArray(this.inputs[name].selection) &&
-                                this.inputs[name].selection.length > 2 ||
-                                this.inputs[name].selection &&
-                                !Array.isArray(this.inputs[name].selection) &&
-                                Object.keys(this.inputs[name].selection)
-                                    .length > 2
-                            )
-                        ) {
+                        if (this.determinedStateValueIsUnneeded(name)) {
                             delete parameter.model![name as keyof Model].value
                             if (Object.keys(
                                 parameter.model![name as keyof Model]
@@ -2402,13 +2425,11 @@ export class AgileForm extends Web {
                         } else
                             parameter.model![name].value =
                                 this.inputs[name].value
-                } else if (!(
-                    this.inputs[name].initialValue &&
-                    this.inputs[name].initialValue ===
-                        this.inputs[name].value ||
-                    this.inputs[name].initialValue !== undefined &&
-                    this.inputs[name].value === this.inputs[name].default
-                ))
+                /*
+                    NOTE: Initial values derived from existing state url
+                    shouldn't be a problem because of the prior condition.
+                 */
+                } else if (!this.determinedStateValueIsUnneeded(name))
                     parameter.model![name] = {value: this.inputs[name].value}
         parameter = Tools.maskObject<Partial<Configuration>>(
             parameter, this.resolvedConfiguration.urlModelMask

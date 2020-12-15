@@ -78,9 +78,9 @@
     "@webcomponents/webcomponentsjs": "*",
     "babel-eslint": "*",
     "clientnode": "*",
-    "documentation-website": "*",
     "css-loader": "*",
     "cssnano": "*",
+    "documentation-website": "*",
     "eslint": "*",
     "eslint-config-google": "*",
     "eslint-plugin-jsdoc": "*",
@@ -138,7 +138,9 @@
           "react-ace": "react-input-material/components/Dummy",
           "react-useanimations$": "react-input-material/components/Dummy",
           "react-useanimations/lib/lock$": "react-input-material/components/Dummy",
-          "react-useanimations/lib/plusToX$": "react-input-material/components/Dummy"
+          "react-useanimations/lib/plusToX$": "react-input-material/components/Dummy",
+          "#1": "We need native class to get web components work in test context.",
+          "web-component-wrapper/Web$": "web-component-wrapper/WebNext"
         }
       }
     },
