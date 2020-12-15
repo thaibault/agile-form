@@ -16,26 +16,24 @@
 // region imports
 import api, {AgileForm} from './index'
 // endregion
+const name:string = 'test-form'
+api.register(name)
+
 describe('api', ():void => {
     test('api definitions', ():void => {
         expect(api).toBeDefined()
         expect(api).toHaveProperty('component', AgileForm)
 
-        // TODO
-        return
-        api.register()
-        expect(document.createElement('agile-form')).toBeInstanceOf(AgileForm)
+        expect(document.createElement(name)).toBeInstanceOf(AgileForm)
     })
 })
 describe('AgileForm', ():void => {
-    customElements.define('a-form', AgileForm)
-
     test('custom element definition', ():void => {
-        const form:AgileForm = document.createElement('a-form') as AgileForm
+        const form:AgileForm = document.createElement(name) as AgileForm
         document.body.appendChild(form)
     })
     test('attribute configuration', ():void => {
-        const form:AgileForm = document.createElement('a-form') as AgileForm
+        const form:AgileForm = document.createElement(name) as AgileForm
         document.body.appendChild(form)
 
         form.setAttribute('configuration', '{value: 2}')
@@ -44,23 +42,22 @@ describe('AgileForm', ():void => {
         expect(form).toHaveProperty('resolvedConfiguration.value', 2)
     })
     test('input connections', async ():Promise<void> => {
-        const form:AgileForm = document.createElement('a-form') as AgileForm
+        const form:AgileForm = document.createElement(name) as AgileForm
         document.body.appendChild(form)
 
         expect(form).toHaveProperty('inputs', {})
 
         const input:HTMLElement = document.createElement('generic-input')
-        const name:string = 'test'
-        input.setAttribute('name', name)
+        const inputName:string = 'test'
+        input.setAttribute('name', inputName)
         form.appendChild(input)
         await form.render()
 
-        return
         expect(form).toHaveProperty('inputs', {})
 
-        form.resolvedConfiguration.model[name] = {}
+        form.resolvedConfiguration.model[inputName] = {}
         await form.render()
-        expect(form.inputs).toHaveProperty(name, input)
+        expect(form.inputs).toHaveProperty(inputName, input)
     })
 })
 // region vim modline

@@ -97,6 +97,8 @@ import {
 
  * @property resolvedConfiguration - Holds given configuration object.
  * @property urlConfiguration - URL given configurations object.
+ *
+ * @property tools - Holds tools instance for saving instance specific locks.
  */
 export class AgileForm extends Web {
     static baseScopeNames:Array<string> = [
@@ -297,6 +299,8 @@ export class AgileForm extends Web {
     urlConfiguration:null|PlainObject = null
 
     readonly self:typeof AgileForm = AgileForm
+
+    readonly tools:Tools = new Tools()
     // region live cycle hooks
     constructor() {
         super()
@@ -822,6 +826,8 @@ export class AgileForm extends Web {
      * @returns Nothing.
      */
     async configureContentProjectedInputs():Promise<void> {
+        const lockName:string = 'configureContentProjectedInputs'
+        await this.tools.acquireLock(lockName)
         const missingInputs:Mapping<Model> =
             await this.connectSpecificationWithDomNodes()
         // Configure input components to hide validation states first.
@@ -842,6 +848,7 @@ export class AgileForm extends Web {
             )
         this.createDependencyMapping()
         this.addEventListener()
+        await this.tools.releaseLock(lockName)
     }
     /**
      * Determine all environment variables to ran expressions again. We have to
@@ -951,9 +958,7 @@ export class AgileForm extends Web {
                 }
                 domNode.model = model
                 this.models[name].domNode = domNode
-
                 await this.digest()
-                console.log('TODO', name, this.models[name])
                 Object.defineProperty(
                     this.models[name],
                     'value',
