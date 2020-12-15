@@ -17,25 +17,23 @@
     endregion
 */
 // region imports
-import Tools, {globalContext} from 'clientnode'
+import Tools from 'clientnode'
 import {
     EvaluationResult, Mapping, PlainObject, RecursiveEvaluateable, ValueOf
 } from 'clientnode/type'
 import {object} from 'clientnode/property-types'
+import FetchType from 'node-fetch'
 import Web from 'web-component-wrapper/Web'
 import {WebComponentAPI} from 'web-component-wrapper/type'
-import {CircularSpinner} from 'web-input-material/components/CircularSpinner'
-import {GenericInput} from 'web-input-material/components/GenericInput'
-import {
-    RequireableCheckbox
-} from 'web-input-material/components/RequireableCheckbox'
-import {StaticFunctionInputComponent} from 'web-input-material/type'
 
 import {
     Action,
     AnnotatedDomNode,
+    AnnotatedModelDomNode,
     Configuration,
+    IndicatorFunction,
     Model,
+    ModelAnnotation,
     PropertyTypes,
     Response,
     ResponseResult,
@@ -99,6 +97,8 @@ import {
 
  * @property resolvedConfiguration - Holds given configuration object.
  * @property urlConfiguration - URL given configurations object.
+ *
+ * @property tools - Holds tools instance for saving instance specific locks.
  */
 export class AgileForm extends Web {
     static baseScopeNames:Array<string> = [
@@ -115,7 +115,7 @@ export class AgileForm extends Web {
         'valid'
     ]
     static content:string = '<form novalidate><slot></slot></form>'
-    static defaultConfiguration:RecursiveEvaluateable<Configuration> = {
+    static defaultConfiguration:Configuration = {
         actions: {},
         animation: true,
         constraints: [],
@@ -150,7 +150,7 @@ export class AgileForm extends Web {
                 v2: '',
                 v3: ''
             },
-            options: {
+            action: {
                 action: 'aForm'
             },
             secret: '',
@@ -187,8 +187,8 @@ export class AgileForm extends Web {
                 },
                 cache: 'no-store',
                 /*
-                    NOTE: Send user credentials (cookies, basic http auth,
-                    etc..), even for cross-origin calls.
+                    NOTE: Send user credentials (cookies, basic http
+                    authentication, etc..), even for cross-origin calls.
                 */
                 credentials: 'include',
                 headers: {
@@ -228,23 +228,26 @@ export class AgileForm extends Web {
         },
         version: 1
     }
+    static observedAttributes:Array<string> = [
+        'base-configuration', 'configuration', 'dynamic-configuration'
+    ]
     static propertyTypes:Mapping<ValueOf<PropertyTypes>> = {
         baseConfiguration: object,
         configuration: object,
         dynamicConfiguration: object
     }
-    static specificationToPropertyMapping:PlainObject = {
+    static specificationToPropertyMapping:Mapping<{
+        invert?:boolean
+        name:string
+    }> = {
         nullable: {
             invert: true,
             name: 'required'
         }
     }
-    static observedAttributes:Array<string> = [
-        'base-configuration', 'configuration', 'dynamic-configuration'
-    ]
 
     clearButtons:Array<AnnotatedDomNode> = []
-    inputs:{[key:string]:AnnotatedDomNode} = {}
+    inputs:{[key:string]:AnnotatedModelDomNode} = {}
     resetButtons:Array<AnnotatedDomNode> = []
     spinner:Array<AnnotatedDomNode> = []
     statusMessageBoxes:Array<AnnotatedDomNode> = []
@@ -253,9 +256,9 @@ export class AgileForm extends Web {
 
     dependencyMapping:{[key:string]:Array<string>} = {}
 
-    groups:Map<HTMLElement, {
+    groups:Map<AnnotatedDomNode, {
         childNames:Array<string>
-        showIf?:Function
+        showIf?:IndicatorFunction
     }> = new Map()
     groupTemplateCache:Map<HTMLElement, string> = new Map()
 
@@ -265,7 +268,7 @@ export class AgileForm extends Web {
     message:string = ''
     response:any = null
 
-    models:PlainObject = {}
+    models:Mapping<Model> = {}
     modelNames:Array<string> = []
 
     invalid:boolean|null = null
@@ -276,20 +279,40 @@ export class AgileForm extends Web {
 
     reCaptchaFallbackInput:AnnotatedDomNode|null = null
     reCaptchaFallbackRendered:boolean = false
+    /*
+        NOTE: Will be finally initialized when promise is created so do not
+        change order here.
+    */
+    reCaptchaPromiseResolver:(result:null|string) => void =
+        (result:null|string) => {}
     reCaptchaPromise:Promise<null|string> = new Promise(
         (resolve:(result:null|string) => void):void => {
             this.reCaptchaPromiseResolver = resolve
         }
     )
-    // NOTE: Will be initialized when promise is created.
-    // reCaptchaPromiseResolver:(result:null|string) => void
-    reCaptchaPromiseToken:null|string = null
+    reCaptchaToken:null|string = null
 
+    baseConfiguration:Partial<Configuration>|undefined
+    configuration:Partial<Configuration>|undefined
+    dynamicConfiguration:Partial<Configuration>|undefined
     resolvedConfiguration:Configuration = {} as Configuration
     urlConfiguration:null|PlainObject = null
 
     readonly self:typeof AgileForm = AgileForm
+
+    readonly tools:Tools = new Tools()
     // region live cycle hooks
+    constructor() {
+        super()
+        /*
+            Babels property declaration transformation overwrites defined
+            properties at the end of an implicit constructor. So we have to
+            redefined them as long as we want to declare expected component
+            interface properties to enable static type checks.
+        */
+        this.defineGetterAndSetterInterface()
+        this.resolveConfiguration()
+    }
     /**
      * Parses given configuration object and delegates to forward them to
      * nested input nodes.
@@ -471,7 +494,7 @@ export class AgileForm extends Web {
         }
     }
     /**
-     * Adds given dom nodes visual reporesentation.
+     * Adds given dom nodes visual representation.
      * @param domNode - Node to activate.
      * @returns Nothing.
      */
@@ -479,7 +502,7 @@ export class AgileForm extends Web {
         this.fade(domNode)
     }
     /**
-     * Removes given dom nodes visual reporesentation.
+     * Removes given dom nodes visual representation.
      * @param domNode - Node to deactivate.
      * @returns Nothing.
      */
@@ -512,30 +535,29 @@ export class AgileForm extends Web {
      * visibility change has been happen.
      */
     async updateInputVisibility(name:string):Promise<boolean> {
-        const oldState:boolean|undefined = this.models[name].shown
+        const model:Model = this.models[name]
+        const oldState:boolean|undefined = model.shown
         this.inputs[name].shown =
-        this.models[name].shown =
-            !this.models[name].showIf ||
-            this.models[name].showIf!()
-        if (this.models[name].shown !== oldState) {
+        model.shown =
+            !model.showIf ||
+            model.showIf!()
+        if (model.shown !== oldState) {
             if (this.resolvedConfiguration.debug)
                 if (Boolean(oldState) === oldState)
                     console.debug(
                         `Update input "${name}" visibility state from ` +
                         `"${oldState ? 'show' : 'hide'}" to "` +
-                        (this.models[name].shown ? 'show' : 'hide') +
-                        '".'
+                        `${model.shown ? 'show' : 'hide'}".`
                     )
                 else
                     console.debug(
                         `Initialize input "${name}" visibility state to "` +
-                        (this.models[name].shown ? 'show' : 'hide') +
-                        '".'
+                        `${model.shown ? 'show' : 'hide'}".`
                     )
-            if (this.models[name].shown || this.resolvedConfiguration.showAll)
+            if (model.shown || this.resolvedConfiguration.showAll)
                 this.activate(this.inputs[name])
             else {
-                if (this.models[name].valuePersistence === 'resetOnHide')
+                if (model.valuePersistence === 'resetOnHide')
                     await this.resetInput(name)
                 this.deactivate(this.inputs[name])
             }
@@ -557,7 +579,7 @@ export class AgileForm extends Web {
         this.groups.forEach((
             specification:{
                 childNames:Array<string>
-                showIf?:Function
+                showIf?:IndicatorFunction
             },
             domNode:AnnotatedDomNode
         ):void => {
@@ -634,7 +656,7 @@ export class AgileForm extends Web {
                 typeof content === 'string' &&
                 content.includes('${') &&
                 content.includes('}') &&
-                /\$\{.+\}/.test(content)
+                /\${.+}/.test(content)
             )
                 this.groupTemplateCache.set(
                     domNode, content.replace(/&nbsp;/g, ' ').trim()
@@ -804,6 +826,8 @@ export class AgileForm extends Web {
      * @returns Nothing.
      */
     async configureContentProjectedInputs():Promise<void> {
+        const lockName:string = 'configureContentProjectedInputs'
+        await this.tools.acquireLock(lockName)
         const missingInputs:Mapping<Model> =
             await this.connectSpecificationWithDomNodes()
         // Configure input components to hide validation states first.
@@ -824,6 +848,7 @@ export class AgileForm extends Web {
             )
         this.createDependencyMapping()
         this.addEventListener()
+        await this.tools.releaseLock(lockName)
     }
     /**
      * Determine all environment variables to ran expressions again. We have to
@@ -844,7 +869,7 @@ export class AgileForm extends Web {
      * @returns An object mapping with missing but specified fields.
      */
     async connectSpecificationWithDomNodes():Promise<Mapping<Model>> {
-        const inputs:Array<AnnotatedDomNode> =
+        const inputs:Array<AnnotatedModelDomNode> =
             Array.from(this.root.querySelectorAll(
                 this.resolvedConfiguration.selector.inputs
             ))
@@ -918,10 +943,11 @@ export class AgileForm extends Web {
                     domNode.initialValue = this.models[name].value
                     delete this.models[name].value
                 }
-                let model:PlainObject = Tools.copy(this.models[name])
+                let model:Model = Tools.copy(this.models[name])
                 if (domNode.hasAttribute('model')) {
-                    const result:EvaluationResult =
-                        Tools.stringEvaluate(domNode.getAttribute('model'))
+                    const result:EvaluationResult = Tools.stringEvaluate(
+                        domNode.getAttribute('model') as string
+                    )
                     if (result.error)
                         console.warn(
                             'Failed to evaluate field model configuration "' +
@@ -953,8 +979,12 @@ export class AgileForm extends Web {
                         domNode.pristine
                     ) &&
                     !(
-                        [null, undefined].includes(domNode.initialValue) &&
-                        [null, undefined].includes(model.default) &&
+                        [null, undefined].includes(
+                            domNode.initialValue as null
+                        ) &&
+                        [null, undefined].includes(
+                            model.default as unknown as null
+                        ) &&
                         [null, undefined].includes(model.value)
                     )
                 )
@@ -991,7 +1021,7 @@ export class AgileForm extends Web {
      * its internal state has been reflected.
      * @returns A promise resolving when digest hast been finished.
     */
-    digest():ReturnType<Tools.timeout> {
+    digest():ReturnType<typeof Tools.timeout> {
          return Tools.timeout()
     }
     /**
@@ -1020,15 +1050,15 @@ export class AgileForm extends Web {
         for (const domNode of groups) {
             const specification:{
                 childNames:Array<string>
-                showIf?:Function
+                showIf?:IndicatorFunction
             } = {
                 childNames: (Array.from(domNode.querySelectorAll(
                     this.resolvedConfiguration.selector.inputs
-                )) as Array<AnnotatedDomNode>)
-                    .filter((domNode:AnnotatedDomNode):boolean =>
+                )) as Array<AnnotatedModelDomNode>)
+                    .filter((domNode:AnnotatedModelDomNode):boolean =>
                         typeof domNode.getAttribute('name') === 'string'
                     )
-                    .map((domNode:AnnotatedDomNode):string =>
+                    .map((domNode:AnnotatedModelDomNode):string =>
                         domNode.getAttribute('name') as string
                     )
             }
@@ -1574,9 +1604,10 @@ export class AgileForm extends Web {
         }
         return false
     }
+    // / endregion
     /**
      * Callback triggered when any keyboard events occur.
-     * @param event - Keboard event object.
+     * @param event - Keyboard event object.
      * @returns Nothing.
      */
     onKeyDown = (event:KeyboardEvent):void => {
@@ -1674,7 +1705,7 @@ export class AgileForm extends Web {
             'The following inputs are invalid "' +
             `${invalidInputNames.join('", "')}".`
         )
-        const invalidInputs:Array<AnnotatedDomNode> = Array.from(
+        const invalidInputs:Array<AnnotatedModelDomNode> = Array.from(
             this.root.querySelectorAll(
                 `[name="${invalidInputNames.join('"], [name="')}"]`
             )
@@ -1800,8 +1831,10 @@ export class AgileForm extends Web {
                 }
             })
         else if (response && response.status === 420) {
-            this.updateReCaptchaFallbackToken()
-            this.scrollAndFocus(this.reCaptchaFallbackInput)
+            if (this.updateReCaptchaFallbackToken())
+                this.scrollAndFocus(
+                    this.reCaptchaFallbackInput as AnnotatedDomNode
+                )
 
             if (this.reCaptchaFallbackRendered)
                 // NOTE: We had an unsuccessful re-captcha challenge.
@@ -1873,23 +1906,26 @@ export class AgileForm extends Web {
             target.options.hasOwnProperty('headers') &&
             target.options.headers !== null
         ) {
+            const givenHeaders:Mapping = target.options.headers as Mapping
             const headers:Headers = new Headers()
             for (const name in target.options.headers)
                 if (
-                    target.options.headers.hasOwnProperty(name) &&
+                    givenHeaders.hasOwnProperty(name) &&
                     ['boolean', 'number', 'string'].includes(
-                        typeof target.options.headers[name]
+                        typeof givenHeaders[name as keyof Mapping]
                     ) &&
-                    `${target.options.headers[name]}`.trim()
+                    `${givenHeaders[name as keyof Mapping]}`.trim()
                 )
-                    headers.set(name, target.options.headers[name])
-            target.options.headers = headers
+                    headers.set(name, givenHeaders[name as keyof Mapping])
+            ;(target.options.headers as Headers) = headers
         }
         // endregion
         let result:null|Response = null
         try {
             this.updateReCaptchaToken()
-            result = await fetch(target.url, target.options || {})
+            result = await (fetch as unknown as typeof FetchType)(
+                target.url,target.options || {}
+            ) as Response
             let responseString:string = await (result as Response).text()
             if (responseString.startsWith(
                 this.resolvedConfiguration.securityResponsePrefix
@@ -1944,21 +1980,20 @@ export class AgileForm extends Web {
     async handleValidSubmittedInput(
         event:Event, data:PlainObject, newWindow:boolean = false
     ):Promise<void> {
-        if (this.resolvedConfiguration.target?.url) {
-            // region prepare request
-            this.resolvedConfiguration.data = data
-            this.resolvedConfiguration.targetData = this.mapTargetNames(data)
-            const target:TargetConfiguration = Tools.evaluateDynamicData(
-                Tools.copy(this.resolvedConfiguration.target),
-                {
-                    determineStateURL: this.determineStateURL,
-                    Tools,
-                    ...this.resolvedConfiguration
-                }
-            )
+        // region prepare request
+        this.resolvedConfiguration.data = data
+        this.resolvedConfiguration.targetData = this.mapTargetNames(data)
+        const target:TargetConfiguration = Tools.evaluateDynamicData(
+            Tools.copy(this.resolvedConfiguration.target),
+            {
+                determineStateURL: this.determineStateURL,
+                Tools,
+                ...this.resolvedConfiguration
+            }
+        ) as TargetConfiguration
+        if (target?.url) {
             if (target.options.body && typeof target.options.body !== 'string')
                 target.options.body = JSON.stringify(target.options.body)
-            // endregion
             this.track({
                 event: this.resolvedConfiguration.eventNameMapping.submit,
                 eventType: 'formSubmit',
@@ -2054,13 +2089,15 @@ export class AgileForm extends Web {
                 this.handleInvalidSubmittedInput(data, invalidInputNames)
             } else if (
                 this.reCaptchaFallbackRendered &&
-                this.reCaptchaFallbackInput.hasAttribute('invalid')
+                this.reCaptchaFallbackInput!.hasAttribute('invalid')
             ) {
                 this.updateMessageBox('Please do the re-captcha challenge.')
-                this.scrollAndFocus(this.reCaptchaFallbackInput)
+                this.scrollAndFocus(
+                    this.reCaptchaFallbackInput as AnnotatedDomNode
+                )
             } else {
                 this.resolvedConfiguration.reCaptcha.token =
-                    await this.reCaptchaPromise
+                    (await this.reCaptchaPromise) || ''
 
                 this.onceSubmitted = this.submitted = true
 
@@ -2146,7 +2183,7 @@ export class AgileForm extends Web {
                 this.inputs[name].addEventListener(
                     (
                         this.models[name].hasOwnProperty('eventChangedName') ?
-                            this.models[name].eventChangedName :
+                            this.models[name].eventChangedName as string :
                             'onChange'
                     ),
                     async (event:Event):Promise<void> => {
@@ -2182,25 +2219,34 @@ export class AgileForm extends Web {
         let changed:boolean = false
         if (this.models[name].hasOwnProperty('dynamicExtend'))
             for (const key in this.models[name].dynamicExtend) {
-                const oldValue:any = this.models[name][key]
+                const oldValue:any = this.models[name][key as keyof Model]
                 const newValue:any =
-                    this.models[name].dynamicExtend[key](event)
+                    this.models[name].dynamicExtend![key](event)
                 if (oldValue !== newValue) {
                     changed = true
                     if (key !== 'value')
-                        this.models[name][key] = newValue
+                        this.models[name][key as keyof Model] = newValue
                     if (
                         this.self.specificationToPropertyMapping
                             .hasOwnProperty(key)
                     )
-                        this.inputs[name][
-                            this.self.specificationToPropertyMapping[key].name
-                        ] = this.self.specificationToPropertyMapping[key]
-                            .invert ?
-                                !newValue :
-                                newValue
+                        (
+                            this.inputs[name][
+                                this.self.specificationToPropertyMapping[
+                                    key
+                                ].name as keyof ModelAnnotation
+                            ] as ValueOf<ModelAnnotation>
+                        ) = (
+                            this.self.specificationToPropertyMapping[key]
+                                .invert ?
+                                    !newValue :
+                                    newValue
+                        )
                     else
-                        this.inputs[name][key] = newValue
+                        (
+                            this.inputs[name][key as keyof ModelAnnotation] as
+                                ValueOf<ModelAnnotation>
+                        ) = newValue
                     await this.digest()
                 }
             }
@@ -2226,7 +2272,11 @@ export class AgileForm extends Web {
      */
     async triggerModelUpdate(name:string):Promise<void> {
         if (this.inputs.hasOwnProperty(name)) {
-            if ('changeTrigger' in this.inputs[name]) {
+            if (typeof this.inputs[name].changeTrigger === 'function')
+                this.inputs[name].changeTrigger()
+            else if (Object.prototype.hasOwnProperty.call(
+                this.inputs[name], 'changeTrigger'
+            )) {
                 this.inputs[name].changeTrigger =
                     !this.inputs[name].changeTrigger
                 await this.digest()
@@ -2244,7 +2294,12 @@ export class AgileForm extends Web {
      * @param event - Event to derive name from.
      * @return Derived name.
      */
-    determineEventName(event:Event):string {
+    determineEventName(
+        event:Event & {detail?:{
+            parameter?:Array<{type?:string}>
+            type?:string
+        }}
+    ):string {
         if (event.detail) {
             if (
                 Array.isArray(event.detail.parameter) &&
@@ -2308,11 +2363,45 @@ export class AgileForm extends Web {
         this.hideSpinner()
     }
     /**
+     * Determines whether the current value state can be derived by given
+     * configuration or has to be saved.
+     * @param name - Model name to derive from.
+     * @returns A boolean indicating the neediness.
+     */
+    determinedStateValueIsUnneeded(name:string):boolean {
+        return (
+            this.inputs[name].initialValue &&
+            this.inputs[name].initialValue === this.inputs[name].value ||
+            this.inputs[name].initialValue !== undefined &&
+            this.inputs[name].value === this.inputs[name].default ||
+            /*
+                NOTE: If only a boolean value we do not have to save an
+                explicit or implicit default.
+            */
+            !this.inputs[name].default &&
+            !this.inputs[name].value &&
+            this.inputs[name].type === 'boolean' &&
+            /*
+                NOTE: If only one possible state exists we do not have to save
+                that state.
+            */
+            !(
+                this.inputs[name].selection &&
+                (
+                    Array.isArray(this.inputs[name].selection) &&
+                    this.inputs[name].selection.length > 2 ||
+                    !Array.isArray(this.inputs[name].selection) &&
+                    Object.keys(this.inputs[name].selection).length > 2
+                )
+            )
+        )
+    }
+    /**
      * Determines current state url.
      * @returns URL.
      */
     determineStateURL = ():{encoded:string;plain:string} => {
-        let parameter:PlainObject = {
+        let parameter:Partial<Configuration> = {
             model: {},
             ...(this.urlConfiguration || {})
         }
@@ -2322,60 +2411,32 @@ export class AgileForm extends Web {
                 this.inputs.hasOwnProperty(name) &&
                 this.inputs[name].dirty
             )
-                if (parameter.model.hasOwnProperty(name)) {
+                if (parameter.model!.hasOwnProperty(name)) {
                     if (
-                        this.inputs[name].value !== parameter.model[name].value
+                        this.inputs[name].value !==
+                            parameter.model![name as keyof Model].value
                     )
-                        if (
-                            /*
-                                NOTE: Do not compare to dom nodes initial value
-                                because it could be derived from given model
-                                value specification.
-                            */
-                            this.models[name].initialValue &&
-                            this.models[name].initialValue ===
-                                this.inputs[name].value ||
-                            this.inputs[name].value ===
-                                this.inputs[name].default ||
-                            !this.inputs[name].default &&
-                            /*
-                                NOTE: If only a boolean value and two possible
-                                states possible we do not have to save an
-                                implicit default "false".
-                            */
-                            !this.inputs[name].value &&
-                            this.inputs[name].type === 'boolean' &&
-                            !(
-                                this.inputs[name].selection &&
-                                Array.isArray(this.inputs[name].selection) &&
-                                this.inputs[name].selection.length > 2 ||
-                                this.inputs[name].selection &&
-                                !Array.isArray(this.inputs[name].selection) &&
-                                Object.keys(this.inputs[name].selection)
-                                    .length > 2
-                            )
-                        ) {
-                            delete parameter.model[name].value
-                            if (
-                                Object.keys(parameter.model[name]).length === 0
-                            )
-                                delete parameter.model[name]
+                        /*
+                            NOTE: Initial values derived from existing state
+                            url shouldn't be a problem because of the prior
+                            condition.
+                         */
+                        if (this.determinedStateValueIsUnneeded(name)) {
+                            delete parameter.model![name as keyof Model].value
+                            if (Object.keys(
+                                parameter.model![name as keyof Model]
+                            ).length === 0)
+                                delete parameter.model![name]
                         } else
-                            parameter.model[name].value =
+                            parameter.model![name].value =
                                 this.inputs[name].value
-                } else if (!(
-                    /*
-                        NOTE: Do not compare to dom nodes initial value
-                        because it could be derived from given model value
-                        specification.
-                    */
-                    this.models[name].initialValue &&
-                    this.models[name].initialValue ===
-                        this.inputs[name].value ||
-                    this.inputs[name].value === this.inputs[name].default
-                ))
-                    parameter.model[name] = {value: this.inputs[name].value}
-        parameter = Tools.maskObject(
+                /*
+                    NOTE: Initial values derived from existing state url
+                    shouldn't be a problem because of the prior condition.
+                 */
+                } else if (!this.determinedStateValueIsUnneeded(name))
+                    parameter.model![name] = {value: this.inputs[name].value}
+        parameter = Tools.maskObject<Partial<Configuration>>(
             parameter, this.resolvedConfiguration.urlModelMask
         )
         if (parameter.model && Object.keys(parameter.model).length === 0)
@@ -2448,9 +2509,9 @@ export class AgileForm extends Web {
     /**
      * Renders user interaction re-captcha version if corresponding placeholder
      * is available.
-     * @returns Nothing.
+     * @returns A boolean indicating if a fallback node was found to render.
      */
-    updateReCaptchaFallbackToken():void {
+    updateReCaptchaFallbackToken():boolean {
         this.reCaptchaPromise =
             new Promise((resolve:(result:null|string) => void):void => {
                 this.reCaptchaPromiseResolver = resolve
@@ -2462,7 +2523,8 @@ export class AgileForm extends Web {
             (
                 this.resolvedConfiguration.showAll ||
                 this.resolvedConfiguration.reCaptcha?.key?.v2 &&
-                this.resolvedConfiguration.target?.url
+                this.resolvedConfiguration.target &&
+                (this.resolvedConfiguration.target as TargetConfiguration).url
             )
         ) {
             this.reCaptchaFallbackInput.removeAttribute('valid')
@@ -2487,22 +2549,24 @@ export class AgileForm extends Web {
                             this.reCaptchaToken = token
                             this.reCaptchaPromiseResolver(this.reCaptchaToken)
 
-                            this.reCaptchaFallbackInput
+                            this.reCaptchaFallbackInput!
                                 .removeAttribute('invalid')
-                            this.reCaptchaFallbackInput
+                            this.reCaptchaFallbackInput!
                                 .setAttribute('valid', '')
 
-                            this.reCaptchaFallbackInput
+                            this.reCaptchaFallbackInput!
                                 .removeAttribute('pristine')
-                            this.reCaptchaFallbackInput
+                            this.reCaptchaFallbackInput!
                                 .setAttribute('dirty', '')
                         },
-                        sitekey : this.resolvedConfiguration.reCaptcha.key.v2
+                        sitekey: this.resolvedConfiguration.reCaptcha.key.v2
                     }
                 )
                 this.activate(this.reCaptchaFallbackInput)
             }
+            return true
         }
+        return false
     }
     /**
      * Updates internal saved re-captcha token.
@@ -2510,8 +2574,10 @@ export class AgileForm extends Web {
      * was unsuccessful.
      */
     updateReCaptchaToken():Promise<null|string> {
-        if (this.reCaptchaFallbackRendered)
-            return this.updateReCaptchaFallbackToken()
+        if (this.reCaptchaFallbackRendered) {
+            this.updateReCaptchaFallbackToken()
+            return Promise.resolve(null)
+        }
 
         if (this.reCaptchaToken) {
             // NOTE: If called second time reset initializing promise.
@@ -2525,14 +2591,15 @@ export class AgileForm extends Web {
         if (
             window.grecaptcha &&
             this.resolvedConfiguration.reCaptcha?.key?.v3 &&
-            this.resolvedConfiguration.target?.url
+            this.resolvedConfiguration.target &&
+            (this.resolvedConfiguration.target as TargetConfiguration).url
         )
             try {
                 window.grecaptcha!.ready(async ():Promise<void> => {
                     try {
                         this.reCaptchaToken = await window.grecaptcha.execute(
                             this.resolvedConfiguration.reCaptcha.key.v3,
-                            this.resolvedConfiguration.reCaptcha.options
+                            this.resolvedConfiguration.reCaptcha.action
                         )
                         this.reCaptchaPromiseResolver(this.reCaptchaToken)
                     } catch (error) {
@@ -2556,7 +2623,7 @@ export class AgileForm extends Web {
     // endregion
 }
 // endregion
-export const api:WebComponentAPI<AgileForm> = {
+export const api:WebComponentAPI<typeof AgileForm> = {
     component: AgileForm,
     register: (tagName:string = 'agile-form'):void =>
         customElements.define(tagName, AgileForm)

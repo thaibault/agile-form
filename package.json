@@ -4,6 +4,18 @@
   "license": "CC-BY-3.0",
   "description": "Reusable form builder with support for (richt-)text, code, selections, numbers, dates and so on.",
   "homepage": "https://torben.website/agile-form",
+  "documentationWebsite": {
+    "tagline": "Build flexible agnostic forms.",
+    "trackingCode": "TODO"
+  },
+  "keywords": [
+    "component",
+    "form",
+    "react",
+    "web",
+    "webcomponent",
+    "web-component"
+  ],
   "main": "index.js",
   "files": [
     "index.bundle.js",
@@ -11,13 +23,6 @@
     "index.css",
     "index.ts",
     "type.ts"
-  ],
-  "keywords": [
-    "component",
-    "form",
-    "react",
-    "web",
-    "web-component"
   ],
   "repository": {
     "type": "git",
@@ -29,7 +34,7 @@
     "build:plain": "weboptimizer build",
     "check": "yarn check:types; yarn lint",
     "check:types": "weboptimizer check:types",
-    "clear": "weboptimizer clear",
+    "clear": "weboptimizer clear && rimraf styles.bundle.css",
     "document": "weboptimizer document",
     "lint": "weboptimizer lint",
     "prepare": "yarn build",
@@ -75,6 +80,7 @@
     "clientnode": "*",
     "css-loader": "*",
     "cssnano": "*",
+    "documentation-website": "*",
     "eslint": "*",
     "eslint-config-google": "*",
     "eslint-plugin-jsdoc": "*",
@@ -87,6 +93,7 @@
     "postcss-loader": "*",
     "postcss-preset-env": "*",
     "prop-types": "*",
+    "rimraf": "*",
     "style-loader": "*",
     "web-input-material": "*",
     "weboptimizer": "*",
@@ -132,7 +139,9 @@
           "react-ace": "react-input-material/components/Dummy",
           "react-useanimations$": "react-input-material/components/Dummy",
           "react-useanimations/lib/lock$": "react-input-material/components/Dummy",
-          "react-useanimations/lib/plusToX$": "react-input-material/components/Dummy"
+          "react-useanimations/lib/plusToX$": "react-input-material/components/Dummy",
+          "#1": "We need native class to get web components work in test context.",
+          "web-component-wrapper/Web$": "web-component-wrapper/WebNext"
         }
       }
     },
