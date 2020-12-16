@@ -49,11 +49,15 @@
                 /* region fetch mock */
                 window.fetch = function(url, options) {
                     const headers = {}
-                    for (const [key, value] of options.headers.entries())
-                        headers[key] = value
+                    const givenHeaders = Array.from(options.headers.entries())
+                    for (index = 0; index < givenHeaders.length; index++)
+                        headers[givenHeaders[index][0]] =
+                            givenHeaders[index][1]
                     options.headers = headers
 
-                    console.info(`Send mock request to ${url} with:`, options)
+                    console.info(
+                        'Send mock request to ' + url + ' with:', options
+                    )
                     return new Promise(function(resolve) {
                         resolve({
                             ok: document.querySelector(

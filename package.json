@@ -41,7 +41,7 @@
     "report:coverage": "nyc report --reporter=text-lcov | coveralls",
     "serve": "weboptimizer serve",
     "start": "yarn serve",
-    "test": "weboptimizer test",
+    "test": "weboptimizer test '{__reference__: \"target:test\"}'",
     "test:browser": "weboptimizer test:browser",
     "update": "yarn version --patch && yarn publish",
     "update:documentation": "documentationWebsite --log-level info",
@@ -139,9 +139,7 @@
           "react-ace": "react-input-material/components/Dummy",
           "react-useanimations$": "react-input-material/components/Dummy",
           "react-useanimations/lib/lock$": "react-input-material/components/Dummy",
-          "react-useanimations/lib/plusToX$": "react-input-material/components/Dummy",
-          "#1": "We need native class to get web components work in test context.",
-          "web-component-wrapper/Web$": "web-component-wrapper/WebNext"
+          "react-useanimations/lib/plusToX$": "react-input-material/components/Dummy"
         }
       }
     },
@@ -175,6 +173,16 @@
                 "__remove__": "@babel/plugin-transform-runtime"
               }
             }
+          }
+        }
+      }
+    },
+    "target:test": {
+      "module": {
+        "replacements": {
+          "normal": {
+            "#": "We need native class to get web components work in test context.",
+            "web-component-wrapper/Web$": "web-component-wrapper/WebNext"
           }
         }
       }
