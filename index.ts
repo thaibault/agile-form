@@ -68,6 +68,7 @@ import {
  * and conditional show if expression.
  * @property groupTemplateCache - Cache of group template contents.
 
+ * @property determinedTargetURL - Last determined target url.
  * @property initialData - Initialed form input values.
  * @property initialResponse - Initialisation server response.
  * @property latestResponse - Last seen server response.
@@ -103,6 +104,7 @@ import {
 export class AgileForm extends Web {
     static baseScopeNames:Array<string> = [
         'determineStateURL',
+        'determinedTargetURL',
         'getData',
         'initialResponse',
         'invalid',
@@ -262,6 +264,7 @@ export class AgileForm extends Web {
     }> = new Map()
     groupTemplateCache:Map<HTMLElement, string> = new Map()
 
+    determinedTargetURL:null|string = null
     initialData:PlainObject = {}
     initialResponse:any = null
     latestResponse:any = null
@@ -682,6 +685,7 @@ export class AgileForm extends Web {
                 try {
                     output = template(
                         this.determineStateURL,
+                        this.determinedTargetURL,
                         this.getData,
                         this.initialResponse,
                         this.invalid,
@@ -1084,6 +1088,7 @@ export class AgileForm extends Web {
                         try {
                             return Boolean(preCompiled(
                                 this.determineStateURL,
+                                this.determinedTargetURL,
                                 this.getData,
                                 this.initialResponse,
                                 this.invalid,
@@ -1174,6 +1179,7 @@ export class AgileForm extends Web {
                 try {
                     return (preCompiled as Function)(
                         this.determineStateURL,
+                        this.determinedTargetURL,
                         this.getData,
                         this.initialResponse,
                         this.invalid,
@@ -1229,6 +1235,7 @@ export class AgileForm extends Web {
                 try {
                     return Boolean((preCompiled as Function)(
                         this.determineStateURL,
+                        this.determinedTargetURL,
                         this.getData,
                         this.initialResponse,
                         this.invalid,
@@ -1302,6 +1309,7 @@ export class AgileForm extends Web {
                     const scope:Mapping<any> = {}
                     const context:Array<any> = [
                         this.determineStateURL,
+                        this.determinedTargetURL,
                         this.getData,
                         this.initialResponse,
                         this.invalid,
@@ -1375,6 +1383,7 @@ export class AgileForm extends Web {
                     try {
                         return (preCompiled as Function)(
                             this.determineStateURL,
+                            this.determinedTargetURL,
                             this.getData,
                             this.initialResponse,
                             this.invalid,
@@ -1426,6 +1435,7 @@ export class AgileForm extends Web {
                 try {
                     return (preCompiled as Function)(
                         this.determineStateURL,
+                        this.determinedTargetURL,
                         this.getData,
                         this.initialResponse,
                         this.invalid,
@@ -1993,6 +2003,7 @@ export class AgileForm extends Web {
             }
         ) as TargetConfiguration
         if (target?.url) {
+            this.determinedTargetURL = target.url
             if (target.options.body && typeof target.options.body !== 'string')
                 target.options.body = JSON.stringify(target.options.body)
             this.track({
@@ -2022,6 +2033,7 @@ export class AgileForm extends Web {
                     return
             // endregion
         } else {
+            this.determinedTargetURL = null
             await this.startBackgroundProcess(event)
             if (this.resolvedConfiguration.debug)
                 console.debug('Retrieved data:', Tools.represent(data))
@@ -2110,6 +2122,7 @@ export class AgileForm extends Web {
                     this.modelNames.map((name:string):any => this.models[name])
                 const values:Array<any> = [
                     this.determineStateURL,
+                    this.determinedTargetURL,
                     this.getData,
                     this.initialResponse,
                     this.invalid,

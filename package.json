@@ -73,6 +73,7 @@
     "@types/react-dom": "*",
     "@types/react-transition-group": "*",
     "@types/webpack-env": "*",
+    "@types/workbox-webpack-plugin": "*",
     "@typescript-eslint/eslint-plugin": "*",
     "@typescript-eslint/parser": "*",
     "@webcomponents/webcomponentsjs": "*",
