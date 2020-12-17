@@ -1901,6 +1901,7 @@ export class AgileForm extends Web {
     ):Promise<null|Response> {
         // region convert headers configuration to header object
         if (
+            window.Headers &&
             target.hasOwnProperty('options') &&
             target.options !== null &&
             target.options.hasOwnProperty('headers') &&
@@ -2081,6 +2082,7 @@ export class AgileForm extends Web {
             await this.resetAllHiddenNonPersistentInputs()
 
             const {data, invalidInputNames} = this.getData()
+
             if (invalidInputNames.length) {
                 // Trigger input components to present their validation state.
                 for (const name in this.inputs)
@@ -2512,10 +2514,9 @@ export class AgileForm extends Web {
      * @returns A boolean indicating if a fallback node was found to render.
      */
     updateReCaptchaFallbackToken():boolean {
-        this.reCaptchaPromise =
-            new Promise((resolve:(result:null|string) => void):void => {
-                this.reCaptchaPromiseResolver = resolve
-            })
+        // NOTE: IE 11 sometimes does not load reCAPTCHA properly.
+        if (window.grecaptcha && !window.grecaptcha.render && window.location)
+            location.reload()
 
         if (
             window.grecaptcha &&
@@ -2527,6 +2528,11 @@ export class AgileForm extends Web {
                 (this.resolvedConfiguration.target as TargetConfiguration).url
             )
         ) {
+            this.reCaptchaPromise =
+                new Promise((resolve:(result:null|string) => void):void => {
+                    this.reCaptchaPromiseResolver = resolve
+                })
+
             this.reCaptchaFallbackInput.removeAttribute('valid')
             this.reCaptchaFallbackInput.setAttribute('invalid', '')
 
@@ -2565,7 +2571,8 @@ export class AgileForm extends Web {
                 this.activate(this.reCaptchaFallbackInput)
             }
             return true
-        }
+        } else
+            this.reCaptchaPromise = Promise.resolve(null)
         return false
     }
     /**
