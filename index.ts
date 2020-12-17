@@ -2370,8 +2370,8 @@ export class AgileForm extends Web {
      * @param name - Model name to derive from.
      * @returns A boolean indicating the neediness.
      */
-    determinedStateValueIsUnneeded(name:string):boolean {
-        return (
+    determinedStateValueIsNeeded(name:string):boolean {
+        return !(
             this.inputs[name].initialValue &&
             this.inputs[name].initialValue === this.inputs[name].value ||
             this.inputs[name].initialValue !== undefined &&
@@ -2391,9 +2391,9 @@ export class AgileForm extends Web {
                 this.inputs[name].selection &&
                 (
                     Array.isArray(this.inputs[name].selection) &&
-                    this.inputs[name].selection.length > 2 ||
+                    this.inputs[name].selection.length > 1 ||
                     !Array.isArray(this.inputs[name].selection) &&
-                    Object.keys(this.inputs[name].selection).length > 2
+                    Object.keys(this.inputs[name].selection).length > 1
                 )
             )
         )
@@ -2423,20 +2423,21 @@ export class AgileForm extends Web {
                             url shouldn't be a problem because of the prior
                             condition.
                          */
-                        if (this.determinedStateValueIsUnneeded(name)) {
+                        if (this.determinedStateValueIsNeeded(name))
+                            parameter.model![name].value =
+                                this.inputs[name].value
+                        else {
                             delete parameter.model![name as keyof Model].value
                             if (Object.keys(
                                 parameter.model![name as keyof Model]
                             ).length === 0)
                                 delete parameter.model![name]
-                        } else
-                            parameter.model![name].value =
-                                this.inputs[name].value
+                        }
                 /*
                     NOTE: Initial values derived from existing state url
                     shouldn't be a problem because of the prior condition.
                  */
-                } else if (!this.determinedStateValueIsUnneeded(name))
+                } else if (this.determinedStateValueIsNeeded(name))
                     parameter.model![name] = {value: this.inputs[name].value}
         parameter = Tools.maskObject<Partial<Configuration>>(
             parameter, this.resolvedConfiguration.urlModelMask
