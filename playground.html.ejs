@@ -49,11 +49,16 @@
                 /* region fetch mock */
                 window.fetch = function(url, options) {
                     const headers = {}
-                    const givenHeaders = Array.from(options.headers.entries())
-                    for (index = 0; index < givenHeaders.length; index++)
-                        headers[givenHeaders[index][0]] =
-                            givenHeaders[index][1]
-                    options.headers = headers
+                    if (window.Headers) {
+                        const givenHeaders =
+                            Array.from(options.headers.entries())
+                        for (
+                            var index = 0; index < givenHeaders.length; index++
+                        )
+                            headers[givenHeaders[index][0]] =
+                                givenHeaders[index][1]
+                        options.headers = headers
+                    }
 
                     console.info(
                         'Send mock request to ' + url + ' with:', options
@@ -134,14 +139,14 @@
                         dependsOn: 'reCaptchaV3Challenge',
                         dynamicExtendExpressions: {
                             nullable: 'reCaptchaV3Challenge.value',
-                            value: '(eventName === \'change\' && event.target?.name === \'reCaptchaV3Challenge\' && reCaptchaV3Challenge.value) ? false : self.value'
+                            value: '(eventName === \'change\' && event.target && event.target.name === \'reCaptchaV3Challenge\' && reCaptchaV3Challenge.value) ? false : self.value'
                         }
                     },
                     reCaptchaV3Challenge: {
                         dependsOn: 'legalNotesChecked',
                         dynamicExtendExpressions: {
                             nullable: function(event, scope) { return scope.legalNotesChecked.value },
-                            value: '(eventName === \'change\' && event.target?.name === \'legalNotesChecked\' && legalNotesChecked.value) ? false : self.value'
+                            value: '(eventName === \'change\' && event.target && event.target.name === \'legalNotesChecked\' && legalNotesChecked.value) ? false : self.value'
                         }
                     }
                 }
