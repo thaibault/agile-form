@@ -311,6 +311,10 @@ export class AgileForm extends Web {
 
     readonly tools:Tools = new Tools()
     // region live cycle hooks
+    /**
+     * Defines dynamic getter and setter interface and resolves configuration
+     * object.
+     */
     constructor() {
         super()
         /*
