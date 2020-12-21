@@ -134,6 +134,7 @@
         "normal": {
           "#": "Mock unneeded optional dependencies away.",
           "ace-builds": "react-input-material/components/Dummy",
+          "jquery": "react-input-material/components/Dummy",
           "@tinymce/tinymce-react$": "react-input-material/components/Dummy",
           "react-ace": "react-input-material/components/Dummy",
           "react-useanimations$": "react-input-material/components/Dummy",
