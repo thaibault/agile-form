@@ -19,7 +19,13 @@
 // region imports
 import Tools from 'clientnode'
 import {
-    EvaluationResult, Mapping, PlainObject, RecursiveEvaluateable, ValueOf
+    EvaluationResult,
+    Mapping,
+    Offset,
+    PlainObject,
+    ProcedureFunction,
+    RecursiveEvaluateable,
+    ValueOf
 } from 'clientnode/type'
 import {object} from 'clientnode/property-types'
 import FetchType from 'node-fetch'
@@ -1694,9 +1700,10 @@ export class AgileForm extends Web {
      * @param domNode - Target node to calculate from.
      * @returns Calculated values.
      */
-    getOffset(domNode:AnnotatedDomNode):{left:number;top:number} {
+    getOffset(domNode:AnnotatedDomNode):Offset {
         const documentNode:HTMLElement = document.documentElement
-        const box = domNode.getBoundingClientRect()
+        const box:ReturnType<HTMLElement['getBoundingClientRect']> =
+            domNode.getBoundingClientRect()
         return {
             left: box.left + window.pageXOffset - documentNode.clientLeft,
             top: box.top + window.pageYOffset - documentNode.clientTop
@@ -1726,30 +1733,48 @@ export class AgileForm extends Web {
     /**
      * Scrolls to given element and focuses it.
      * @param targetDomNode - Dom node to scroll to.
+     * @param smooth - Indicates whether to animate scrolling.
      * @returns a Promise resolving when focusing has finished.
      */
-    scrollAndFocus(targetDomNode:AnnotatedDomNode):Promise<void> {
-        const offset = this.getOffset(targetDomNode)
-        const newScrollPosition = Math.max(
-            0, offset.top - this.resolvedConfiguration.offsetInPixel
-        )
-        // TODO: make this nice (without jquery)
-        const $window = require('jquery')('html, body')
-        // Workaround since jquery triggers animation callback twice.
-        let run:boolean = false
-        return new Promise((resolve:Function):void => $window.animate(
-            {scrollTop: newScrollPosition},
-            'slow',
-            ():void => {
-                if (run)
-                    return
-                run = true
-                $window.animate({scrollTop: newScrollPosition}, 0)
-                if (typeof targetDomNode.focus === 'function')
-                    targetDomNode.focus()
+    scrollAndFocus(
+        targetDomNode:AnnotatedDomNode, smooth:boolean = true
+    ):Promise<void> {
+        return new Promise((resolve:ProcedureFunction):void => {
+            const offset:Offset = this.getOffset(targetDomNode)
+            const newScrollPosition:number = Math.max(
+                0, offset.top - this.resolvedConfiguration.offsetInPixel
+            )
+
+            const onScroll:ProcedureFunction = ():void => {
+                if (
+                    window.pageYOffset.toFixed() ===
+                        newScrollPosition.toFixed()
+                ) {
+                    window.removeEventListener('scroll', onScroll)
+
+                    if (typeof targetDomNode.focus === 'function')
+                        targetDomNode.focus()
+
+                    resolve()
+                }
             }
-        ))
-        //---
+
+            window.addEventListener('scroll', onScroll)
+
+            onScroll()
+
+            if (Tools.maximalSupportedInternetExplorerVersion === 0 && smooth)
+                window.scrollTo(
+                    {
+                        behavior: 'smooth',
+                        top: newScrollPosition
+                    }
+                )
+            else {
+                window.scrollTo(0, newScrollPosition)
+                onScroll()
+            }
+        })
     }
     /**
      * Handle valid sent data and redirects to corresponding specified target

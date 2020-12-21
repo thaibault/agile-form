@@ -1826,13 +1826,6 @@
     jest-diff "^26.0.0"
     pretty-format "^26.0.0"
 
-"@types/jquery@*":
-  version "3.5.5"
-  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.5.5.tgz#2c63f47c9c8d96693d272f5453602afd8338c903"
-  integrity sha512-6RXU9Xzpc6vxNrS6FPPapN1SxSHgQ336WC6Jj/N8q30OiaBZ00l1GBgeP7usjVZPivSkGUfL1z/WW6TX989M+w==
-  dependencies:
-    "@types/sizzle" "*"
-
 "@types/jsdom@*":
   version "16.2.5"
   resolved "https://registry.yarnpkg.com/@types/jsdom/-/jsdom-16.2.5.tgz#74ebad438741d249ecb416c5486dcde4217eb66c"
@@ -1929,11 +1922,6 @@
   version "0.2.28"
   resolved "https://registry.yarnpkg.com/@types/relateurl/-/relateurl-0.2.28.tgz#6bda7db8653fa62643f5ee69e9f69c11a392e3a6"
   integrity sha1-a9p9uGU/piZD9e5p6facEaOS46Y=
-
-"@types/sizzle@*":
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/@types/sizzle/-/sizzle-2.3.2.tgz#a811b8c18e2babab7d542b3365887ae2e4d9de47"
-  integrity sha512-7EJYyKTL7tFR8+gDbB6Wwz/arpGa0Mywk1TJbNzKzHtzbwVmY4HR9WqS5VV7dsBUKQmPNr192jHr/VpBluj/hg==
 
 "@types/source-list-map@*":
   version "0.1.2"
@@ -3748,9 +3736,9 @@ cli-table3@^0.5.0:
     colors "^1.1.2"
 
 clientnode@*:
-  version "3.0.633"
-  resolved "https://registry.yarnpkg.com/clientnode/-/clientnode-3.0.633.tgz#dd2e7e15fc30cc97c62ef8d0493618ff449471ea"
-  integrity sha512-sUdyybLA+a+lWvph2YE86UaOCHECVc88NdGFntKidL6ViA2FxXFu4Fyz1bVYX1kkIFCl/usHW7bHzLm3JzrmGg==
+  version "3.0.634"
+  resolved "https://registry.yarnpkg.com/clientnode/-/clientnode-3.0.634.tgz#25a01f55b8329e7a8b100a202dc50758bcb11d82"
+  integrity sha512-wu6liw/CPel+WmtELApAHYg0+LzXsuCorCe7uh8zLTqmuXHgiK0WryP6uapUyOpAfkx9zEc3PnKHnAS54nFzAw==
 
 cliui@^4.0.0:
   version "4.1.0"
@@ -4658,12 +4646,12 @@ end-of-stream@^1.1.0:
     once "^1.4.0"
 
 enhanced-resolve@^5.3.1:
-  version "5.4.0"
-  resolved "https://registry.yarnpkg.com/enhanced-resolve/-/enhanced-resolve-5.4.0.tgz#a8bcf23b00affac9455cf71efd80844f4054f4dc"
-  integrity sha512-ZmqfWURB2lConOBM1JdCVfPyMRv5RdKWktLXO6123p97ovVm2CLBgw9t5MBj3jJWA6eHyOeIws9iJQoGFR4euQ==
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/enhanced-resolve/-/enhanced-resolve-5.4.1.tgz#c89b0c34f17f931902ef2913a125d4b825b49b6f"
+  integrity sha512-4GbyIMzYktTFoRSmkbgZ1LU+RXwf4AQ8Z+rSuuh1dC8plp0PPeaWvx6+G4hh4KnUJ48VoxKbNyA1QQQIUpXjYA==
   dependencies:
     graceful-fs "^4.2.4"
-    tapable "^2.0.0"
+    tapable "^2.2.0"
 
 enquirer@^2.3.5, enquirer@^2.3.6:
   version "2.3.6"
@@ -6687,11 +6675,6 @@ jest@*:
     "@jest/core" "^26.6.3"
     import-local "^3.0.2"
     jest-cli "^26.6.3"
-
-jquery@*:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.5.1.tgz#d7b4d08e1bfdb86ad2f1a3d039ea17304717abb5"
-  integrity sha512-XwIBPqcMn57FxfT+Go5pzySnm4KWkT1Tv7gjrpT1srtf8Weynl6R273VJ5GjkRb51IzMp5nbaPjJXMWeju2MKg==
 
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
@@ -8774,9 +8757,9 @@ react-dom@*:
     scheduler "^0.20.1"
 
 react-input-material@*:
-  version "0.0.122"
-  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.122.tgz#3e972b7ed2d629c8437a03c9ca480e7def870dd9"
-  integrity sha512-oUBAbGcmmM/j72P75rg5DWKALBx1gQ7/Tima1L3RsNo1asvrAubWLjRD6e0eAHnqkQqi8nHEgQAoUYd70sfrpQ==
+  version "0.0.124"
+  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.124.tgz#cccc8e3c3bf4a8fd8b96ecbc45d24419a4795903"
+  integrity sha512-T5zVBUbGsaLntv3dKqEuuuxitPUeCWCwhmnhurfMZxEUv7f3eJQBqs3+qL+dY9MLzLe9D7w014/85RNnasiXqA==
 
 react-is@^16.12.0, react-is@^16.8.1:
   version "16.13.1"
@@ -9897,7 +9880,7 @@ tapable@2.0.0:
   resolved "https://registry.yarnpkg.com/tapable/-/tapable-2.0.0.tgz#a49c3d6a8a2bb606e7db372b82904c970d537a08"
   integrity sha512-bjzn0C0RWoffnNdTzNi7rNDhs1Zlwk2tRXgk8EiHKAOX1Mag3d6T0Y5zNa7l9CJ+EoUne/0UHdwS8tMbkh9zDg==
 
-tapable@^2.0.0, tapable@^2.1.1:
+tapable@^2.1.1, tapable@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/tapable/-/tapable-2.2.0.tgz#5c373d281d9c672848213d0e037d1c4165ab426b"
   integrity sha512-FBk4IesMV1rBxX2tfiK8RAmogtWn53puLOQlvO8XuwlgxcYbP4mVPS9Ph4aeamSyyVjOl24aYWAuc8U5kCVwMw==
@@ -10379,14 +10362,14 @@ wbuf@^1.1.0, wbuf@^1.7.3:
     minimalistic-assert "^1.0.0"
 
 web-component-wrapper@*:
-  version "0.0.124"
-  resolved "https://registry.yarnpkg.com/web-component-wrapper/-/web-component-wrapper-0.0.124.tgz#089b9bae511ac321b3412504c0845b8f4d77159c"
-  integrity sha512-0Hd5fBvkuxJm3CHZBIoDplo0R6x/51KxhTEAYH09xZU7u8NI2J6nzJR1VZjT8sHi0m7sE+q12H2i3/BliDG2Ag==
+  version "0.0.125"
+  resolved "https://registry.yarnpkg.com/web-component-wrapper/-/web-component-wrapper-0.0.125.tgz#5ac8f82cec92fb6bace85463fab9c216e5df67e5"
+  integrity sha512-A8rDDllShzpfUGHA463wn8syNOO/UeRegtAxr+QBmF47UD8ylAo62wZjGdf2A23UqaTpKaEAUejkQwpLBL+bxA==
 
 web-input-material@*:
-  version "0.0.69"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.69.tgz#6ee7991062e4449da7f27a41c7e51dc4a5ae19ee"
-  integrity sha512-4poR10P/jOQwTNvie+P4IbJcnjHNFzOnlH331BgUHrdsr3JsDnf4uMsESXuOgjUun9qp1Qm3J4nbHATA5HfQGQ==
+  version "0.0.70"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.70.tgz#e1ea650466dec0f07d14b6fff25a805644e52a78"
+  integrity sha512-rDgiXw0IMbXqiKfkJl6j9QM75RU0WYv213ef/kZYOCnaQib2tKhC7OIZWH2uqEI2e4Lz5w4WjK9sUyrR4GAGzA==
   dependencies:
     prop-types "*"
     react "*"
