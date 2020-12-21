@@ -1,6 +1,6 @@
 {
   "name": "agile-form",
-  "version": "0.0.51",
+  "version": "0.0.52",
   "license": "CC-BY-3.0",
   "description": "Reusable form builder with support for (richt-)text, code, selections, numbers, dates and so on.",
   "homepage": "https://torben.website/agile-form",
