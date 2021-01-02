@@ -124,22 +124,20 @@
       }
     },
     "module": {
+      "aliases": {
+        "#": "Remove unneeded optional dependencies.",
+        "ace-builds$": false,
+        "jquery$": false,
+        "@tinymce/tinymce-react$": false,
+        "react-ace$": false,
+        "react-useanimations$": false,
+        "react-useanimations/lib/lock$": false,
+        "react-useanimations/lib/plusToX$": false
+      },
       "optimizer": {
         "babelMinify": {
           "#": "To provide a logging output we need to exclude this feature.",
           "__evaluate__": "self.debug ? {bundle: null, module: null} : {bundle: {transform: {removeConsole: false}}, module: {removeConsole: false}}"
-        }
-      },
-      "replacements": {
-        "normal": {
-          "#": "Mock unneeded optional dependencies away.",
-          "ace-builds": "react-input-material/components/Dummy",
-          "jquery": "react-input-material/components/Dummy",
-          "@tinymce/tinymce-react$": "react-input-material/components/Dummy",
-          "react-ace": "react-input-material/components/Dummy",
-          "react-useanimations$": "react-input-material/components/Dummy",
-          "react-useanimations/lib/lock$": "react-input-material/components/Dummy",
-          "react-useanimations/lib/plusToX$": "react-input-material/components/Dummy"
         }
       }
     },
