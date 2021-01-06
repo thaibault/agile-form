@@ -789,8 +789,7 @@ export class AgileForm extends Web {
 
         this.resolvedConfiguration.initializeTarget = Tools.extend(
             true,
-            {},
-            this.resolvedConfiguration.target,
+            Tools.copy(this.resolvedConfiguration.target),
             this.resolvedConfiguration.initializeTarget
         )
 
