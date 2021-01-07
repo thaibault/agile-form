@@ -255,14 +255,14 @@ export class AgileForm extends Web {
     }
 
     clearButtons:Array<AnnotatedDomNode> = []
-    inputs:{[key:string]:AnnotatedModelDomNode} = {}
+    inputs:Mapping<AnnotatedModelDomNode> = {}
     resetButtons:Array<AnnotatedDomNode> = []
     spinner:Array<AnnotatedDomNode> = []
     statusMessageBoxes:Array<AnnotatedDomNode> = []
     submitButtons:Array<AnnotatedDomNode> = []
     truncateButtons:Array<AnnotatedDomNode> = []
 
-    dependencyMapping:{[key:string]:Array<string>} = {}
+    dependencyMapping:Mapping<Array<string>> = {}
 
     groups:Map<AnnotatedDomNode, {
         childNames:Array<string>
@@ -789,8 +789,7 @@ export class AgileForm extends Web {
 
         this.resolvedConfiguration.initializeTarget = Tools.extend(
             true,
-            {},
-            this.resolvedConfiguration.target,
+            Tools.copy(this.resolvedConfiguration.target),
             this.resolvedConfiguration.initializeTarget
         )
 

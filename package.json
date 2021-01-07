@@ -94,6 +94,7 @@
     "prop-types": "*",
     "rimraf": "*",
     "style-loader": "*",
+    "web-component-wrapper": "*",
     "web-input-material": "*",
     "weboptimizer": "*",
     "webpack-dev-server": "*"
