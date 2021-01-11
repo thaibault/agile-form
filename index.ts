@@ -107,7 +107,7 @@ import {
  *
  * @property tools - Holds tools instance for saving instance specific locks.
  */
-export class AgileForm extends Web {
+export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     static baseScopeNames:Array<string> = [
         'determineStateURL',
         'determinedTargetURL',
