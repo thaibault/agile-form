@@ -221,18 +221,18 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         },
         targetData: null,
         urlModelMask: {
-          exclude: false,
-          include: {
-            model: false,
+            exclude: false,
+            include: {
+                model: false,
 
-            reCaptcha: {
-              secret: true,
-              skip: true
-            },
+                reCaptcha: {
+                    secret: true,
+                    skip: true
+                },
 
-            tag: true,
-            tags: true
-          }
+                tag: true,
+                tags: true
+            }
         },
         version: 1
     }
