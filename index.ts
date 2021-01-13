@@ -686,6 +686,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         this.self.evaluateDomNodeTemplate<AnnotatedDomNode>(
             domNode,
             scope,
+            this.groupTemplateCache,
             ((domNode:HTMLElement):boolean =>
                 /*
                     NOTE: Avoid updating nested nodes which are groups by their
@@ -693,8 +694,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 */
                 domNode.nodeName.toLowerCase() !==
                 this.resolvedConfiguration.selector.groups
-            ),
-            this.groupTemplateCache
+            )
         )
     }
     /**
