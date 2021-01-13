@@ -25,12 +25,15 @@ import {
     PlainObject,
     ProcedureFunction,
     RecursiveEvaluateable,
+    TemplateFunction,
     ValueOf
 } from 'clientnode/type'
 import {object} from 'clientnode/property-types'
 import FetchType from 'node-fetch'
 import Web from 'web-component-wrapper/Web'
-import {WebComponentAPI} from 'web-component-wrapper/type'
+import {
+    CompiledDomNodeTemplate, WebComponentAPI
+} from 'web-component-wrapper/type'
 
 import {
     Action,
@@ -268,7 +271,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         childNames:Array<string>
         showIf?:IndicatorFunction
     }> = new Map()
-    groupTemplateCache:Map<HTMLElement, string> = new Map()
+    groupTemplateCache:CompiledDomNodeTemplate = new Map()
 
     determinedTargetURL:null|string = null
     initialData:PlainObject = {}
@@ -620,7 +623,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 )
                 */
                 if (domNode.shown)
-                    this.updateGroupContent(domNode, name)
+                    this.updateGroupContent(domNode)
                 return
             }
             if (this.resolvedConfiguration.debug)
@@ -641,7 +644,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 domNode.style.opacity = '0'
                 domNode.style.display = 'block'
                 if (domNode.shown)
-                    this.updateGroupContent(domNode, name)
+                    this.updateGroupContent(domNode)
                 this.fade(domNode)
             } else
                 this.fade(domNode, 0)
@@ -650,96 +653,49 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Evaluate dynamic text content.
      * @param domNode - Dom node to render its content.
-     * @param name - Name describing this node.
      * @returns Nothing.
      */
-    updateGroupContent(
-        domNode:AnnotatedDomNode, name:string = 'unknown'
-    ):void {
-        const nodeName:string = domNode.nodeName.toLowerCase()
-        if (
-            ['a', '#text'].includes(nodeName) &&
-            !this.groupTemplateCache.has(domNode)
-        ) {
-            const content:null|string = nodeName === 'a' ?
-                domNode.getAttribute('href') :
-                domNode.textContent
-            // NOTE: First three conditions are only for performance.
-            if (
-                typeof content === 'string' &&
-                content.includes('${') &&
-                content.includes('}') &&
-                /\${.+}/.test(content)
+    updateGroupContent(domNode:AnnotatedDomNode):void {
+        const scope:Mapping<any> = {}
+        const keys:Array<string> = this.self.baseScopeNames.concat(
+            this.resolvedConfiguration.expressions.map(
+                (expression:Array<string>):string => expression[0]
+            ),
+            this.modelNames
+        )
+        const values:Array<any> = [
+            this.determineStateURL,
+            this.determinedTargetURL,
+            this.getData,
+            this.initialResponse,
+            this.invalid,
+            this.latestResponse,
+            this.pending,
+            this.response,
+            this.message,
+            this.onceSubmitted,
+            Tools,
+            this.valid,
+            ...this.evaluateExpressions(),
+            ...this.modelNames.map((name:string):any =>
+                this.models[name]
             )
-                this.groupTemplateCache.set(
-                    domNode, content.replace(/&nbsp;/g, ' ').trim()
-                )
-        }
-        if (this.groupTemplateCache.has(domNode)) {
-            const [scopeNames, template] = Tools.stringCompile(
-                `\`${this.groupTemplateCache.get(domNode)}\``,
-                this.self.baseScopeNames.concat(
-                    this.resolvedConfiguration.expressions.map(
-                        (expression:Array<string>):string => expression[0]
-                    ),
-                    this.modelNames
-                )
-            )
-            if (typeof template === 'string')
-                console.warn(
-                    'Error occured during compiling text content for "' +
-                    `${name}": ${template}`
-                )
-            else {
-                let output:null|string = null
-                try {
-                    output = template(
-                        this.determineStateURL,
-                        this.determinedTargetURL,
-                        this.getData,
-                        this.initialResponse,
-                        this.invalid,
-                        this.latestResponse,
-                        this.pending,
-                        this.response,
-                        this.message,
-                        this.onceSubmitted,
-                        Tools,
-                        this.valid,
-                        ...this.evaluateExpressions(),
-                        ...this.modelNames.map((name:string):any =>
-                            this.models[name]
-                        )
-                    )
-                } catch (error) {
-                    console.warn(
-                        'Error occured when running "' +
-                        `${this.groupTemplateCache.get(domNode)}": for "` +
-                        `${name}" with bound names "` +
-                        `${scopeNames.join('", "')}": "` +
-                        `${Tools.represent(error)}".`
-                    )
-                }
-                if (output)
-                    if (nodeName === 'a')
-                        domNode.setAttribute('href', output)
-                    else
-                        domNode.textContent = output
-             }
-        }
-        // Render content of each nested node.
-        let currentDomNode:ChildNode|null = domNode.firstChild
-        while (currentDomNode) {
-            // NOTE: Avoid updating nested nodes which are groups by their own.
-            if (
-                currentDomNode.nodeName.toLowerCase() !==
+        ]
+        for (let index = 0; index < keys.length; index += 1)
+            scope[keys[index]] = values[index]
+        Web.evaluateDomNodeTemplate<AnnotatedDomNode>(
+            domNode,
+            scope,
+            ((domNode:HTMLElement):boolean =>
+                /*
+                    NOTE: Avoid updating nested nodes which are groups by their
+                    own.
+                */
+                domNode.nodeName.toLowerCase() !==
                 this.resolvedConfiguration.selector.groups
-            )
-                this.updateGroupContent(
-                    currentDomNode as AnnotatedDomNode, name
-                )
-            currentDomNode = currentDomNode.nextSibling
-        }
+            ),
+            this.groupTemplateCache
+        )
     }
     /**
      * Updates current error message box state.
