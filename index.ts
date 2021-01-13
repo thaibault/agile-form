@@ -683,7 +683,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         ]
         for (let index = 0; index < keys.length; index += 1)
             scope[keys[index]] = values[index]
-        Web.evaluateDomNodeTemplate<AnnotatedDomNode>(
+        this.self.evaluateDomNodeTemplate<AnnotatedDomNode>(
             domNode,
             scope,
             ((domNode:HTMLElement):boolean =>
