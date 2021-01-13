@@ -31,6 +31,8 @@ describe('AgileForm', ():void => {
     test('custom element definition', ():void => {
         const form:AgileForm = document.createElement(name) as AgileForm
         document.body.appendChild(form)
+
+        expect(form).toBeDefined()
     })
     test('attribute configuration', ():void => {
         const form:AgileForm = document.createElement(name) as AgileForm
