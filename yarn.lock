@@ -3603,9 +3603,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000844, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001173:
-  version "1.0.30001176"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001176.tgz#e44bac506d4656bae4944a1417f41597bd307335"
-  integrity sha512-VWdkYmqdkDLRe0lvfJlZQ43rnjKqIGKHWhWWRbkqMsJIUaYDNf/K/sdZZcVO6YKQklubokdkJY+ujArsuJ5cag==
+  version "1.0.30001177"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001177.tgz#2c3b384933aafda03e29ccca7bb3d8c3389e1ece"
+  integrity sha512-6Ld7t3ifCL02jTj3MxPMM5wAYjbo4h/TAQGFTgv1inihP1tWnWp8mxxT4ut4JBEHLbpFXEXJJQ119JCJTBkYDw==
 
 capture-exit@^2.0.0:
   version "2.0.0"
@@ -4563,9 +4563,9 @@ ejs@*:
     jake "^10.6.1"
 
 electron-to-chromium@^1.3.47, electron-to-chromium@^1.3.634:
-  version "1.3.637"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.637.tgz#be46f77acc217cdecf633bbd25292f6a36cc689b"
-  integrity sha512-924WXYMYquYybc+7pNApGlhY2RWg3MY3he4BrZ5BUmM2n1MGBsrS+PZxrlo6UAsWuNl4NE66fqFdwsWkBUGgkA==
+  version "1.3.639"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.639.tgz#0a27e3018ae3acf438a14a1dd4e41db4b8ab764e"
+  integrity sha512-bwl6/U6xb3d3CNufQU9QeO1L32ueouFwW4bWANSwdXR7LVqyLzWjNbynoKNfuC38QFB5Qn7O0l2KLqBkcXnC3Q==
 
 emittery@^0.7.1:
   version "0.7.2"
@@ -4599,7 +4599,7 @@ end-of-stream@^1.1.0:
   dependencies:
     once "^1.4.0"
 
-enhanced-resolve@^5.6.0:
+enhanced-resolve@^5.7.0:
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/enhanced-resolve/-/enhanced-resolve-5.7.0.tgz#525c5d856680fbd5052de453ac83e32049958b5c"
   integrity sha512-6njwt/NsZFUKhM6j9U8hzVyD4E4r0x7NQzhTCbcWOJ0IQjNSAoalWmb0AE51Wn+fwan5qVESWi7t2ToBxs9vrw==
@@ -4682,6 +4682,11 @@ es-abstract@^1.18.0-next.1:
     object.assign "^4.1.1"
     string.prototype.trimend "^1.0.1"
     string.prototype.trimstart "^1.0.1"
+
+es-module-lexer@^0.3.26:
+  version "0.3.26"
+  resolved "https://registry.yarnpkg.com/es-module-lexer/-/es-module-lexer-0.3.26.tgz#7b507044e97d5b03b01d4392c74ffeb9c177a83b"
+  integrity sha512-Va0Q/xqtrss45hWzP8CZJwzGSZJjDM5/MJRE3IXXnUCcVLElR9BRaE9F62BopysASyc4nM3uwhSW7FFB9nlWAA==
 
 es-to-primitive@^1.2.1:
   version "1.2.1"
@@ -8732,9 +8737,9 @@ react-dom@*:
     scheduler "^0.20.1"
 
 react-input-material@*:
-  version "0.0.133"
-  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.133.tgz#1a44ea30f0a4f3d6f830827a4368c6b1c6b26dcf"
-  integrity sha512-J1HTTf9DTALVCUig+aJD8n6gITqVZGkqKgobugQcYiA33O0TKMCTQvfN8pmlLPtZQLVUC+BsvRtX/8vtNzU4Aw==
+  version "0.0.135"
+  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.135.tgz#9e35b22e0f2f72c9fcf31f91946cc876cc37ed5f"
+  integrity sha512-7/h2XPV5BjGTAc/619wdtMrkcxvgruEhEg3wTj8sCTWbUQQdk/5xC19YHx4Gv3x18z2dkpjay7cuLUceBOr6rw==
 
 react-is@^16.12.0, react-is@^16.8.1:
   version "16.13.1"
@@ -10317,14 +10322,14 @@ wbuf@^1.1.0, wbuf@^1.7.3:
     minimalistic-assert "^1.0.0"
 
 web-component-wrapper@*:
-  version "0.0.135"
-  resolved "https://registry.yarnpkg.com/web-component-wrapper/-/web-component-wrapper-0.0.135.tgz#190953503a8a6219e2d6517d4932667a7c17c96a"
-  integrity sha512-oqIJBm+siPMOpOBxFdOFKXN8M9nTNzytvltp/GBpv5LsK1khNFAF0hwG8zF1XFK9CvDs1lz2e7pQWc2/hPExAA==
+  version "0.0.138"
+  resolved "https://registry.yarnpkg.com/web-component-wrapper/-/web-component-wrapper-0.0.138.tgz#1d92dedfe85cc71480cd53cb33ab004222ac8062"
+  integrity sha512-X0p+q4vPWFfXzaGNqUPSBVZG1pTfeMExtPhGh8Fvq1VirPhipbY2Ox+LqsF5Sg3VdpwvbmNNC1k7howpQp99AA==
 
 web-input-material@*:
-  version "0.0.79"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.79.tgz#85e939990bf94d3ec40affbfc32b089b4965a821"
-  integrity sha512-qiVegkp5MjEG8SU5NSmIvtBQCUIsFg4R3xT4nrGhKkW1ETZ/ztReNDZaflHdC59Q/71d/xH0v1xJP27maA31TQ==
+  version "0.0.80"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.80.tgz#47eb6f453ef74d67aed35d3dfec60cec7e76f6fd"
+  integrity sha512-n9WyYWTgluW9t3PAblNDfcWbPiPI8fcwBZ+LdZZz1wEBwfaQja5YPjSNmdS98BZoId4NZfQv3LoOOSVUSB//Yw==
   dependencies:
     prop-types "*"
     react "*"
@@ -10479,9 +10484,9 @@ webpack-sources@^1.1.0:
     source-map "~0.6.1"
 
 webpack@*:
-  version "5.13.0"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.13.0.tgz#275351b043bd212562f4390e903619d07d5a2fcf"
-  integrity sha512-NPhMEtfhSVegp1FNPkCM1MPygDm0GHwpreG10dh//0Gr0epfB0br9nlgEfxSghxJqrQ7j9XzgO91CGGLWZiHeA==
+  version "5.14.0"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.14.0.tgz#cdfe9286d14ddc2bb348afabc1d910d166f3c47f"
+  integrity sha512-PFtfqXIKT6EG+k4L7d9whUPacN2XvxlUMc8NAQvN+sF9G8xPQqrCDGDiXbAdyGNz+/OP6ioxnUKybBBZ1kp/2A==
   dependencies:
     "@types/eslint-scope" "^3.7.0"
     "@types/estree" "^0.0.45"
@@ -10491,7 +10496,8 @@ webpack@*:
     acorn "^8.0.4"
     browserslist "^4.14.5"
     chrome-trace-event "^1.0.2"
-    enhanced-resolve "^5.6.0"
+    enhanced-resolve "^5.7.0"
+    es-module-lexer "^0.3.26"
     eslint-scope "^5.1.1"
     events "^3.2.0"
     glob-to-regexp "^0.4.1"
