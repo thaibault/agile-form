@@ -686,15 +686,17 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         this.self.evaluateDomNodeTemplate<AnnotatedDomNode>(
             domNode,
             scope,
-            this.groupTemplateCache,
-            ((domNode:HTMLElement):boolean =>
-                /*
-                    NOTE: Avoid updating nested nodes which are groups by their
-                    own.
-                */
-                domNode.nodeName.toLowerCase() !==
-                this.resolvedConfiguration.selector.groups
-            )
+            {
+                filter: (domNode:HTMLElement):boolean =>
+                    /*
+                        NOTE: Avoid updating nested nodes which are groups by
+                        their own.
+                    */
+                    domNode.nodeName.toLowerCase() !==
+                    this.resolvedConfiguration.selector.groups
+                ,
+                map: this.groupTemplateCache
+            }
         )
     }
     /**
