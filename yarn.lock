@@ -1864,17 +1864,17 @@
   integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
 
 "@types/node-fetch@*":
-  version "2.5.7"
-  resolved "https://registry.yarnpkg.com/@types/node-fetch/-/node-fetch-2.5.7.tgz#20a2afffa882ab04d44ca786449a276f9f6bbf3c"
-  integrity sha512-o2WVNf5UhWRkxlf6eq+jMZDu7kjgpgJfl4xVNlvryc95O/6F2ld8ztKX+qu+Rjyet93WAWm5LjeX9H5FGkODvw==
+  version "2.5.8"
+  resolved "https://registry.yarnpkg.com/@types/node-fetch/-/node-fetch-2.5.8.tgz#e199c835d234c7eb0846f6618012e558544ee2fb"
+  integrity sha512-fbjI6ja0N5ZA8TV53RUqzsKNkl9fv8Oj3T7zxW7FGv1GSH7gwJaNF8dzCjrqKaxKeUpTz4yT1DaJFq/omNpGfw==
   dependencies:
     "@types/node" "*"
     form-data "^3.0.0"
 
 "@types/node@*":
-  version "14.14.20"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.20.tgz#f7974863edd21d1f8a494a73e8e2b3658615c340"
-  integrity sha512-Y93R97Ouif9JEOWPIUyU+eyIdyRqQR0I8Ez1dzku4hDx34NWh4HbtIc3WNzwB1Y9ULvNGeu5B8h8bVL5cAk4/A==
+  version "14.14.21"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.21.tgz#d934aacc22424fe9622ebf6857370c052eae464e"
+  integrity sha512-cHYfKsnwllYhjOzuC5q1VpguABBeecUp24yFluHpn/BQaVxB1CuQ1FSRZCzrPxrkIfWISXV2LbeoBthLWg0+0A==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -4563,9 +4563,9 @@ ejs@*:
     jake "^10.6.1"
 
 electron-to-chromium@^1.3.47, electron-to-chromium@^1.3.634:
-  version "1.3.639"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.639.tgz#0a27e3018ae3acf438a14a1dd4e41db4b8ab764e"
-  integrity sha512-bwl6/U6xb3d3CNufQU9QeO1L32ueouFwW4bWANSwdXR7LVqyLzWjNbynoKNfuC38QFB5Qn7O0l2KLqBkcXnC3Q==
+  version "1.3.640"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.640.tgz#94e68c0ae79181a1d6fd1ed9a42b9790d51a1bca"
+  integrity sha512-cU6wQdXYzuSPzLdszsa4whStYfmU7CVNnG6c5z6/z9YlCOQ2Xh/uKB1gTxlIRr0ubgSg1/dZuSbUAoeESeQ3sQ==
 
 emittery@^0.7.1:
   version "0.7.2"
@@ -4735,9 +4735,9 @@ eslint-config-google@*:
   integrity sha512-WsbX4WbjuMvTdeVL6+J3rK1RGhCTqjsFjX7UMSMgZiyxxaNLkoJENbrGExzERFeoTpGw3F3FypTiWAP9ZXzkEw==
 
 eslint-plugin-jsdoc@*:
-  version "31.0.4"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-31.0.4.tgz#a0daf907933e4a3f312d2f27987a75ff016545e4"
-  integrity sha512-jZDKbvIYNqZgS+MB+8EmO/dm5aRbAdXqbmV++uyJDjxUUevWmtbnbzJ6aSFBYteUeyL72WD34eAPOe6vuiiyCg==
+  version "31.0.5"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-31.0.5.tgz#f190d1b81989e9febb01356618b721cdc23675c4"
+  integrity sha512-TiBVItHnBAtSAY4YfYq0PBIfcCqmInYpK7ziCgCQgBUdRT30JtIqZ6TLrH5kF237fpfSdFUFYCVkdlc+MZPd0g==
   dependencies:
     comment-parser "1.0.1"
     debug "^4.3.1"
@@ -8737,9 +8737,9 @@ react-dom@*:
     scheduler "^0.20.1"
 
 react-input-material@*:
-  version "0.0.137"
-  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.137.tgz#013b8e0fba8dc4af03a63628a570b72e0a8a8e7d"
-  integrity sha512-qM/lKUW3pcs2yFB3NjRx6D8COtk3ikAhB7b+vXxBSS72MUhCqa4oeN6G74lAlaEb1ouS6P2ApH1vCROhaGqDHQ==
+  version "0.0.138"
+  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.138.tgz#d1835ed12cffc21da35cd9fc38e8d82f96bdfa6b"
+  integrity sha512-kUF5tYg9ADO8T7cMaBakK/rhlqyLNSPQ9GsniHXefYUnykfxJmU9aU4o2tbRR2QknAHKC9J0Ct0g2k5lePVlzQ==
 
 react-is@^16.12.0, react-is@^16.8.1:
   version "16.13.1"
@@ -10322,14 +10322,14 @@ wbuf@^1.1.0, wbuf@^1.7.3:
     minimalistic-assert "^1.0.0"
 
 web-component-wrapper@*:
-  version "0.0.141"
-  resolved "https://registry.yarnpkg.com/web-component-wrapper/-/web-component-wrapper-0.0.141.tgz#25a6d5d442a0ce8df159ea7a832e04bbe0448510"
-  integrity sha512-sguu5U408rRRXi41s8B6TBnJLiGSuoC6BkvGqTiK8V3BgBR7T7+Y7rivTNpR3a+HHtO9YdVO6RA61ueoWWrVMQ==
+  version "0.0.142"
+  resolved "https://registry.yarnpkg.com/web-component-wrapper/-/web-component-wrapper-0.0.142.tgz#05a32f8e95d1806ba3efbdc97b51a94109d87c99"
+  integrity sha512-IA5bBhCN/KP2DNFTuOpZuW0pVJDgd+BsB1KJIQnWgSWHnC3dxopaG+PpKcRbvz4F37CluI5NXMNE9yZtK12gcQ==
 
 web-input-material@*:
-  version "0.0.81"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.81.tgz#293e820be038c98696702947de7186947801ff34"
-  integrity sha512-w7gzWZPfAGCgCtKFWaTKpPN0IuPWExDjP/JViixrQ0WBC5f0inhsOux0RZfSBUUJTyFHuR2LmrZhzn2mabknjQ==
+  version "0.0.82"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.82.tgz#29f2b808c8c964f3e9b4dd5aabbcfb82453c409e"
+  integrity sha512-0e4y+OJpckhxLy+8gjr7mRu9LUtldGNPsxnH4mJtn1pfety0B6hIjeDY5YrsbOjQxXIb2mEv4jeS2VrYrdKnzw==
   dependencies:
     prop-types "*"
     react "*"
