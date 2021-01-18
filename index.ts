@@ -689,11 +689,12 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             {
                 filter: (domNode:HTMLElement):boolean =>
                     /*
-                        NOTE: Avoid updating nested nodes which are groups by
+                        NOTE: Avoid updating nested nodes which are grouped by
                         their own.
                     */
+                    // TODO this couldn't work!
                     domNode.nodeName.toLowerCase() !==
-                    this.resolvedConfiguration.selector.groups
+                        this.resolvedConfiguration.selector.groups
                 ,
                 map: this.groupTemplateCache
             }
