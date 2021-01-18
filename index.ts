@@ -31,9 +31,7 @@ import {
 import {object} from 'clientnode/property-types'
 import FetchType from 'node-fetch'
 import Web from 'web-component-wrapper/Web'
-import {
-    CompiledDomNodeTemplate, WebComponentAPI
-} from 'web-component-wrapper/type'
+import {WebComponentAPI} from 'web-component-wrapper/type'
 
 import {
     Action,
@@ -75,7 +73,6 @@ import {
 
  * @property groups - Mapping from group dom nodes to containing field names
  * and conditional show if expression.
- * @property groupTemplateCache - Cache of group template contents.
 
  * @property determinedTargetURL - Last determined target url.
  * @property initialData - Initialed form input values.
@@ -271,7 +268,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         childNames:Array<string>
         showIf?:IndicatorFunction
     }> = new Map()
-    groupTemplateCache:CompiledDomNodeTemplate = new Map()
 
     determinedTargetURL:null|string = null
     initialData:PlainObject = {}
@@ -683,19 +679,18 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         ]
         for (let index = 0; index < keys.length; index += 1)
             scope[keys[index]] = values[index]
-        this.self.evaluateDomNodeTemplate<AnnotatedDomNode>(
+        this.evaluateDomNodeTemplate<AnnotatedDomNode>(
             domNode,
             scope,
             {
                 filter: (domNode:HTMLElement):boolean =>
                     /*
-                        NOTE: Avoid updating nested nodes which are groups by
+                        NOTE: Avoid updating nested nodes which are grouped by
                         their own.
                     */
+                    // TODO this couldn't work!
                     domNode.nodeName.toLowerCase() !==
-                    this.resolvedConfiguration.selector.groups
-                ,
-                map: this.groupTemplateCache
+                        this.resolvedConfiguration.selector.groups
             }
         )
     }
