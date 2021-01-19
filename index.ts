@@ -253,6 +253,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             name: 'required'
         }
     }
+    static _name:string = 'AgileForm'
 
     clearButtons:Array<AnnotatedDomNode> = []
     inputs:Mapping<AnnotatedModelDomNode> = {}
@@ -2627,8 +2628,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 // endregion
 export const api:WebComponentAPI<typeof AgileForm> = {
     component: AgileForm,
-    register: (tagName:string = 'agile-form'):void =>
-        customElements.define(tagName, AgileForm)
+    register: (
+        tagName:string = Tools.stringCamelCaseToDelimited(AgileForm._name)
+    ):void => customElements.define(tagName, AgileForm)
 }
 export default api
 // region vim modline
