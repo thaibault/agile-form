@@ -1624,13 +1624,24 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         typeof value === 'object' &&
                         this.models[name].hasOwnProperty('dataMapping')
                     ) {
+                        const scope:Mapping<any> = {
+                            ...(
+                                value !== null && typeof value === 'object' ?
+                                    value :
+                                    {}
+                            ),
+                            data,
+                            inputs: this.inputs,
+                            name,
+                            item: value
+                        }
                         if (
                             typeof this.models[name].dataMapping === 'string'
                         ) {
                             const evaluated:EvaluationResult =
                                 Tools.stringEvaluate(
                                     this.models[name].dataMapping as string,
-                                    {item: value}
+                                    scope
                                 )
                             if (evaluated.error)
                                 throw new Error(evaluated.error)
@@ -1641,11 +1652,19 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             ))
                                 if ((
                                     this.models[name].dataMapping as Mapping
-                                ).hasOwnProperty(subName))
-                                    data[subName] = value[(
-                                        this.models[name].dataMapping as
-                                            Mapping
-                                    )[subName]]
+                                ).hasOwnProperty(subName)) {
+                                    const evaluated:EvaluationResult =
+                                        Tools.stringEvaluate(
+                                            value[(
+                                                this.models[name]
+                                                    .dataMapping as Mapping
+                                            )[subName]],
+                                            scope
+                                        )
+                                    if (evaluated.error)
+                                        throw new Error(evaluated.error)
+                                    data[subName] = evaluated.result
+                                }
                     } else
                         data[name] = value
             }
