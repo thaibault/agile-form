@@ -684,6 +684,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             domNode,
             scope,
             {
+                applyBindings: false,
                 filter: (domNode:HTMLElement):boolean =>
                     /*
                         NOTE: Avoid updating nested nodes which are grouped by
@@ -2200,7 +2201,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     (
                         this.models[name].hasOwnProperty('changedEventName') ?
                             this.models[name].changedEventName as string :
-                            'onChange'
+                            'change'
                     ),
                     async (event:Event):Promise<void> => {
                         await this.digest()
