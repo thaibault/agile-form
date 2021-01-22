@@ -2198,8 +2198,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             if (this.inputs.hasOwnProperty(name))
                 this.inputs[name].addEventListener(
                     (
-                        this.models[name].hasOwnProperty('eventChangedName') ?
-                            this.models[name].eventChangedName as string :
+                        this.models[name].hasOwnProperty('changedEventName') ?
+                            this.models[name].changedEventName as string :
                             'onChange'
                     ),
                     async (event:Event):Promise<void> => {
