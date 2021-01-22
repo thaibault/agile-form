@@ -695,9 +695,11 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         NOTE: Avoid updating nested nodes which are grouped by
                         their own.
                     */
-                    !domNode.matches ||
-                    domNode.matches(
-                        this.resolvedConfiguration.selector.groups
+                    !(
+                        domNode.matches &&
+                        domNode.matches(
+                            this.resolvedConfiguration.selector.groups
+                        )
                     )
             }
         )
