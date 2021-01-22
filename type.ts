@@ -50,7 +50,7 @@ export type Model<Type = any> =
         domNode?:AnnotatedDomNode
         dynamicExtend?:Mapping<(event:Event) => any>
         dynamicExtendExpressions?:Mapping<((event:Event, scope:any) => any)|string>
-        eventChangedName?:string
+        changedEventName?:string
         showIf?:IndicatorFunction
         showIfExpression?:string
         shown?:boolean

@@ -3608,9 +3608,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000844, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001173:
-  version "1.0.30001178"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001178.tgz#3ad813b2b2c7d585b0be0a2440e1e233c6eabdbc"
-  integrity sha512-VtdZLC0vsXykKni8Uztx45xynytOi71Ufx9T8kHptSw9AL4dpqailUJJHavttuzUe1KYuBYtChiWv+BAb7mPmQ==
+  version "1.0.30001179"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001179.tgz#b0803883b4471a6c62066fb1752756f8afc699c8"
+  integrity sha512-blMmO0QQujuUWZKyVrD1msR4WNDAqb/UPO1Sw2WWsQ7deoM5bJiicKnWJ1Y0NS/aGINSnKPIWBMw5luX+NDUCA==
 
 capture-exit@^2.0.0:
   version "2.0.0"
@@ -3733,9 +3733,9 @@ cli-table3@^0.5.0:
     colors "^1.1.2"
 
 clientnode@*:
-  version "3.0.654"
-  resolved "https://registry.yarnpkg.com/clientnode/-/clientnode-3.0.654.tgz#0b256e3945907e84ef6b5feae1148af1bff0b1c1"
-  integrity sha512-kcs6Y5rHonQLEbOlTHfNPZGCYSHh01VV9+WI2ZyQRTewalj1eoByKblO1G208WkyLV6oFYEQqvBC5c1dqW3V5g==
+  version "3.0.659"
+  resolved "https://registry.yarnpkg.com/clientnode/-/clientnode-3.0.659.tgz#7e85e288969d1a2ed9504c3ec59cfb94e7999bfc"
+  integrity sha512-IKFDbV/Ajrt6JGVj+TDguCBWWnEDuFwSu7DiaR3JyXMH3mnNIhDXgNmSj9JkI3tUMK8YMwdGrmpN1xV7Xcfaww==
 
 cliui@^4.0.0:
   version "4.1.0"
@@ -5664,9 +5664,9 @@ html-minifier@*:
     uglify-js "^3.5.1"
 
 html-webpack-plugin@^5.0.0-alpha.16:
-  version "5.0.0-beta.5"
-  resolved "https://registry.yarnpkg.com/html-webpack-plugin/-/html-webpack-plugin-5.0.0-beta.5.tgz#a5f03394996c2cbb5b587f424556ff938f06decb"
-  integrity sha512-5zxdMIutk7qnqYxZYf8B+0IQVqa/AvYX9dEXKq90Uw0/svWergof10vBPsckCkXhUdo9nst9FE/Uf+WIUyVUsw==
+  version "5.0.0-beta.6"
+  resolved "https://registry.yarnpkg.com/html-webpack-plugin/-/html-webpack-plugin-5.0.0-beta.6.tgz#aab868a3c1607828699ebbbb44cde9d6f3615cb3"
+  integrity sha512-wjdhOnJlo5c8uN3OahRm2eaLKL8gEQ4ZNOkwQc8BStyudpFLTsg28m6wbf00keXiRPesk2Pad9CYeKpxbffApg==
   dependencies:
     "@types/html-minifier-terser" "^5.0.0"
     html-minifier-terser "^5.0.1"
@@ -8116,15 +8116,15 @@ postcss-lab-function@^2.0.1:
     postcss-values-parser "^2.0.0"
 
 postcss-loader@*:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/postcss-loader/-/postcss-loader-4.1.0.tgz#4647a6c8dad3cb6b253fbfaa21d62201086f6e39"
-  integrity sha512-vbCkP70F3Q9PIk6d47aBwjqAMI4LfkXCoyxj+7NPNuVIwfTGdzv2KVQes59/RuxMniIgsYQCFSY42P3+ykJfaw==
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/postcss-loader/-/postcss-loader-4.2.0.tgz#f6993ea3e0f46600fb3ee49bbd010448123a7db4"
+  integrity sha512-mqgScxHqbiz1yxbnNcPdKYo/6aVt+XExURmEbQlviFVWogDbM4AJ0A/B+ZBpYsJrTRxKw7HyRazg9x0Q9SWwLA==
   dependencies:
     cosmiconfig "^7.0.0"
     klona "^2.0.4"
     loader-utils "^2.0.0"
     schema-utils "^3.0.0"
-    semver "^7.3.2"
+    semver "^7.3.4"
 
 postcss-logical@^3.0.0:
   version "3.0.0"
@@ -8753,9 +8753,9 @@ react-dom@*:
     scheduler "^0.20.1"
 
 react-input-material@*:
-  version "0.0.157"
-  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.157.tgz#8349bef9495ddbb368a959d901d108da1da35ce7"
-  integrity sha512-XuZfIkZ0JrQFG11SRVurCCJMeavfR0MZovSFS3kjLqFLzAzFwLF1f6K9tClksky0j5vNRjVFGqufYW9Ld753yQ==
+  version "0.0.160"
+  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.160.tgz#763d2f4160576c145fbbd9a501522b1b33f4edb6"
+  integrity sha512-+qPKqeRzBuOYWOJa8+r90OpxSwzUB1DSrmEAz4E+J8bQbhjMORW28ugZt4nSHaacjtoCVVs5xMqMnYT/UN4bVw==
 
 react-is@^16.12.0, react-is@^16.8.1:
   version "16.13.1"
@@ -10345,14 +10345,14 @@ wbuf@^1.1.0, wbuf@^1.7.3:
     minimalistic-assert "^1.0.0"
 
 web-component-wrapper@*:
-  version "0.0.165"
-  resolved "https://registry.yarnpkg.com/web-component-wrapper/-/web-component-wrapper-0.0.165.tgz#e7cfb0bc7e887fe1e7ffee5f68883c4c71edf917"
-  integrity sha512-k+/ovulJX9MgjXf4jttAkv34cVMq5Wk6HSA+9I6be5qCXqEzsErME6N8pUToXSMxN3wd2SRh6+uiJMseU6gSpQ==
+  version "0.0.170"
+  resolved "https://registry.yarnpkg.com/web-component-wrapper/-/web-component-wrapper-0.0.170.tgz#854dee8ca74fdcf6c3e6da6a3e5b01106cd849d5"
+  integrity sha512-dSamnbVY+KjLbxSLYSZWPnFmFCIfj7sNYRZCwJIV5c9G0BB/PwnwHWrF4yKeIRhVyTR/eqnK/8wJTOPgC6fSAg==
 
 web-input-material@*:
-  version "0.0.97"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.97.tgz#381e4dbd8ee2a063d50d796d7ac73c9580f976f2"
-  integrity sha512-kGG1+BsbjLXGkQ1L5egGEvN+DvTm+dbnFnAx2v631bwxKWX1C/3RDft7GzJ1S7hBNvtbhn/npbwc0n0incn5vg==
+  version "0.0.100"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.100.tgz#26838d80bd86435d592b41756b1c3f85610a3d88"
+  integrity sha512-f9WLz0XidOfvB8r6+URg4Yg/CaciswBKTIo9jy395Gzr9ZkxnmCaChLozMhUWqXr3XtUmabjeSlnf9TBClOGuw==
   dependencies:
     prop-types "*"
     react "*"
@@ -10372,9 +10372,9 @@ webidl-conversions@^6.1.0:
   integrity sha512-qBIvFLGiBpLjfwmYAaHPXsn+ho5xZnGvyGvsarywGNc8VyQJUMHJ8OBKGGrPER0okBeMDaan4mNBlgBROxuI8w==
 
 weboptimizer@*:
-  version "2.0.883"
-  resolved "https://registry.yarnpkg.com/weboptimizer/-/weboptimizer-2.0.883.tgz#3e9d8365293001e2c3755cc38db52d0664857a84"
-  integrity sha512-IJRBTRsf109BXvKmOEAhc2AnWogcwMg5zlhZ05WJwsK0Pz15MqGBcbBvQsWei1W1kQgP/1ixoq9V8WWyvXEN1g==
+  version "2.0.885"
+  resolved "https://registry.yarnpkg.com/weboptimizer/-/weboptimizer-2.0.885.tgz#f27b0d97a6768eaf567fabdcfe78692eaf31477a"
+  integrity sha512-aixyTiAGJnKPPb+BrdY3Kr8Z6zmcYYLvOvuMVOJPa+0eN0bSnuRx7HwaXTaPdGuRRmTdwqhI0r59a2zz47sZrQ==
   dependencies:
     "@babel/core" "*"
     "@babel/plugin-proposal-class-properties" "*"
