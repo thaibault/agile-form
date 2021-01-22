@@ -1577,11 +1577,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         this.models[name].hasOwnProperty('dataMapping')
                     ) {
                         const scope:Mapping<any> = {
-                            ...(
-                                value !== null && typeof value === 'object' ?
-                                    value :
-                                    {}
-                            ),
+                            ...value,
                             data,
                             inputs: this.inputs,
                             name,
@@ -1607,10 +1603,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                                 ).hasOwnProperty(subName)) {
                                     const evaluated:EvaluationResult =
                                         Tools.stringEvaluate(
-                                            value[(
+                                            (
                                                 this.models[name]
                                                     .dataMapping as Mapping
-                                            )[subName]],
+                                            )[subName],
                                             scope
                                         )
                                     if (evaluated.error)
