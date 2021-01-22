@@ -370,9 +370,13 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Triggered when content projected and nested dom nodes are ready to be
      * traversed. Selects all needed dom nodes.
+     * @param reason - Description why rendering is necessary.
      * @returns A promise resolving to nothing.
      */
-    async render():Promise<void> {
+    async render(reason:string = 'unknown'):Promise<void> {
+        if (!this.dispatchEvent(new CustomEvent('render', {detail: {reason}})))
+            return
+
         /*
             NOTE: We need a digest loop to allow the components to extend given
             model object with their defaults.
@@ -430,7 +434,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         */
         this.updateMessageBox()
 
-        await this.stopBackgroundProcess(new Event('render'))
+        await this.stopBackgroundProcess(
+            new CustomEvent('rendered', {detail: {reason}})
+        )
     }
     // endregion
     // region handle visibility states
@@ -552,8 +558,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         const oldState:boolean|undefined = model.shown
         this.inputs[name].shown =
         model.shown =
-            !model.showIf ||
-            model.showIf!()
+            !model.showIf || model.showIf!(false)
         if (model.shown !== oldState) {
             if (this.resolvedConfiguration.debug)
                 if (Boolean(oldState) === oldState)
@@ -690,9 +695,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         NOTE: Avoid updating nested nodes which are grouped by
                         their own.
                     */
-                    // TODO this couldn't work!
-                    domNode.nodeName.toLowerCase() !==
+                    !domNode.matches ||
+                    domNode.matches(
                         this.resolvedConfiguration.selector.groups
+                    )
             }
         )
     }
@@ -749,7 +755,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         )
 
         if (this.resolvedConfiguration.debug)
-            console.debug('Got configuration:', this.resolvedConfiguration)
+            console.debug(
+                'Got configuration:',
+                Tools.represent(this.resolvedConfiguration)
+            )
     }
     /**
      * Extends current configuration object by given url parameter.
@@ -815,7 +824,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 `${Object.keys(missingInputs).join('", "')}".`
             )
         this.createDependencyMapping()
-        this.addEventListener()
+        this.addInputEventListener()
         await this.tools.releaseLock(lockName)
     }
     /**
@@ -1136,8 +1145,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     `Failed to compile "${typeName}" "${name}": ${preCompiled}`
                 )
             this.models[name][type as 'transformer'] = (value:any):any => {
-                if ([null, undefined].includes(value))
-                    return value
                 try {
                     return (preCompiled as Function)(
                         this.determineStateURL,
@@ -2136,23 +2143,26 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * dependent field change cascade.
      * @returns Nothing.
      */
-    addEventListener():void {
+    addInputEventListener():void {
         for (const name in this.inputs)
-            if (this.inputs.hasOwnProperty(name))
+            if (
+                this.inputs.hasOwnProperty(name) &&
+                this.dependencyMapping[name].length
+            )
                 this.inputs[name].addEventListener(
                     (
                         this.models[name].hasOwnProperty('changedEventName') ?
                             this.models[name].changedEventName as string :
                             'change'
                     ),
-                    async (event:Event):Promise<void> => {
+                    Tools.debounce(async (event:Event):Promise<void> => {
                         await this.digest()
                         const tools:Tools = new Tools()
                         await tools.acquireLock('digest')
                         await this.updateInputDependencies(name, event)
                         this.updateAllGroups()
                         await tools.releaseLock('digest')
-                    }
+                    })
                 )
     }
     /**
@@ -2397,7 +2407,13 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     shouldn't be a problem because of the prior condition.
                  */
                 } else if (this.determinedStateValueIsNeeded(name))
-                    parameter.model![name] = {value: this.inputs[name].value}
+                    parameter.model![name] = {
+                        value: this.models[name].serializer ?
+                            this.models[name].serializer!(
+                                this.inputs[name].value
+                            ) :
+                            this.inputs[name].value
+                    }
         parameter = Tools.maskObject<Partial<Configuration>>(
             parameter, this.resolvedConfiguration.urlModelMask
         )

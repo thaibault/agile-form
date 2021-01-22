@@ -42,7 +42,7 @@ declare global {
         dataLayer:Array<any>
     }
 }
-export type IndicatorFunction = () => boolean
+export type IndicatorFunction = (defaultValue?:boolean) => boolean
 export type Model<Type = any> =
     Omit<RecursivePartial<BaseModel<Type>>, 'value'> &
     {
