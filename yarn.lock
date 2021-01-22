@@ -4572,9 +4572,9 @@ ejs@*:
     jake "^10.6.1"
 
 electron-to-chromium@^1.3.47, electron-to-chromium@^1.3.634:
-  version "1.3.642"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.642.tgz#8b884f50296c2ae2a9997f024d0e3e57facc2b94"
-  integrity sha512-cev+jOrz/Zm1i+Yh334Hed6lQVOkkemk2wRozfMF4MtTR7pxf3r3L5Rbd7uX1zMcEqVJ7alJBnJL7+JffkC6FQ==
+  version "1.3.643"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.643.tgz#fc196e17d01f4d874ef2307b009c0cd993ebe1c7"
+  integrity sha512-TGomM4gj8adt/uqRgPbu9F0yhUVAR1deww5X0fvbQgpGr9suSMjLgc4IwQ9YKGkp1t03cDbZum20OfAkiTYjAg==
 
 emittery@^0.7.1:
   version "0.7.2"
@@ -8748,9 +8748,9 @@ react-dom@*:
     scheduler "^0.20.1"
 
 react-input-material@*:
-  version "0.0.161"
-  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.161.tgz#d9be467d83418b76117ccf94b586c71ca7f55d0a"
-  integrity sha512-AiDFfjn2lVpziwtwZpBwyM5YHlRHV2mGMWt/I/5i2EE03ivq0sjJzpvMQCRZvqKQoH9xZJJGQWRe2w5fqvMBpg==
+  version "0.0.162"
+  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.162.tgz#e0f5e21c014e7f3f273d4303b193f30d192e376b"
+  integrity sha512-oJM7TsxCS5ArTd16GX0FBa9xzEeF6mxq3WroJW76UPiphDgQEaNO/ORhQ2L4aDxQBvfE1/OxyvOfEG97DeiVFQ==
 
 react-is@^16.12.0, react-is@^16.8.1:
   version "16.13.1"
@@ -10340,14 +10340,14 @@ wbuf@^1.1.0, wbuf@^1.7.3:
     minimalistic-assert "^1.0.0"
 
 web-component-wrapper@*:
-  version "0.0.171"
-  resolved "https://registry.yarnpkg.com/web-component-wrapper/-/web-component-wrapper-0.0.171.tgz#961ec844be483adbb366334ee76aefa9a2b090ee"
-  integrity sha512-kTxLRd5LowLUBOaz1ieqzsHO35wlgvu18gXti4xPyBEqu1Bd8Wf5a4hwdrdsGE9eZcx6+7Kb5IF6G+TvP9AtOA==
+  version "0.0.172"
+  resolved "https://registry.yarnpkg.com/web-component-wrapper/-/web-component-wrapper-0.0.172.tgz#6f0a36d7f3d2cc2e069bebb1b9c94dd75f0107a3"
+  integrity sha512-cPEWWK/eNlBVmTULis2aD7Z+XI3Vw9RtesLbv74e0eiXnUVNof3xciDJ1il0qGR70+aB0uxeCgYK2pYUOfZI6A==
 
 web-input-material@*:
-  version "0.0.101"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.101.tgz#2a864e8e4ac2fb50ed16daf7860b56dd9e25c5c9"
-  integrity sha512-7HNb4fVzL4wVK7uxYu+GdSqtiGNY92m3EBtOaUBsFDMv/iD2w/kvNJRrfkGAeV1hQtr+rizacCIYKyqws5jDHQ==
+  version "0.0.102"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.102.tgz#b4d5742d51f2ca4fd44d8acb638c389b02afa169"
+  integrity sha512-EWD0jVQ0ZfUoh2rAfhXHABzPTZaJj8YVSgsCt60wom6mbIMlXQwxOO8RKdsoZOGaaPtvNfjs8c9kapskdGybzw==
   dependencies:
     prop-types "*"
     react "*"
