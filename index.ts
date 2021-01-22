@@ -970,18 +970,15 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         }
         this.determineModelNames()
         /*
-            Set all environment variables as dependencies for computed fields
-            and pre compile them.
+            Set all environment variables as dependencies of no explicit
+            dependencies are listed.
         */
         for (const name in this.models)
             if (
                 this.models[name].hasOwnProperty('dependsOn') &&
                 this.models[name].dependsOn === null
-            ) {
+            )
                 this.models[name].dependsOn = this.modelNames
-                this.preCompileShowIfExpression(name)
-                this.preCompileDynamicExtendStructure(name)
-            }
         return missingInputs
     }
     /**
@@ -1113,14 +1110,16 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     // / endregion
     // / region expression compiler
     /**
-     * Pre-compiles specified given transformer expression for given field.
+     * Pre-compiles specified given expression for given field.
+     * @param type - Indicates which expression type should be compiled.
      * @param name - Field name to pre-compile their expression.
      * @returns Nothing.
      */
-    preCompileTransformerExpression(name:string):void {
-        if (this.models[name].transformerExpression) {
-            const code:string =
-                this.models[name].transformerExpression as string
+    preCompileExpressions(name:string, type:string = 'transformer'):void {
+        const typeName:'transformerExpression' = `${type}Expression` as
+            'transformerExpression'
+        if (this.models[name][typeName]) {
+            const code:string = this.models[name][typeName] as string
             const [scopeNames, preCompiled] = Tools.stringCompile(
                 code,
                 this.self.baseScopeNames.concat(
@@ -1134,10 +1133,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             )
             if (typeof preCompiled === 'string')
                 console.error(
-                    `Failed to compile "transformerExpression" "${name}":`,
-                    preCompiled
+                    `Failed to compile "${typeName}" "${name}": ${preCompiled}`
                 )
-            this.models[name].transformer = (value:any):any => {
+            this.models[name][type as 'transformer'] = (value:any):any => {
                 if ([null, undefined].includes(value))
                     return value
                 try {
@@ -1162,69 +1160,13 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     )
                 } catch (error) {
                     console.warn(
-                        `Failed running "transformerExpression" "${code}" ` +
-                        `for field "${name}" with bound names "` +
+                        `Failed running "${typeName}" "${code}" for field ` +
+                        `field "${name}" with bound names "` +
                         `${scopeNames.join('", "')}": "` +
                         `${Tools.represent(error)}".`
                     )
                 }
                 return value
-            }
-        }
-    }
-    /**
-     * Pre-compiles specified given show if expression for given field.
-     * @param name - Field name to pre-compile their expression.
-     * @returns Nothing.
-     */
-    preCompileShowIfExpression(name:string):void {
-        if (this.models[name].showIfExpression) {
-            const code:string = this.models[name].showIfExpression as string
-            const [scopeNames, preCompiled] = Tools.stringCompile(
-                code,
-                this.self.baseScopeNames.concat(
-                    'self',
-                    this.resolvedConfiguration.expressions.map(
-                        (expression:Array<string>):string => expression[0]
-                    ),
-                    this.models[name].dependsOn || []
-                )
-            )
-            if (typeof preCompiled === 'string')
-                console.error(
-                    `Failed to compile "showIf" expression "${name}":`,
-                    preCompiled
-                )
-            this.models[name].showIf = ():boolean => {
-                try {
-                    return Boolean((preCompiled as Function)(
-                        this.determineStateURL,
-                        this.determinedTargetURL,
-                        this.getData,
-                        this.initialResponse,
-                        this.invalid,
-                        this.latestResponse,
-                        this.pending,
-                        this.response,
-                        this.message,
-                        this.onceSubmitted,
-                        Tools,
-                        this.valid,
-                        this.models[name],
-                        ...this.evaluateExpressions(),
-                        ...(this.models[name].dependsOn || [])
-                            .map((name:string):any => this.models[name]
-                        )
-                    ))
-                } catch (error) {
-                    console.error(
-                        `Failed running "showIf" expression "${code}" for` +
-                        ` field "${name}" with bound names "` +
-                        `${scopeNames.join('", "')}": "` +
-                        `${Tools.represent(error)}".`
-                    )
-                }
-                return false
             }
         }
     }
@@ -1439,8 +1381,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 this.models[name].dependsOn = ([] as Array<string>).concat(
                     this.models[name].dependsOn || []
                 )
-                this.preCompileTransformerExpression(name)
-                this.preCompileShowIfExpression(name)
+                for (const type of ['serializer', 'transformer', 'showIf'])
+                    this.preCompileExpressions(name, type)
                 this.preCompileDynamicExtendStructure(name)
             }
     }
@@ -2418,10 +2360,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @returns URL.
      */
     determineStateURL = ():{encoded:string;plain:string} => {
-        let parameter:Partial<Configuration> = {
-            model: {},
-            ...(this.urlConfiguration || {})
-        }
+        let parameter:Partial<Configuration> =
+            {model: {}, ...(this.urlConfiguration || {})}
         for (const name in this.models)
             if (
                 this.models.hasOwnProperty(name) &&
@@ -2440,7 +2380,11 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                          */
                         if (this.determinedStateValueIsNeeded(name))
                             parameter.model![name].value =
-                                this.inputs[name].value
+                                this.models[name].serializer ?
+                                    this.models[name].serializer!(
+                                        this.inputs[name].value
+                                    ) :
+                                    this.inputs[name].value
                         else {
                             delete parameter.model![name as keyof Model].value
                             if (Object.keys(

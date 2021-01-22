@@ -21,6 +21,7 @@ import {
     Mapping,
     ObjectMaskConfiguration,
     PlainObject,
+    Primitive,
     ProcedureFunction,
     RecursiveEvaluateable,
     RecursivePartial,
@@ -51,6 +52,8 @@ export type Model<Type = any> =
         dynamicExtend?:Mapping<(event:Event) => any>
         dynamicExtendExpressions?:Mapping<((event:Event, scope:any) => any)|string>
         changedEventName?:string
+        serializer?:(value:any) => Primitive
+        serializerExpression?:string
         showIf?:IndicatorFunction
         showIfExpression?:string
         shown?:boolean
