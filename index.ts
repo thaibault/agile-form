@@ -2339,7 +2339,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         return !(
             this.inputs[name].initialValue &&
             this.inputs[name].initialValue === this.inputs[name].value ||
-            this.inputs[name].initialValue !== undefined &&
+            this.inputs[name].initialValue === undefined &&
             this.inputs[name].value === this.inputs[name].default ||
             /*
                 NOTE: If only a boolean value we do not have to save an
