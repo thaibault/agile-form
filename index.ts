@@ -30,6 +30,7 @@ import {
 } from 'clientnode/type'
 import {object} from 'clientnode/property-types'
 import FetchType from 'node-fetch'
+import property from 'web-component-wrapper/decorator'
 import Web from 'web-component-wrapper/Web'
 import {WebComponentAPI} from 'web-component-wrapper/type'
 
@@ -236,14 +237,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         },
         version: 1
     }
-    static observedAttributes:Array<string> = [
-        'base-configuration', 'configuration', 'dynamic-configuration'
-    ]
-    static propertyTypes:Mapping<ValueOf<PropertyTypes>> = {
-        baseConfiguration: object,
-        configuration: object,
-        dynamicConfiguration: object
-    }
     static specificationToPropertyMapping:Mapping<{
         invert?:boolean
         name:string
@@ -301,8 +294,11 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     )
     reCaptchaToken:null|string = null
 
+    @property({type: object})
     baseConfiguration:Partial<Configuration>|undefined
+    @property({type: object})
     configuration:Partial<Configuration>|undefined
+    @property({type: object})
     dynamicConfiguration:Partial<Configuration>|undefined
     resolvedConfiguration:Configuration = {} as Configuration
     urlConfiguration:null|PlainObject = null
