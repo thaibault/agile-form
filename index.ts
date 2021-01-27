@@ -1882,6 +1882,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     async handleValidSubmittedInput(
         event:Event, data:PlainObject, newWindow:boolean = false
     ):Promise<void> {
+        this.triggerEvent('validSubmit', {reference: data})
         // region prepare request
         this.resolvedConfiguration.data = data
         this.resolvedConfiguration.targetData = this.mapTargetNames(data)
@@ -1893,11 +1894,11 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 ...this.resolvedConfiguration
             }
         ) as TargetConfiguration
+        // endregion
         if (target?.url) {
             this.determinedTargetURL = target.url
             if (target.options.body && typeof target.options.body !== 'string')
                 target.options.body = JSON.stringify(target.options.body)
-            this.triggerEvent('submit', {reference: data})
             this.latestResponse = this.response = null
             await this.startBackgroundProcess(event)
             // region trigger request
@@ -2055,7 +2056,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     )
                 } else
                     this.triggerEvent(
-                        'inputInvalid', {reference: {data, invalidInputNames}}
+                        'invalidSubmit', {reference: {data, invalidInputNames}}
                     )
 
                 this.submitted = false
