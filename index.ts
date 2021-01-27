@@ -803,15 +803,19 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     async configureContentProjectedInputs():Promise<void> {
         const lockName:string = 'configureContentProjectedInputs'
         await this.tools.acquireLock(lockName)
+
         const missingInputs:Mapping<Model> =
             await this.connectSpecificationWithDomNodes()
+
         // Configure input components to hide validation states first.
         for (const name in this.inputs)
             if (this.inputs.hasOwnProperty(name))
                 this.inputs[name].showInitialValidationState = false
         await this.digest()
+
         this.preCompileConfigurationExpressions()
         this.setGroupSpecificConfigurations()
+
         if (Object.keys(missingInputs).length)
             /*
                 NOTE: Message node may not be registered yet so do not render
@@ -821,8 +825,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 'Missing input for expected model name "' +
                 `${Object.keys(missingInputs).join('", "')}".`
             )
+
         this.createDependencyMapping()
-        this.addInputEventListener()
+        this.applyInputBindings()
+
         await this.tools.releaseLock(lockName)
     }
     /**
@@ -2137,8 +2143,15 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * dependent field change cascade.
      * @returns Nothing.
      */
-    addInputEventListener():void {
-        for (const name in this.inputs)
+    applyInputBindings():void {
+        const scope:{
+            instance:AgileForm
+            name:string
+            Tools:typeof Tools
+        } = {instance: this, name: 'UNKNOWN_NAME', Tools}
+        for (const name in this.inputs) {
+            scope.name = name
+            this.self.applyBindings(this.inputs[name], scope)
             if (
                 this.inputs.hasOwnProperty(name) &&
                 this.dependencyMapping[name].length
@@ -2158,6 +2171,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         await tools.releaseLock('digest')
                     })
                 )
+        }
     }
     /**
      * Updates all fields.
