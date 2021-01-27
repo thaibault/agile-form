@@ -108,10 +108,6 @@ export type Configuration = {
     actions:Mapping<Action>
     animation:boolean
     constraints:Array<Constraint>
-    conversionValue:{
-        submit:number
-        successful:number
-    }
     data:null|PlainObject
     debug:boolean
     evaluations:Array<[string, () => any]>
