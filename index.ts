@@ -1755,19 +1755,13 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             // NOTE: We have an invalid e-mail address.
             this.triggerEvent(
                 'serverEMailAddressInvalid',
-                {reference: {
-                    request: rawData,
-                    response: response.data
-                }}
+                {reference: {request: rawData, response: response.data}}
             )
         else if (response && [401, 403].includes(response.status))
             // NOTE: We have an unauthenticated request.
             this.triggerEvent(
                 'serverAuthenticationInvalid',
-                {reference: {
-                    request: rawData,
-                    response: response.data
-                }}
+                {reference: {request: rawData, response: response.data}}
             )
         else if (response && response.status === 420) {
             if (this.updateReCaptchaFallbackToken())
@@ -1869,10 +1863,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     // NOTE: We have an unauthenticated request.
                     this.triggerEvent(
                         'serverAuthenticationInvalid',
-                        {reference: {
-                            request: rawData,
-                            response: result.data
-                        }}
+                        {reference: {request: rawData, response: result.data}}
                     )
                 return result
             }
