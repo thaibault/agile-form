@@ -115,7 +115,6 @@ export type Configuration = {
     data:null|PlainObject
     debug:boolean
     evaluations:Array<[string, () => any]>
-    eventNameMapping:Mapping
     expressions:Array<[string, string]>
     initializeTarget:TargetConfiguration
     model:Mapping<Model>

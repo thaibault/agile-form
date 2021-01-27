@@ -111,6 +111,7 @@ import {
  * @property tools - Holds tools instance for saving instance specific locks.
  */
 export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
+    static applyRootBinding:boolean = true
     static baseScopeNames:Array<string> = [
         'determineStateURL',
         'determinedTargetURL',
@@ -137,17 +138,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         data: null,
         debug: false,
         evaluations: [],
-        eventNameMapping: {
-            inputInvalid: 'formInputInvalid',
-            name: 'AgileForm',
-            reCaptchaCheckFailed: 'formReCaptchaCheckFailed',
-            reCaptchaFallbackCheckFailed: 'formReCaptchaFallbackCheckFailed',
-            serverAuthenticationInvalid: 'formServerAuthenticationInvalid',
-            serverEMailAddressInvalid: 'formServerEMailAddressInvalid',
-            serverUnexpected: 'formServerUnexpected',
-            submit: 'formSubmit',
-            submitSuccessful: 'formSubmitSuccessful'
-        },
         expressions: [],
         initializeTarget: {
             options: {method: 'GET'},
@@ -1713,22 +1703,23 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * Handle valid sent data and redirects to corresponding specified target
      * page.
      * @param data - Data given by the form.
-     * @param newWindow - Indicates whether action targets should be opened
-     * in a new window.
+     * @param newWindow - Indicates whether action targets should be opened in
+     * a new window.
      * @returns Redirection target.
      */
     handleValidSentData(data:PlainObject, newWindow:boolean = false):string {
-        this.track({
-            event:
-                this.resolvedConfiguration.eventNameMapping.submitSuccessful,
-            eventType: 'formSubmitSuccessful',
-            label: 'formSubmitSuccessful',
-            reference: {
-                request: data,
-                response: this.response.data
-            },
-            value: this.resolvedConfiguration.conversionValue.successful
-        })
+        this.triggerEvent(
+            'submitSuccessful',
+            {
+                eventType: 'formSubmitSuccessful',
+                label: 'formSubmitSuccessful',
+                reference: {
+                    request: data,
+                    response: this.response.data
+                },
+                value: this.resolvedConfiguration.conversionValue.successful
+            }
+        )
         let redirected:boolean = false
         let fallbackTarget:string = ''
         for (const name in this.resolvedConfiguration.actions)
@@ -1774,30 +1765,30 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     ):void {
         if (response && response.status === 406)
             // NOTE: We have an invalid e-mail address.
-            this.track({
-                event:
-                    this.resolvedConfiguration.eventNameMapping
-                        .serverEMailAddressInvalid,
-                eventType: 'serverInvalidEMailAddress',
-                label: 'serverInvalidEMailAddress',
-                reference: {
-                    request: rawData,
-                    response: response.data
+            this.triggerEvent(
+                'serverEMailAddressInvalid',
+                {
+                    eventType: 'serverInvalidEMailAddress',
+                    label: 'serverInvalidEMailAddress',
+                    reference: {
+                        request: rawData,
+                        response: response.data
+                    }
                 }
-            })
+            )
         else if (response && [401, 403].includes(response.status))
             // NOTE: We have an unauthenticated request.
-            this.track({
-                event:
-                    this.resolvedConfiguration.eventNameMapping
-                        .serverAuthenticationInvalid,
-                eventType: 'serverAuthenticationInvalid',
-                label: 'serverAuthenticationInvalid',
-                reference: {
-                    request: rawData,
-                    response: response.data
+            this.triggerEvent(
+                'serverAuthenticationInvalid',
+                {
+                    eventType: 'serverAuthenticationInvalid',
+                    label: 'serverAuthenticationInvalid',
+                    reference: {
+                        request: rawData,
+                        response: response.data
+                    }
                 }
-            })
+            )
         else if (response && response.status === 420) {
             if (this.updateReCaptchaFallbackToken())
                 this.scrollAndFocus(
@@ -1806,55 +1797,54 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
             if (this.reCaptchaFallbackRendered)
                 // NOTE: We had an unsuccessful re-captcha challenge.
-                this.track({
-                    event:
-                        this.resolvedConfiguration.eventNameMapping
-                            .reCaptchaFallbackCheckFailed,
-                    eventType: 'serverReCaptchaFallbackCheckFailed',
-                    label: 'serverReCaptchaFallbackCheckFailed',
+                this.triggerEvent(
+                    'reCaptchaFallbackCheckFailed',
+                    {
+                        eventType: 'serverReCaptchaFallbackCheckFailed',
+                        label: 'serverReCaptchaFallbackCheckFailed',
+                        reference: {
+                            request: rawData,
+                            response: response.data
+                        }
+                    }
+                )
+            else
+                this.triggerEvent(
+                    'reCaptchaCheckFailed',
+                    {
+                        eventType: 'serverReCaptchaCheckFailed',
+                        label: 'serverReCaptchaCheckFailed',
+                        reference: {
+                            request: rawData,
+                            response: response.data
+                        }
+                    })
+        } else if (response && response.status === 428)
+            // NOTE: We have sent an outdated form.
+            this.triggerEvent(
+                'serverFormOutdated',
+                {
+                    eventType: 'serverFormOutdated',
+                    label: 'serverFormOutdated',
                     reference: {
                         request: rawData,
                         response: response.data
                     }
-                })
-            else
-                this.track({
-                    event:
-                        this.resolvedConfiguration.eventNameMapping
-                            .reCaptchaCheckFailed,
+                }
+            )
+        else
+            // NOTE: Unexpected server error.
+            this.triggerEvent(
+                'serverUnexpected',
+                {
                     eventType: 'serverReCaptchaCheckFailed',
                     label: 'serverReCaptchaCheckFailed',
                     reference: {
                         request: rawData,
-                        response: response.data
+                        response: response && response.data || null
                     }
-                })
-        } else if (response && response.status === 428)
-            // NOTE: We have sent an outdated form.
-            this.track({
-                event:
-                    this.resolvedConfiguration.eventNameMapping
-                        .serverFormOutdated,
-                eventType: 'serverFormOutdated',
-                label: 'serverFormOutdated',
-                reference: {
-                    request: rawData,
-                    response: response.data
                 }
-            })
-        else
-            // NOTE: Unexpected server error.
-            this.track({
-                event:
-                    this.resolvedConfiguration.eventNameMapping
-                        .serverUnexpected,
-                eventType: 'serverReCaptchaCheckFailed',
-                label: 'serverReCaptchaCheckFailed',
-                reference: {
-                    request: rawData,
-                    response: response && response.data || null
-                }
-            })
+            )
     }
     /**
      * Sends a request to provided target configuration and triggers different
@@ -1921,17 +1911,17 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     [401, 403, 407].includes(result.status)
                 )
                     // NOTE: We have an unauthenticated request.
-                    this.track({
-                        event:
-                            this.resolvedConfiguration.eventNameMapping
-                                .serverAuthenticationInvalid,
-                        eventType: 'serverAuthenticationInvalid',
-                        label: 'serverAuthenticationInvalid',
-                        reference: {
-                            request: rawData,
-                            response: result.data
+                    this.triggerEvent(
+                        'serverAuthenticationInvalid',
+                        {
+                            eventType: 'serverAuthenticationInvalid',
+                            label: 'serverAuthenticationInvalid',
+                            reference: {
+                                request: rawData,
+                                response: result.data
+                            }
                         }
-                    })
+                    )
                 return result
             }
             this.handleUnsuccessfulSentRequest(result, rawData)
@@ -1964,14 +1954,16 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             this.determinedTargetURL = target.url
             if (target.options.body && typeof target.options.body !== 'string')
                 target.options.body = JSON.stringify(target.options.body)
-            this.track({
-                event: this.resolvedConfiguration.eventNameMapping.submit,
-                eventType: 'formSubmit',
-                label: 'formSubmit',
-                reference: data,
-                userInteraction: true,
-                value: this.resolvedConfiguration.conversionValue.submit
-            })
+            this.triggerEvent(
+                'submit',
+                {
+                    eventType: 'formSubmit',
+                    label: 'formSubmit',
+                    reference: data,
+                    userInteraction: true,
+                    value: this.resolvedConfiguration.conversionValue.submit
+                }
+            )
             this.latestResponse = this.response = null
             await this.startBackgroundProcess(event)
             // region trigger request
@@ -2128,14 +2120,14 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         event, data, newWindow
                     )
                 } else
-                    this.track({
-                        event:
-                            this.resolvedConfiguration.eventNameMapping
-                                .inputInvalid,
-                        eventType: 'inputInvalid',
-                        label: 'inputInvalid',
-                        reference: data
-                    })
+                    this.triggerEvent(
+                        'inputInvalid',
+                        {
+                            eventType: 'inputInvalid',
+                            label: 'inputInvalid',
+                            reference: data
+                        }
+                    )
 
                 this.submitted = false
             }
@@ -2484,27 +2476,26 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Tracks given data if tracking environment exists.
+     * @param name - Event name to trigger.
      * @param data - Data to track.
      * @returns Nothing.
      */
-    track(data:PlainObject):void {
-        if (Array.isArray(window.dataLayer)) {
-            /*
-                NOTE: We should forwarded runtime data to avoid unexpected
-                behavior if gtm or configured tracking tool manipulates given
-                data.
-            */
-            if (data.hasOwnProperty('reference'))
-                data.reference = Tools.copy(data.reference)
+    triggerEvent(name:string, data:PlainObject):boolean {
+        /*
+            NOTE: We should forwarded runtime data to avoid unexpected behavior
+            if gtm or configured tracking tool manipulates given data.
+        */
+        if (data.hasOwnProperty('reference'))
+            data.reference = Tools.copy(data.reference)
 
-            window.dataLayer.push({
-                context: location.pathname,
-                subject: this.resolvedConfiguration.eventNameMapping.name,
-                value: 0,
-                userInteraction: false,
-                ...data
-            })
-        }
+        return this.dispatchEvent(new CustomEvent(name, {detail: {
+            context: location.pathname,
+            event: name,
+            subject: this.resolvedConfiguration.name,
+            userInteraction: false,
+            value: 0,
+            ...data
+        }}))
     }
     /**
      * Renders user interaction re-captcha version if corresponding placeholder
