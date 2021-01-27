@@ -83,6 +83,8 @@ import {
  * specification.
  * @property response - Current parsed response from send form data.
 
+ * @property inputEventBindings - Holds a mapping from nodes with registered
+ * event handlers mapped to their de-registration function.
  * @property models - Mapping from field name to corresponding configuration.
  * @property modelNames - Specified transformer environment variable names.
 
@@ -270,6 +272,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     message:string = ''
     response:any = null
 
+    inputEventBindings:Mapping<Function> = {}
     models:Mapping<Model> = {}
     modelNames:Array<string> = []
 
@@ -362,6 +365,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             domNode.removeEventListener('click', this.onSubmit, false)
         for (const domNode of this.truncateButtons)
             domNode.removeEventListener('click', this.onTruncate, false)
+
+        for (const name in this.inputEventBindings)
+            if (this.inputEventBindings.hasOwnProperty(name))
+                this.inputEventBindings[name]()
     }
     /**
      * Triggered when content projected and nested dom nodes are ready to be
@@ -2151,26 +2158,33 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         } = {instance: this, name: 'UNKNOWN_NAME', Tools}
         for (const name in this.inputs) {
             scope.name = name
-            this.self.applyBindings(this.inputs[name], scope)
+            this.applyBindings(this.inputs[name], scope)
             if (
                 this.inputs.hasOwnProperty(name) &&
-                this.dependencyMapping[name].length
-            )
-                this.inputs[name].addEventListener(
-                    (
-                        this.models[name].hasOwnProperty('changedEventName') ?
-                            this.models[name].changedEventName as string :
-                            'change'
-                    ),
-                    Tools.debounce(async (event:Event):Promise<void> => {
+                this.dependencyMapping[name].length &&
+                !this.inputEventBindings.hasOwnProperty(name)
+            ) {
+                const eventName:string =
+                    this.models[name].hasOwnProperty('changedEventName') ?
+                        this.models[name].changedEventName as string :
+                        'change'
+                const handler:EventListener = Tools.debounce(
+                    async (event:Event):Promise<void> => {
                         await this.digest()
                         const tools:Tools = new Tools()
                         await tools.acquireLock('digest')
                         await this.updateInputDependencies(name, event)
                         this.updateAllGroups()
                         await tools.releaseLock('digest')
-                    })
+                    },
+                    400
                 )
+                this.inputs[name].addEventListener(eventName, handler)
+                this.inputEventBindings[name] = ():void => {
+                    this.inputs[name].removeEventListener(eventName, handler)
+                    delete this.inputEventBindings[name]
+                }
+            }
         }
     }
     /**

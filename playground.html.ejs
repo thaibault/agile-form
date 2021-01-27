@@ -198,6 +198,7 @@
                 name="name"
             ></generic-input>
             <generic-input
+                bind-on-blur="this.title = 'Current input: ' + this.value"
                 declaration="Please provide a message."
                 description="Message"
                 editor="text"
