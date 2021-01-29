@@ -934,7 +934,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 }
                 domNode.model = model
 
-                if (!(model.mutable && model.writable))
+                if ([model.mutable, model.writable].includes(false))
                     domNode.disabled = true
 
                 this.models[name].domNode = domNode
