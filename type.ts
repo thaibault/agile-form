@@ -72,6 +72,7 @@ export type ModelAnnotation<Type = any> = {
     changeTrigger?:any
     default:Type
     dirty:boolean
+    disabled:boolean
     initialValue?:Type
     invalid:boolean
     model:Model<Type>
