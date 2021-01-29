@@ -111,6 +111,7 @@ import {
  * @property tools - Holds tools instance for saving instance specific locks.
  */
 export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
+    // region properties
     static applyRootBinding:boolean = true
     static baseScopeNames:Array<string> = [
         'determineStateURL',
@@ -295,6 +296,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     readonly self:typeof AgileForm = AgileForm
 
     readonly tools:Tools = new Tools()
+    // endregion
     // region live cycle hooks
     /**
      * Defines dynamic getter and setter interface and resolves configuration
@@ -931,6 +933,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     model = Tools.extend(true, result.result, model)
                 }
                 domNode.model = model
+
+                if (!(model.mutable && model.writable))
+                    domNode.disabled = true
+
                 this.models[name].domNode = domNode
                 await this.digest()
                 Object.defineProperty(
@@ -1535,6 +1541,68 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             this.onSubmit(event)
     }
     /**
+     * Calculates current document relative offset of given dom node's
+     * position.
+     * @param domNode - Target node to calculate from.
+     * @returns Calculated values.
+     */
+    getOffset(domNode:AnnotatedDomNode):Offset {
+        const documentNode:HTMLElement = document.documentElement
+        const box:ReturnType<HTMLElement['getBoundingClientRect']> =
+            domNode.getBoundingClientRect()
+        return {
+            left: box.left + window.pageXOffset - documentNode.clientLeft,
+            top: box.top + window.pageYOffset - documentNode.clientTop
+        }
+    }
+    /**
+     * Scrolls to given element and focuses it.
+     * @param targetDomNode - Dom node to scroll to.
+     * @param smooth - Indicates whether to animate scrolling.
+     * @returns a Promise resolving when focusing has finished.
+     */
+    scrollAndFocus(
+        targetDomNode:AnnotatedDomNode, smooth:boolean = true
+    ):Promise<void> {
+        return new Promise((resolve:ProcedureFunction):void => {
+            const offset:Offset = this.getOffset(targetDomNode)
+            const newScrollPosition:number = Math.max(
+                0, offset.top - this.resolvedConfiguration.offsetInPixel
+            )
+
+            const onScroll:ProcedureFunction = ():void => {
+                if (
+                    window.pageYOffset.toFixed() ===
+                        newScrollPosition.toFixed()
+                ) {
+                    window.removeEventListener('scroll', onScroll)
+
+                    if (typeof targetDomNode.focus === 'function')
+                        targetDomNode.focus()
+
+                    resolve()
+                }
+            }
+
+            window.addEventListener('scroll', onScroll)
+
+            onScroll()
+
+            if (Tools.maximalSupportedInternetExplorerVersion === 0 && smooth)
+                window.scrollTo(
+                    {
+                        behavior: 'smooth',
+                        top: newScrollPosition
+                    }
+                )
+            else {
+                window.scrollTo(0, newScrollPosition)
+                onScroll()
+            }
+        })
+    }
+    // / region form submission
+    /**
      * Sets all hidden non persistent input fields to their initial value.
      * @returns A promise resolving to nothing.
      */
@@ -1614,21 +1682,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         return {data, invalidInputNames}
     }
     /**
-     * Calculates current document relative offset of given dom node's
-     * position.
-     * @param domNode - Target node to calculate from.
-     * @returns Calculated values.
-     */
-    getOffset(domNode:AnnotatedDomNode):Offset {
-        const documentNode:HTMLElement = document.documentElement
-        const box:ReturnType<HTMLElement['getBoundingClientRect']> =
-            domNode.getBoundingClientRect()
-        return {
-            left: box.left + window.pageXOffset - documentNode.clientLeft,
-            top: box.top + window.pageYOffset - documentNode.clientTop
-        }
-    }
-    /**
      * Sets global validation message and scrolls to first invalid field.
      * @param data - Data given by the form.
      * @param invalidInputNames - All currently invalid fields names.
@@ -1648,52 +1701,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         )
         if (invalidInputs.length)
             this.scrollAndFocus(invalidInputs[0])
-    }
-    /**
-     * Scrolls to given element and focuses it.
-     * @param targetDomNode - Dom node to scroll to.
-     * @param smooth - Indicates whether to animate scrolling.
-     * @returns a Promise resolving when focusing has finished.
-     */
-    scrollAndFocus(
-        targetDomNode:AnnotatedDomNode, smooth:boolean = true
-    ):Promise<void> {
-        return new Promise((resolve:ProcedureFunction):void => {
-            const offset:Offset = this.getOffset(targetDomNode)
-            const newScrollPosition:number = Math.max(
-                0, offset.top - this.resolvedConfiguration.offsetInPixel
-            )
-
-            const onScroll:ProcedureFunction = ():void => {
-                if (
-                    window.pageYOffset.toFixed() ===
-                        newScrollPosition.toFixed()
-                ) {
-                    window.removeEventListener('scroll', onScroll)
-
-                    if (typeof targetDomNode.focus === 'function')
-                        targetDomNode.focus()
-
-                    resolve()
-                }
-            }
-
-            window.addEventListener('scroll', onScroll)
-
-            onScroll()
-
-            if (Tools.maximalSupportedInternetExplorerVersion === 0 && smooth)
-                window.scrollTo(
-                    {
-                        behavior: 'smooth',
-                        top: newScrollPosition
-                    }
-                )
-            else {
-                window.scrollTo(0, newScrollPosition)
-                onScroll()
-            }
-        })
     }
     /**
      * Handle valid sent data and redirects to corresponding specified target
