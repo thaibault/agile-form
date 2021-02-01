@@ -19,6 +19,7 @@
 // region imports
 import Tools from 'clientnode'
 import {
+    CompilationResult,
     EvaluationResult,
     Mapping,
     Offset,
@@ -1014,16 +1015,14 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 this.resolvedConfiguration.selector.groups
             )
         )
-        const scopeNames:Array<string> = this.self.baseScopeNames
-            .concat(
-                this.resolvedConfiguration.expressions.map(
-                    (expression:Array<string>):string => expression[0]
-                ),
-                this.modelNames
-            )
-            .map((name:string):string =>
-                Tools.stringConvertToValidVariableName(name)
-            )
+
+        const originalScopeNames:Array<string> = this.self.baseScopeNames.concat(
+            this.resolvedConfiguration.expressions.map(
+                (expression:Array<string>):string => expression[0]
+            ),
+            this.modelNames
+        )
+
         for (const domNode of groups) {
             const specification:{
                 childNames:Array<string>
@@ -1048,18 +1047,18 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 if (typeof domNode.getAttribute('name') === 'string')
                     name = domNode.getAttribute('name') as string
 
-                const preCompiled:Function|string =
-                    Tools.stringCompile(code, scopeNames)[1]
+                const {error, scopeNames, templateFunction} =
+                    Tools.stringCompile(code, originalScopeNames)
 
-                if (typeof preCompiled === 'string')
+                if (error)
                     console.error(
                         'Failed to compile "show-if" group expression ' +
-                        `attribute "${name}": ${preCompiled}`
+                        `attribute "${name}": ${error}`
                     )
                 else
                     specification.showIf = ():boolean => {
                         try {
-                            return Boolean(preCompiled(
+                            return Boolean(templateFunction(
                                 this.determineStateURL,
                                 this.determinedTargetURL,
                                 this.getData,
@@ -1132,7 +1131,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             'transformerExpression'
         if (this.models[name][typeName]) {
             const code:string = this.models[name][typeName] as string
-            const [scopeNames, preCompiled] = Tools.stringCompile(
+            const {error, scopeNames, templateFunction} = Tools.stringCompile(
                 code,
                 this.self.baseScopeNames.concat(
                     'self',
@@ -1143,13 +1142,15 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     this.models[name].dependsOn || []
                 )
             )
-            if (typeof preCompiled === 'string')
+
+            if (error)
                 console.error(
-                    `Failed to compile "${typeName}" "${name}": ${preCompiled}`
+                    `Failed to compile "${typeName}" "${name}": ${error}`
                 )
+
             this.models[name][type as 'transformer'] = (value:any):any => {
                 try {
-                    return (preCompiled as Function)(
+                    return templateFunction(
                         this.determineStateURL,
                         this.determinedTargetURL,
                         this.getData,
@@ -1176,6 +1177,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         `${Tools.represent(error)}".`
                     )
                 }
+
                 return value
             }
         }
@@ -1188,6 +1190,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     preCompileDynamicExtendStructure(name:string):void {
         if (!this.models[name].dynamicExtendExpressions)
             return
+
         this.models[name].dynamicExtend = {}
         for (const subName in this.models[name].dynamicExtendExpressions)
             if (
@@ -1196,29 +1199,36 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             ) {
                 const code:((event:Event, scope:any) => any)|string =
                     this.models[name].dynamicExtendExpressions![subName]
-                let scopeNames = this.self.baseScopeNames.concat(
-                    'event',
-                    'eventName',
-                    'scope',
-                    'selfName',
-                    'self',
-                    this.resolvedConfiguration.expressions.map(
-                        (expression:Array<string>):string => expression[0]
-                    ),
-                    this.models[name].dependsOn || []
-                )
-                let preCompiled:Function|null|string = null
-                if (typeof code === 'string') {
-                    [scopeNames, preCompiled] = Tools.stringCompile(
-                        code, scopeNames
+
+                let originalScopeNames:Array<string> =
+                    this.self.baseScopeNames.concat(
+                        'event',
+                        'eventName',
+                        'scope',
+                        'selfName',
+                        'self',
+                        this.resolvedConfiguration.expressions.map(
+                            (expression:Array<string>):string => expression[0]
+                        ),
+                        this.models[name].dependsOn || []
                     )
-                    if (typeof preCompiled === 'string')
+                let scopeNames:Array<string>
+                let templateFunction:TemplateFunction
+
+                if (typeof code === 'string') {
+                    const result:CompilationResult =
+                        Tools.stringCompile(code, originalScopeNames)
+                    const error = result.error
+                    scopeNames = result.scopeNames
+                    templateFunction = result.templateFunction
+                    if (error)
                         console.error(
                             `Failed to compile "dynamicExtendExpression" for` +
                             ` property "${subName}" in field "${name}":`,
-                            preCompiled
+                            error
                         )
                 }
+
                 this.models[name].dynamicExtend![subName] = (
                     event:Event
                 ):any => {
@@ -1253,7 +1263,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     try {
                         return Tools.isFunction(code) ?
                             code(event, scope) :
-                            (preCompiled as Function)(...context)
+                            templateFunction!(...context)
                     } catch (error) {
                         console.error(
                             `Failed running "dynamicExtendExpression" "` +
@@ -1271,33 +1281,33 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @returns Nothing.
      */
     preCompileActionSources():void {
-        const scopeNames:Array<string> = this.self.baseScopeNames
+        const originalScopeNames:Array<string> = this.self.baseScopeNames
             .concat(
                 this.resolvedConfiguration.expressions.map(
                     (expression:Array<string>):string => expression[0]
                 ),
                 this.modelNames
             )
-            .map((name:string):string =>
-                Tools.stringConvertToValidVariableName(name)
-            )
+
         for (const name in this.resolvedConfiguration.actions)
             if (this.resolvedConfiguration.actions.hasOwnProperty(name)) {
                 const code:string =
                     this.resolvedConfiguration.actions[name].code
                 if (code.trim() === 'fallback')
                     continue
-                const preCompiled:Function|string =
-                    Tools.stringCompile(code, scopeNames)[1]
-                if (typeof preCompiled === 'string')
+
+                const {error, scopeNames, templateFunction} =
+                    Tools.stringCompile(code, originalScopeNames)
+                if (error)
                     console.error(
                         `Failed to compile action source expression "${name}` +
-                        `": ${preCompiled}`
+                        `": ${error}`
                     )
+
                 this.resolvedConfiguration.actions[name].indicator = (
                 ):any => {
                     try {
-                        return (preCompiled as Function)(
+                        return templateFunction(
                             this.determineStateURL,
                             this.determinedTargetURL,
                             this.getData,
@@ -1335,21 +1345,23 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         const expressionNames:Array<string> = []
         for (const expression of this.resolvedConfiguration.expressions) {
             const [name, code] = expression
-            const [scopeNames, preCompiled] = Tools.stringCompile(
+
+            const {error, scopeNames, templateFunction} = Tools.stringCompile(
                 code,
                 this.self.baseScopeNames.concat(
                     expressionNames, this.modelNames
                 )
             )
-            expressionNames.push(name)
-            if (typeof preCompiled === 'string')
+            if (error)
                 console.error(
-                    `Failed to compile generic expression "${name}":`,
-                    preCompiled
+                    `Failed to compile generic expression "${name}": ${error}`
                 )
+
+            expressionNames.push(name)
+
             this.resolvedConfiguration.evaluations.push([name, ():any => {
                 try {
-                    return (preCompiled as Function)(
+                    return templateFunction(
                         this.determineStateURL,
                         this.determinedTargetURL,
                         this.getData,
