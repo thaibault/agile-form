@@ -1078,8 +1078,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             ))
                         } catch (error) {
                             console.error(
-                                `Failed to evaluate "${code}" with bound "` +
-                                `names "${scopeNames.join('", "')}": "` +
+                                `Failed to evaluate group "${name}" code "` +
+                                `${code}" with bound names "` +
+                                `${scopeNames.join('", "')}": "` +
                                 `${Tools.represent(error)}".`
                             )
                         }
