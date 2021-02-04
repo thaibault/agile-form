@@ -113,7 +113,6 @@ import {
  */
 export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     // region properties
-    static applyRootBinding:boolean = true
     static baseScopeNames:Array<string> = [
         'determineStateURL',
         'determinedTargetURL',
