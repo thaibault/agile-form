@@ -594,6 +594,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         ):void => {
             const name:string = domNode.getAttribute('name') ?? 'unknown'
             const oldState:boolean|null = domNode.shown
+
             domNode.shown = (
                 specification.showIf &&
                 specification.showIf() ||
@@ -619,6 +620,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     this.updateGroupContent(domNode)
                 return
             }
+
             if (this.resolvedConfiguration.debug)
                 if (Boolean(oldState) === oldState)
                     console.debug(
@@ -633,6 +635,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         `visibility state to "` +
                         `${domNode.shown ? 'show' : 'hide'}".`
                     )
+
             if (domNode.shown || this.resolvedConfiguration.showAll) {
                 domNode.style.opacity = '0'
                 domNode.style.display = 'block'
@@ -676,6 +679,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         ]
         for (let index = 0; index < keys.length; index += 1)
             scope[keys[index]] = values[index]
+
         this.evaluateDomNodeTemplate<AnnotatedDomNode>(
             domNode,
             scope,
@@ -1100,6 +1104,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             if (this.inputs.hasOwnProperty(name)) {
                 if (!this.dependencyMapping.hasOwnProperty(name))
                     this.dependencyMapping[name] = []
+
                 if (this.models[name].dependsOn)
                     for (
                         const dependentName of ([] as Array<string>).concat(
@@ -2101,12 +2106,13 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             name:string
             Tools:typeof Tools
         } = {instance: this, name: 'UNKNOWN_NAME', Tools}
+
         for (const name in this.inputs) {
             scope.name = name
             this.applyBindings(this.inputs[name], scope)
+
             if (
                 this.inputs.hasOwnProperty(name) &&
-                this.dependencyMapping[name].length &&
                 !this.inputEventBindings.hasOwnProperty(name)
             ) {
                 const eventName:string =
@@ -2116,11 +2122,15 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 const handler:EventListener = Tools.debounce(
                     async (event:Event):Promise<void> => {
                         await this.digest()
-                        const tools:Tools = new Tools()
-                        await tools.acquireLock('digest')
-                        await this.updateInputDependencies(name, event)
+                        let tools:Tools
+                        if (this.dependencyMapping[name].length) {
+                            tools = new Tools()
+                            await tools.acquireLock('digest')
+                            await this.updateInputDependencies(name, event)
+                        }
                         this.updateAllGroups()
-                        await tools.releaseLock('digest')
+                        if (this.dependencyMapping[name].length)
+                            await tools!.releaseLock('digest')
                     },
                     400
                 )
@@ -2339,6 +2349,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     determineStateURL = ():{encoded:string;plain:string} => {
         let parameter:Partial<Configuration> =
             {model: {}, ...(this.urlConfiguration || {})}
+
         for (const name in this.models)
             if (
                 this.models.hasOwnProperty(name) &&
