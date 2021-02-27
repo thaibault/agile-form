@@ -1360,6 +1360,20 @@
     "@material/feature-targeting" "^5.1.0"
     "@material/rtl" "^5.1.0"
 
+"@material/slider@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@material/slider/-/slider-5.1.0.tgz#93d2dee500752a0e85af497848260042219408e4"
+  integrity sha512-3+0kIgqowmUK0AXOC0jvR+8fqFJobdWuthfbuYBV+PFGBa9+zUow6Txf/yrhtCeQ01FHXw2iNeEFXSws+MYP9w==
+  dependencies:
+    "@material/animation" "^5.1.0"
+    "@material/base" "^5.1.0"
+    "@material/dom" "^5.1.0"
+    "@material/feature-targeting" "^5.1.0"
+    "@material/rtl" "^5.1.0"
+    "@material/theme" "^5.1.0"
+    "@material/typography" "^5.1.0"
+    tslib "^1.9.3"
+
 "@material/tab-bar@^5.1.0":
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/@material/tab-bar/-/tab-bar-5.1.0.tgz#e3b4e959a04f3af76282e9a71204aad98a512e78"
@@ -1643,6 +1657,15 @@
     "@rmwc/menu" "^6.1.4"
     "@rmwc/notched-outline" "^6.1.4"
     "@rmwc/ripple" "^6.1.4"
+    "@rmwc/types" "^6.0.5"
+
+"@rmwc/slider@*":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@rmwc/slider/-/slider-6.1.4.tgz#2e0131044fadf14a2207f83a4e936e67c5a24ab2"
+  integrity sha512-C42wTQj/gPVQ/3zq+oUPeVcqJEqQvHBppEOz6LPJzhre1v84y+PuzU4piCPD9tmQcsG0gXhi3EyJ6jYovrrV2A==
+  dependencies:
+    "@material/slider" "^5.1.0"
+    "@rmwc/base" "^6.1.4"
     "@rmwc/types" "^6.0.5"
 
 "@rmwc/tabs@*":

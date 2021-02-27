@@ -165,7 +165,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             groups: '.agile-form__group',
             // TODO do not allow nested elements, as long as not supported
             // prefer high-level inputs over native "<input />"
-            inputs: 'generic-input, requireable-checkbox',
+            inputs: 'generic-input, requireable-checkbox, slider-input',
             reCaptchaFallbackInput: '.agile-form__re-captcha-fallback',
             resetButtons: 'button[reset], [type=reset]',
             spinner: 'circular-spinner',
@@ -1218,15 +1218,19 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 if (typeof code === 'string') {
                     const result:CompilationResult =
                         Tools.stringCompile(code, originalScopeNames)
-                    const error = result.error
                     scopeNames = result.scopeNames
                     templateFunction = result.templateFunction
-                    if (error)
+                    if (result.error)
                         console.error(
                             `Failed to compile "dynamicExtendExpression" for` +
                             ` property "${subName}" in field "${name}":`,
-                            error
+                            result.error
                         )
+                } else {
+                    scopeNames = originalScopeNames.map((name:string):string =>
+                        Tools.stringConvertToValidVariableName(name)
+                    )
+                    templateFunction = code
                 }
 
                 this.models[name].dynamicExtend![subName] = (

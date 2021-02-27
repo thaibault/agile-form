@@ -21,6 +21,7 @@
         <meta http-equiv="pragma" content="no-cache">
         <title>playground</title>
         <!--region style-->
+        <link rel="stylesheet" href="/@material/slider/dist/mdc.slider.css">
         <style>
             <%-
                 require('material-design-icons/iconfont/material-icons.css')
@@ -130,6 +131,11 @@
                         minimumLength: 4,
                         nullable: false,
                         regularExpressionPattern: '[a-zA-Z0-9]+'
+                    },
+                    pensum: {
+                        maximum: 100,
+                        minimumLength: 5,
+                        nullable: false
                     }
                 }
             }"
@@ -168,8 +174,7 @@
                 name="send-report"
                 show-if="submitted"
             >
-                Form-Result:
-                <pre>${tools.represent(getData())}</pre>
+                Form-Result: <pre>${tools.represent(getData())}</pre>
             </div>
             <div
                 class="agile-form__group"
@@ -214,7 +219,7 @@
                 placeholder="Please select your feeling"
             ></generic-input>
 
-            <slider-input name="pensum" max="100" min="10" step="2">
+            <slider-input max="100" min="10" name="pensum" step="2">
             </slider-input>
 
             <requireable-checkbox
