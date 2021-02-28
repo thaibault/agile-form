@@ -33,7 +33,7 @@ import {object} from 'clientnode/property-types'
 import FetchType from 'node-fetch'
 import property from 'web-component-wrapper/decorator'
 import Web from 'web-component-wrapper/Web'
-import {WebComponentAPI} from 'web-component-wrapper/type'
+import {WebComponentAPI, StaticWebComponent} from 'web-component-wrapper/type'
 
 import {
     Action,
@@ -2354,7 +2354,18 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             if (
                 this.models.hasOwnProperty(name) &&
                 this.inputs.hasOwnProperty(name) &&
-                this.inputs[name].dirty
+                (
+                    this.inputs[name].dirty ||
+                    /*
+                        NOTE: This input seems to have limited input state
+                        support so we have to consider this.
+                    */
+                    this.inputs[name].dirty !== false &&
+                    (
+                        this.inputs[name].constructor as unknown as
+                            StaticWebComponent
+                    ).webComponentAdapterWrapped !== 'react'
+                )
             )
                 if (parameter.model!.hasOwnProperty(name)) {
                     if (
