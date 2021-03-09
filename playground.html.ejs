@@ -24,10 +24,10 @@
         <link rel="stylesheet" href="/@material/slider/dist/mdc.slider.css">
         <style>
             <%-
-                require('material-design-icons/iconfont/material-icons.css')
+                require('material-icons/iconfont/material-icons.css')
                     .replace(
-                        /(url\()(MaterialIcons-Regular\.[^.]+\))/g,
-                        '$1./material-design-icons/iconfont/$2'
+                        /(url\()"?(MaterialIcons-Regular\.[^.")]+)"?(\))/g,
+                        '$1material-icons/iconfont/$2$3'
                     )
              %>
         </style>

@@ -165,7 +165,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             groups: '.agile-form__group',
             // TODO do not allow nested elements, as long as not supported
             // prefer high-level inputs over native "<input />"
-            inputs: 'generic-input, requireable-checkbox, slider-input',
+            // TODO support buttons (with two states).
+            inputs: 'button[name], generic-input, requireable-checkbox, slider-input',
             reCaptchaFallbackInput: '.agile-form__re-captcha-fallback',
             resetButtons: 'button[reset], [type=reset]',
             spinner: 'circular-spinner',
