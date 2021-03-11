@@ -1036,18 +1036,27 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     this.resolvedConfiguration.selector.inputs
                 )) as Array<AnnotatedModelDomNode>)
                     .filter((domNode:AnnotatedModelDomNode):boolean =>
-                        typeof domNode.getAttribute('name') === 'string'
+                        typeof domNode.getAttribute('name') === 'string' ||
+                        typeof domNode.getAttribute('data-name') === 'string'
                     )
-                    .map((domNode:AnnotatedModelDomNode):string =>
-                        domNode.getAttribute('name') as string
-                    )
+                    .map((domNode:AnnotatedModelDomNode):string => (
+                        domNode.getAttribute('name') ||
+                        domNode.getAttribute('data-name')
+                    ) as string)
             }
-            if (domNode.getAttribute('show-if')) {
-                const code:string =
-                    (domNode.getAttribute('show-if') as string)
+            if (
+                domNode.getAttribute('show-if') ||
+                domNode.getAttribute('data-show-if')
+            ) {
+                const code:string = ((
+                    domNode.getAttribute('show-if') ||
+                    domNode.getAttribute('data-show-if')
+                ) as string)
                     .replace(/(#039;)|(&amp;)/g, '&')
                     .replace(/<br\/>/g, '')
                 let name:string = 'UNKNOWN'
+                if (typeof domNode.getAttribute('data-name') === 'string')
+                    name = domNode.getAttribute('data-name') as string
                 if (typeof domNode.getAttribute('name') === 'string')
                     name = domNode.getAttribute('name') as string
 
