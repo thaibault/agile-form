@@ -222,6 +222,14 @@
             <slider-input max="100" min="10" name="pensum" step="2">
             </slider-input>
 
+            <div
+                class="agile-form__group"
+                data-name="slider"
+                data-show-if="pensum.value > 30"
+            >
+                Slider is more than 30 (${pensum.value})
+            </div>
+
             <requireable-checkbox
                 description="Check it!" name="legalNotesChecked"
             ></requireable-checkbox>
@@ -240,7 +248,7 @@
 
             <hr/>
 
-            <div class="agile-form__group" name="url">
+            <div class="agile-form__group" data-name="url">
                 State-URL:
                 <a href="${determineStateURL().encoded}">
                     ${determineStateURL().plain}
