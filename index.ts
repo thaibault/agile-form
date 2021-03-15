@@ -17,7 +17,7 @@
     endregion
 */
 // region imports
-import Tools from 'clientnode'
+import Tools, {$} from 'clientnode'
 import {
     CompilationResult,
     EvaluationResult,
@@ -446,60 +446,79 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     ):void {
         if (domNode.clearFading)
             domNode.clearFading()
+
         if (parseFloat(domNode.style.opacity) === opacity)
             return
+
         if (opacity === 0) {
+            const style:Mapping<number|string> = $(domNode).Tools('style')
+
+            domNode.oldDisplay = style.display as string || 'initial'
+            if (domNode.oldDisplay === 'none')
+                delete domNode.oldDisplay
+
             if (!this.resolvedConfiguration.animation) {
                 domNode.style.display = 'none'
                 return
             }
+
             const oldPosition:string = domNode.style.position
             /*
                 Make this element absolute at current position to potentially
                 fade other elements in at overlapping position.
             */
             domNode.style.position = 'absolute'
+
+            let currentOpacity:number =
+                domNode.oldOpacity =
+                parseFloat(style.opacity as string)
             const timer = setInterval(
                 ():void => {
-                    if (opacity <= 0.1) {
+                    if (currentOpacity <= opacity + .1) {
                         if (domNode.clearFading)
                             domNode.clearFading()
                         return
                     }
-                    domNode.style.opacity = `${opacity}`
-                    opacity -= opacity * 0.1
+
+                    currentOpacity -= currentOpacity * .1
+                    domNode.style.opacity = `${currentOpacity}`
                 },
-                durationInMilliseconds * 0.1
+                durationInMilliseconds * .1
             )
+
             domNode.clearFading = ():void => {
                 clearInterval(timer)
-                domNode.style.opacity = '0'
+                domNode.style.opacity = `${opacity}`
                 domNode.style.display = 'none'
                 domNode.style.position = oldPosition
                 delete domNode.clearFading
             }
         } else {
-            domNode.style.display = 'block'
+            domNode.style.display = domNode.oldDisplay || 'block'
+
             if (!this.resolvedConfiguration.animation) {
                 domNode.style.opacity = '1'
                 return
             }
-            opacity = 0.1
+
+            let currentOpacity:number = .1
             const timer = setInterval(
                 ():void => {
-                    if (opacity >= 1) {
+                    if (currentOpacity >= (domNode.oldOpacity || 1) - .1) {
                         if (domNode.clearFading)
                             domNode.clearFading()
                         return
                     }
-                    domNode.style.opacity = `${opacity}`
-                    opacity += opacity * 0.1
+
+                    currentOpacity *= 1.1
+                    domNode.style.opacity = `${currentOpacity}`
                 },
-                durationInMilliseconds * 0.1
+                durationInMilliseconds * .1
             )
+
             domNode.clearFading = ():void => {
                 clearInterval(timer)
-                domNode.style.opacity = '1'
+                domNode.style.opacity = `${domNode.oldOpacity || 1}`
                 delete domNode.clearFading
             }
         }

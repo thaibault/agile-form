@@ -65,6 +65,8 @@ export type Model<Type = any> =
     }
 export type Annotation = {
     clearFading?:ProcedureFunction
+    oldDisplay?:string
+    oldOpacity?:number
     showIf?:IndicatorFunction
     shown:boolean
 }
