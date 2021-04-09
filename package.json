@@ -131,13 +131,19 @@
     "module": {
       "aliases": {
         "#": "Remove unneeded optional dependencies.",
-        "ace-builds$": false,
+        "ace-builds$ ALTERNATE": false,
+        "ace-builds$": "react-input-material/components/Dummy",
         "jquery$": false,
-        "@tinymce/tinymce-react$": false,
-        "react-ace$": false,
-        "react-useanimations$": false,
-        "react-useanimations/lib/lock$": false,
-        "react-useanimations/lib/plusToX$": false
+        "@tinymce/tinymce-react$ ALTERNAT": false,
+        "@tinymce/tinymce-react$": "react-input-material/components/Dummy",
+        "react-ace$ ALTERNATE": false,
+        "react-ace$": "react-input-material/components/Dummy",
+        "react-useanimations$ ALTERNATE": false,
+        "react-useanimations$": "react-input-material/components/Dummy",
+        "react-useanimations/lib/lock$ ALTERNATE": false,
+        "react-useanimations/lib/lock$": "react-input-material/components/Dummy",
+        "react-useanimations/lib/plusToX$ ALTERNATE": false,
+        "react-useanimations/lib/plusToX$": "react-input-material/components/Dummy"
       },
       "enforceDeduplication": true,
       "html": {
