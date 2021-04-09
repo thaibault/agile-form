@@ -107,14 +107,16 @@ export type TargetConfiguration = {
     }>
     url:string
 }
+export type Evaluation = [string, () => any]
+export type Expression = [string, string]
 export type Configuration = {
     actions:Mapping<Action>
     animation:boolean
     constraints:Array<Constraint>
     data:null|PlainObject
     debug:boolean
-    evaluations:Array<[string, () => any]>
-    expressions:Array<[string, string]>
+    evaluations:Array<Evaluation>
+    expressions:Array<Expression>
     initializeTarget:TargetConfiguration
     model:Mapping<Model>
     name:string

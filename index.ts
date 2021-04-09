@@ -40,6 +40,8 @@ import {
     AnnotatedDomNode,
     AnnotatedModelDomNode,
     Configuration,
+    Evaluation,
+    Expression,
     IndicatorFunction,
     Model,
     ModelAnnotation,
@@ -746,12 +748,20 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         this.resolvedConfiguration =
             Tools.copy(this.self.defaultConfiguration) as Configuration
 
+        let evaluations:Array<Evaluation> = []
+        let expressions:Array<Expression> = []
         for (const configuration of [
             this.baseConfiguration || {},
             this.configuration || {},
             this.dynamicConfiguration || {}
-        ])
+        ]) {
+            evaluations = evaluations.concat(configuration.evaluations || [])
+            expressions = expressions.concat(configuration.expressions || [])
+
             Tools.extend(true, this.resolvedConfiguration, configuration)
+        }
+        this.resolvedConfiguration.evaluations = evaluations
+        this.resolvedConfiguration.expressions = expressions
 
         this.extendConfigurationByGivenURLParameter()
 
