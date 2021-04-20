@@ -812,7 +812,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 evaluated.result !== null &&
                 typeof evaluated.result === 'object'
             ) {
-                this.urlConfiguration = Tools.maskObject(
+                this.urlConfiguration = Tools.mask(
                     evaluated.result, this.resolvedConfiguration.urlModelMask
                 ) as PlainObject
                 Tools.extend(
@@ -2442,7 +2442,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             ) :
                             this.inputs[name].value
                     }
-        parameter = Tools.maskObject<Partial<Configuration>>(
+        parameter = Tools.mask<Partial<Configuration>>(
             parameter, this.resolvedConfiguration.urlModelMask
         )
         if (parameter.model && Object.keys(parameter.model).length === 0)
