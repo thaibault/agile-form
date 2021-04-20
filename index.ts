@@ -291,6 +291,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     reCaptchaToken:null|string = null
 
     @property({type: object})
+    additionalConfiguration:Partial<Configuration>|undefined
+    @property({type: object})
     baseConfiguration:Partial<Configuration>|undefined
     @property({type: object})
     configuration:Partial<Configuration>|undefined
@@ -756,7 +758,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         for (const configuration of [
             this.baseConfiguration || {},
             this.configuration || {},
-            this.dynamicConfiguration || {}
+            this.dynamicConfiguration || {},
+            this.additionalConfiguration || {}
         ]) {
             evaluations = evaluations.concat(configuration.evaluations || [])
             expressions = expressions.concat(configuration.expressions || [])
