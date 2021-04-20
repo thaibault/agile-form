@@ -119,6 +119,7 @@
                         nullable: false,
                         type: 'boolean'
                     },
+                    items: {type: 'string[]'},
                     name: {
                         default: 'Default Name',
                         maximumLength: 15,
@@ -220,6 +221,12 @@
                 placeholder="Please select your feeling"
             ></generic-input>
 
+            <generic-inputs
+                default="['coding is much fun']"
+                description="Provide some thoughts..."
+                name="items"
+            ></generic-inputs>
+
             <slider-input max="100" min="10" name="pensum" step="2">
             </slider-input>
 
@@ -245,7 +252,6 @@
             <button clear>Clear</button>
             <button type="reset">Reset</button>
             <button type="submit">OK</button>
-
 
             <hr/>
 

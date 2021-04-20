@@ -168,7 +168,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             // TODO do not allow nested elements, as long as not supported
             // prefer high-level inputs over native "<input />"
             // TODO support buttons (with two states).
-            inputs: 'button[name], generic-input, requireable-checkbox, slider-input',
+            inputs: 'button[name], generic-input, generic-inputs, requireable-checkbox, slider-input',
             reCaptchaFallbackInput: '.agile-form__re-captcha-fallback',
             resetButtons: 'button[reset], [type=reset]',
             spinner: 'circular-spinner',
@@ -250,10 +250,13 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
     dependencyMapping:Mapping<Array<string>> = {}
 
-    groups:Map<AnnotatedDomNode, {
-        childNames:Array<string>
-        showIf?:IndicatorFunction
-    }> = new Map()
+    groups:Map<
+        AnnotatedDomNode,
+        {
+            childNames:Array<string>
+            showIf?:IndicatorFunction
+        }
+    > = new Map()
 
     determinedTargetURL:null|string = null
     initialData:PlainObject = {}
