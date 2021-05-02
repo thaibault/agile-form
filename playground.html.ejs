@@ -176,7 +176,7 @@
                 name="send-report"
                 show-if="submitted"
             >
-                Form-Result: <pre>${tools.represent(getData())}</pre>
+                Form-Result: <pre>${Tools.represent(getData())}</pre>
             </div>
             <div
                 class="agile-form__group"
@@ -184,7 +184,7 @@
                 show-if="latestResponse"
             >
                 Response (Status: ${latestResponse.status}):
-                <pre>${tools.represent(latestResponse.data)}</pre>
+                <pre>${Tools.represent(latestResponse.data)}</pre>
             </div>
 
             <hr
@@ -221,6 +221,7 @@
                 placeholder="Please select your feeling"
             ></generic-input>
 
+            <!--TODO-->
             <generic-inputs
                 default="['coding is much fun']"
                 description="Provide some thoughts..."

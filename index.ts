@@ -126,7 +126,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         'response',
         'stateMessage',
         'submitted',
-        'tools',
+        'Tools',
         'valid'
     ]
     static content:string = '<form novalidate><slot></slot></form>'
@@ -1691,6 +1691,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     getData = ():ResponseResult => {
         const data:PlainObject = {}
         const invalidInputNames:Array<string> = []
+
         for (const name in this.inputs)
             if (this.inputs.hasOwnProperty(name) && !name.includes('.')) {
                 const value:any = this.models[name].transformer ?
@@ -1698,8 +1699,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         this.inputs[name].value
                     ) :
                     this.inputs[name].value
+
                 if (this.models[name].shown && this.inputs[name].invalid)
                     invalidInputNames.push(name)
+
                 if (name && ![null, undefined].includes(value))
                     if (
                         typeof value === 'object' &&
@@ -1712,6 +1715,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             name,
                             item: value
                         }
+
                         if (
                             typeof this.models[name].dataMapping === 'string'
                         ) {
@@ -1720,8 +1724,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                                     this.models[name].dataMapping as string,
                                     scope
                                 )
+
                             if (evaluated.error)
                                 throw new Error(evaluated.error)
+
                             data[name] = evaluated.result
                         } else
                             for (const subName in (
@@ -1738,8 +1744,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                                             )[subName],
                                             scope
                                         )
+
                                     if (evaluated.error)
                                         throw new Error(evaluated.error)
+
                                     data[subName] = evaluated.result
                                 }
                     } else
