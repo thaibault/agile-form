@@ -1750,6 +1750,17 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
                                     data[subName] = evaluated.result
                                 }
+                    } else if (Array.isArray(value)) {
+                        if (value.every((item:unknown):boolean =>
+                            item !== null &&
+                            typeof item === 'object' &&
+                            item.hasOwnProperty('value')
+                        ))
+                            data[name] = value.map((item:unknown):unknown =>
+                                item.value
+                            )
+                        else
+                            data[name] = value
                     } else
                         data[name] = value
             }
