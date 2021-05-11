@@ -143,6 +143,7 @@
             }"
             dynamic-configuration="{
                 model: {
+                    file: {},
                     legalNotesChecked: {
                         dependsOn: 'reCaptchaV3Challenge',
                         dynamicExtendExpressions: {
@@ -221,12 +222,14 @@
                 placeholder="Please select your feeling"
             ></generic-input>
 
-            <!--TODO-->
             <generic-inputs
                 default="['coding is much fun']"
                 description="Provide some thoughts..."
                 name="items"
             ></generic-inputs>
+
+            <file-input description="Nice file" name="file">
+            </file-input>
 
             <slider-input max="100" min="10" name="pensum" step="2">
             </slider-input>

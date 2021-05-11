@@ -113,7 +113,7 @@ export type Configuration = {
     actions:Mapping<Action>
     animation:boolean
     constraints:Array<Constraint>
-    data:null|PlainObject
+    data:null|Mapping<unknown>
     debug:boolean
     evaluations:Array<Evaluation>
     expressions:Array<Expression>
@@ -153,7 +153,7 @@ export type Configuration = {
         values:Array<string>
     }
     target:RecursiveEvaluateable<TargetConfiguration>
-    targetData:null|PlainObject
+    targetData:null|Mapping<unknown>
     urlModelMask:ObjectMaskConfiguration
     version:number
 }
@@ -163,7 +163,10 @@ export type PropertyTypes = {
     dynamicConfiguration:ValueOf<typeof PropertyTypes>
 }
 export type Response = FetchResponse & {data:PlainObject}
-export type ResponseResult = {data:PlainObject;invalidInputNames:Array<string>}
+export type ResponseResult = {
+    data:Mapping<unknown>
+    invalidInputNames:Array<string>
+}
 // region vim modline
 // vim: set tabstop=4 shiftwidth=4 expandtab:
 // vim: foldmethod=marker foldmarker=region,endregion:
