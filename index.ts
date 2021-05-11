@@ -168,7 +168,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             // TODO do not allow nested elements, as long as not supported
             // prefer high-level inputs over native "<input />"
             // TODO support buttons (with two states).
-            inputs: 'button[name], generic-input, generic-inputs, requireable-checkbox, slider-input',
+            inputs: 'button[name], file-input, generic-input, generic-inputs, requireable-checkbox, slider-input',
             reCaptchaFallbackInput: '.agile-form__re-captcha-fallback',
             resetButtons: 'button[reset], [type=reset]',
             spinner: 'circular-spinner',
@@ -259,7 +259,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     > = new Map()
 
     determinedTargetURL:null|string = null
-    initialData:PlainObject = {}
+    initialData:Mapping<unknown> = {}
     initialResponse:any = null
     latestResponse:any = null
     message:string = ''
@@ -1689,7 +1689,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * fields.
      */
     getData = ():ResponseResult => {
-        const data:PlainObject = {}
+        const data:Mapping<unknown> = {}
         const invalidInputNames:Array<string> = []
 
         for (const name in this.inputs)
@@ -1754,11 +1754,12 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         if (value.every((item:unknown):boolean =>
                             item !== null &&
                             typeof item === 'object' &&
-                            item.hasOwnProperty('value')
+                            item!.hasOwnProperty('value')
                         ))
-                            data[name] = value.map((item:unknown):unknown =>
-                                item.value
-                            )
+                            data[name] =
+                                value.map((item:{value:unknown}):unknown =>
+                                    item!.value
+                                )
                         else
                             data[name] = value
                     } else
@@ -1773,7 +1774,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @returns Nothing.
      */
     handleInvalidSubmittedInput(
-        data:PlainObject, invalidInputNames:Array<string>
+        data:Mapping<unknown>, invalidInputNames:Array<string>
     ):void {
         this.updateMessageBox(
             'The following inputs are invalid "' +
@@ -1795,7 +1796,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * a new window.
      * @returns Redirection target.
      */
-    handleValidSentData(data:PlainObject, newWindow:boolean = false):string {
+    handleValidSentData(
+        data:Mapping<unknown>, newWindow:boolean = false
+    ):string {
         this.triggerEvent('submitSuccessful', {reference: {
             request: data,
             response: this.response.data
@@ -1972,7 +1975,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @returns Promise holding nothing.
      */
     async handleValidSubmittedInput(
-        event:Event, data:PlainObject, newWindow:boolean = false
+        event:Event, data:Mapping<unknown>, newWindow:boolean = false
     ):Promise<void> {
         this.triggerEvent('validSubmit', {reference: data})
         // region prepare request
@@ -1996,7 +1999,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             // region trigger request
             this.latestResponse =
             this.response =
-                await this.doRequest(target, data)
+                await this.doRequest(target, data as PlainObject)
             if (this.response && this.response.ok && this.response.data)
                 /*
                     NOTE: When redirecting to new page on the current active
@@ -2022,8 +2025,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @param - Data to transform.
      * @returns Resulting transformed data.
      */
-    mapTargetNames(data:PlainObject):PlainObject {
-        const result:PlainObject = {}
+    mapTargetNames(data:Mapping<unknown>):Mapping<unknown> {
+        const result:Mapping<unknown> = {}
         for (const name in data)
             if (data.hasOwnProperty(name))
                 if (
@@ -2034,8 +2037,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         typeof this.models[name].target === 'string' &&
                         (this.models[name].target as string).length
                     )
-                        result[this.models[name].target as keyof PlainObject] =
-                            data[name]
+                        result[this.models[name].target as string] = data[name]
                 } else
                     result[name] = data[name]
         return result
@@ -2519,7 +2521,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @param data - Data to track.
      * @returns Nothing.
      */
-    triggerEvent(name:string, data:PlainObject):boolean {
+    triggerEvent(name:string, data:Mapping<unknown>):boolean {
         /*
             NOTE: We should forwarded runtime data to avoid unexpected behavior
             if gtm or configured tracking tool manipulates given data.

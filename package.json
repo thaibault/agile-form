@@ -78,6 +78,7 @@
     "@typescript-eslint/parser": "*",
     "@webcomponents/webcomponentsjs": "*",
     "babel-eslint": "*",
+    "blob-util": "*",
     "clientnode": "*",
     "css-loader": "*",
     "cssnano": "<=4",
