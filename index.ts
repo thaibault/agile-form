@@ -454,7 +454,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         if (domNode.clearFading)
             domNode.clearFading()
 
-        if (!domNode.style || parseFloat(domNode.style.opacity) === opacity)
+        if (parseFloat(domNode.style.opacity) === opacity)
             return
 
         if (opacity === 0) {
