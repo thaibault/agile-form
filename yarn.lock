@@ -4168,9 +4168,9 @@ css-has-pseudo@^0.10.0:
     postcss-selector-parser "^5.0.0-rc.4"
 
 css-loader@*:
-  version "5.2.6"
-  resolved "https://registry.yarnpkg.com/css-loader/-/css-loader-5.2.6.tgz#c3c82ab77fea1f360e587d871a6811f4450cc8d1"
-  integrity sha512-0wyN5vXMQZu6BvjbrPdUJvkCzGEO24HC7IS7nW4llc6BBFC+zwR9CKtYGv63Puzsg10L/o12inMY5/2ByzfD6w==
+  version "5.2.7"
+  resolved "https://registry.yarnpkg.com/css-loader/-/css-loader-5.2.7.tgz#9b9f111edf6fb2be5dc62525644cbc9c232064ae"
+  integrity sha512-Q7mOvpBNBG7YrVGMxRxcBJZFL75o+cH2abNASdibkj/fffYD8qWbInZrD0S9ccI6vZclF3DsHE7njGlLtaHbhg==
   dependencies:
     icss-utils "^5.1.0"
     loader-utils "^2.0.0"
@@ -8712,9 +8712,9 @@ react-dom@*:
     scheduler "^0.20.2"
 
 react-input-material@*:
-  version "0.0.283"
-  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.283.tgz#db8e504477d9090475f26a310a15a4ddcf924a2d"
-  integrity sha512-RoVmM7C9Ocis2b7zNM1eyEqNuq1G+xR29RNl2JjwyZxcA5VCKqUZsEdsPk3AHI1W5W40PiODiuDlQwEoWKZtgw==
+  version "0.0.284"
+  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.284.tgz#f5b95b42607931e326adce39e3fb7b6bb04244d5"
+  integrity sha512-KUhvrsbcmNGAXXnw4LUouDRSgoYQIKGCLGyoycYPuB223eHSP+Lk5gHo9VPsOZMrGcFLzKmZUf6sJ/2TnAHt/A==
   dependencies:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.0.tgz"
 
@@ -10180,9 +10180,9 @@ web-component-wrapper@*:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.0.tgz"
 
 web-input-material@*:
-  version "0.0.172"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.172.tgz#6a16c551d01cfb50eddad51d1650b0c16e56c661"
-  integrity sha512-hT+ZL9de+1HRimr56RTfythpaj3x1rVesl2O8561JqH/hLNlKHnPUqBq0LV7nl0/ptzJZ2N7G8BbDM0DHXt5Dg==
+  version "0.0.173"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.173.tgz#0910e14a461d9dac5001267f9e23f0f45156d35a"
+  integrity sha512-Uvq8C2WkwLYffa0n8BjPeE5sqdp6y0tttkEFEcsgUFADdF245q6tvK+zuHOwfbnRKIUcgsBZw9sc7PR3C0TVTg==
   dependencies:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.0.tgz"
     prop-types "*"
