@@ -37,6 +37,8 @@
             include(
                 'web-component-wrapper/polyfill.html',
                 {additionalFeatures: [
+                    // Asynchronous suggestion creator.
+                    'AbortController',
                     // MDC-Select - Throws about missing object.
                     'CustomEvent'
                 ]}
