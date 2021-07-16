@@ -37,10 +37,30 @@
             include(
                 'web-component-wrapper/polyfill.html',
                 {additionalFeatures: [
+                    // Most polyfills are determined via "create-polyfill-service-url" subracted by already includes one due to "web-component-wrapper"..
                     // Asynchronous suggestion creator.
                     'AbortController',
-                    // MDC-Select - Throws about missing object.
-                    'CustomEvent'
+                    'Array.prototype.every',
+                    'Array.prototype.fill',
+                    'Array.prototype.find',
+                    'Array.prototype.forEach',
+                    'Array.prototype.indexOf',
+                    'Array.prototype.reduce',
+                    'Array.prototype.some',
+                    'Array.prototype.sort',
+                    'Blob',
+                    'Event',
+                    'fetch',
+                    'globalThis',
+                    'Intl',
+                    'Object.assign',
+                    'Object.create',
+                    'Object.getOwnPropertyNames',
+                    'Object.getPrototypeOf',
+                    'Object.setPrototypeOf',
+                    'Reflect',
+                    'Reflect.construct',
+                    'Symbol.prototype.description'
                 ]}
             )
         %>
