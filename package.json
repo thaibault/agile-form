@@ -50,6 +50,7 @@
     "watch": "weboptimizer build --watch"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "*",
     "@rmwc/card": "*",
     "@rmwc/checkbox": "*",
     "@rmwc/circular-progress": "*",
@@ -78,7 +79,6 @@
     "@typescript-eslint/eslint-plugin": "*",
     "@typescript-eslint/parser": "*",
     "@webcomponents/webcomponentsjs": "*",
-    "babel-eslint": "*",
     "blob-util": "*",
     "clientnode": "*",
     "css-loader": "*",
