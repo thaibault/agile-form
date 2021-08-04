@@ -1630,7 +1630,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     scrollAndFocus(
         targetDomNode:AnnotatedDomNode, smooth:boolean = true
     ):Promise<void> {
-        return new Promise((resolve:ProcedureFunction):void => {
+        return new Promise<void>((resolve:() => void):void => {
             const offset:Offset = this.getOffset(targetDomNode)
             const newScrollPosition:number = Math.max(
                 0, offset.top - this.resolvedConfiguration.offsetInPixel
