@@ -22,6 +22,7 @@
     "index.bundle.css",
     "index.css",
     "index.d.ts",
+    "index.js",
     "type.d.ts"
   ],
   "repository": {
