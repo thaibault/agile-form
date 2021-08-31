@@ -781,11 +781,14 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         unknown as {tags:Array<string>}
                 ).tags)
 
-        this.resolvedConfiguration.initializeTarget = Tools.extend(
-            true,
-            Tools.copy(this.resolvedConfiguration.target),
-            this.resolvedConfiguration.initializeTarget
-        )
+        this.resolvedConfiguration.initializeTarget =
+            Tools.extend<TargetConfiguration>(
+                true,
+                Tools.copy<TargetConfiguration>(
+                    this.resolvedConfiguration.target as TargetConfiguration
+                ),
+                this.resolvedConfiguration.initializeTarget
+            )
 
         if (this.resolvedConfiguration.debug)
             console.debug(
@@ -1472,23 +1475,30 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     async handleInitializeAction():Promise<void> {
         if (this.resolvedConfiguration.actions.hasOwnProperty('initialize')) {
             const event:Event = new Event('initialize')
+
             if (this.resolvedConfiguration.initializeTarget?.url) {
                 const target:TargetConfiguration =
                     Tools.evaluateDynamicData(
                         Tools.copy(this.resolvedConfiguration.initializeTarget),
                         {Tools, ...this.resolvedConfiguration}
                     )
+
                 await this.startBackgroundProcess(event)
+
                 this.initialResponse = this.latestResponse =
                     await this.doRequest(target)
+
                 if (!this.initialResponse) {
                     await this.stopBackgroundProcess(event)
+
                     return
                 }
             }
+
             const target:null|string = this.resolveAction(
                 this.resolvedConfiguration.actions.initialize, 'initialize'
             )
+
             if (typeof target === 'string')
                 location.href = target
             else if (this.pending)
