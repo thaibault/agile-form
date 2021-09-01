@@ -980,7 +980,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 }
 
                 let model:Model = Tools.copy(this.models[name])
-                if (domNode.externalProperties?.model) {
+                if (domNode.externalProperties?.model)
                     /*
                         NOTE: Explicit input specific model configuration has
                         higher priority than form specifications.
@@ -988,8 +988,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     model = Tools.extend(
                         true, model, domNode.externalProperties.model
                     )
-                    console.log(name, model, domNode.externalProperties.model)
-                }
                 domNode.model = model
 
                 if ([model.mutable, model.writable].includes(false))
