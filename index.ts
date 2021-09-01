@@ -567,7 +567,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Updates given field (by name) visibility state.
+     *
      * @param name - Field name to update.
+     *
      * @returns A promise resolving to a boolean value indicating whether a
      * visibility change has been happen.
      */
@@ -971,16 +973,20 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     continue
                 }
 
+                // TODO how to handle (default) value on input specific specs?
+
                 // Do not control "state" from the outside.
                 delete this.models[name].state
-                if (this.models[name].hasOwnProperty('value')) {
+                const hasInitialValue:boolean =
+                    this.models[name].hasOwnProperty('value')
+                if (hasInitialValue) {
                     // Control value via "value" property in dom node.
                     domNode.initialValue = this.models[name].value
                     delete this.models[name].value
                 }
 
                 let model:Model = Tools.copy(this.models[name])
-                if (domNode.externalProperties?.model)
+                if (domNode.externalProperties?.model) {
                     /*
                         NOTE: Explicit input specific model configuration has
                         higher priority than form specifications.
@@ -988,6 +994,15 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     model = Tools.extend(
                         true, model, domNode.externalProperties.model
                     )
+                    if (
+                        hasInitialValue &&
+                        domNode.externalProperties.model.hasOwnProperty(
+                            'default'
+                        )
+                    )
+                        domNode.initialValue =
+                            domNode.externalProperties.model.default
+                }
                 domNode.model = model
 
                 if ([model.mutable, model.writable].includes(false))
