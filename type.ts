@@ -75,6 +75,7 @@ export type ModelAnnotation<Type = any> = {
     default:Type
     dirty:boolean
     disabled:boolean
+    externalProperties?:ModelAnnotation<Type>
     initialValue?:Type
     invalid:boolean
     model:Model<Type>

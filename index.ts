@@ -980,21 +980,14 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 }
 
                 let model:Model = Tools.copy(this.models[name])
-                if (domNode.hasAttribute('model')) {
-                    const result:EvaluationResult = Tools.stringEvaluate(
-                        domNode.getAttribute('model') as string
+                if (domNode.externalProperties?.model)
+                    /*
+                        NOTE: Explicit input specific model configuration has
+                        higher priority than form specifications.
+                    */
+                    model = Tools.extend(
+                        true, model, domNode.externalProperties.model
                     )
-
-                    if (result.error)
-                        console.warn(
-                            'Failed to evaluate field model configuration "' +
-                            `${domNode.getAttribute('model')} for field "` +
-                            `${name}".`
-                        )
-
-                    // TODO Who should rewrite which one?
-                    model = Tools.extend(true, result.result, model)
-                }
                 domNode.model = model
 
                 if ([model.mutable, model.writable].includes(false))
@@ -1077,6 +1070,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * Finds all groups and connects them with their corresponding compiled
      * show if indicator functions. Additionally some description will be
      * supplied.
+     *
      * @returns Nothing.
      */
     setGroupSpecificConfigurations():void {
