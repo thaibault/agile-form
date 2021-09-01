@@ -567,7 +567,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Updates given field (by name) visibility state.
+     *
      * @param name - Field name to update.
+     *
      * @returns A promise resolving to a boolean value indicating whether a
      * visibility change has been happen.
      */
@@ -970,6 +972,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
                     continue
                 }
+
+                // TODO how to handle (default) value on input specific specs?
 
                 // Do not control "state" from the outside.
                 delete this.models[name].state
