@@ -575,8 +575,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         const model:Model = this.models[name]
         const oldState:boolean|undefined = model.shown
         this.inputs[name].shown =
-        model.shown =
-            !model.showIf || model.showIf!(false)
+        model.shown = !model.showIf || model.showIf!(false)
+
         if (model.shown !== oldState) {
             if (this.resolvedConfiguration.debug)
                 if (Boolean(oldState) === oldState)
@@ -590,15 +590,19 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         `Initialize input "${name}" visibility state to "` +
                         `${model.shown ? 'show' : 'hide'}".`
                     )
+
             if (model.shown || this.resolvedConfiguration.showAll)
                 this.activate(this.inputs[name])
             else {
                 if (model.valuePersistence === 'resetOnHide')
                     await this.resetInput(name)
+
                 this.deactivate(this.inputs[name])
             }
+
             return true
         }
+
         /*
         console.debug(
             `Input "${name}" stays in visibility state ` +
@@ -636,6 +640,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     specification.childNames.length === 0
                 )
             )
+
             if (domNode.shown === oldState) {
                 /*
                 console.debug(
@@ -704,6 +709,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 this.models[name]
             )
         ]
+
         for (let index = 0; index < keys.length; index += 1)
             scope[keys[index]] = values[index]
 
@@ -735,6 +741,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             this.message = message
         else if (message === null)
             this.message = ''
+
         for (const domNode of this.statusMessageBoxes)
             if (this.message) {
                 domNode.style.display = 'block'
@@ -836,6 +843,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * Forwards all input specifications to their corresponding input node.
      * Observes fields for changes to apply specified inter-constraints between
      * them.
+     *
      * @returns Nothing.
      */
     async configureContentProjectedInputs():Promise<void> {
@@ -849,6 +857,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         for (const name in this.inputs)
             if (this.inputs.hasOwnProperty(name))
                 this.inputs[name].showInitialValidationState = false
+
         await this.digest()
 
         this.preCompileConfigurationExpressions()
@@ -892,17 +901,20 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             Array.from(this.root.querySelectorAll(
                 this.resolvedConfiguration.selector.inputs
             ))
+
         // If no input is specified simply consider all provided inputs.
         const dummyMode:boolean = Object.keys(this.models).length === 0
         // Show all inputs in dummy mode.
         if (dummyMode)
             for (const domNode of inputs)
                 this.activate(domNode)
+
         this.models = {...this.resolvedConfiguration.model}
         const missingInputs:Mapping<Model> = {...this.models}
         this.determineModelNames()
         this.inputs = {}
         this.initialData = {}
+
         let index:number = 0
         /*
             Match all found inputs against existing specified fields or load
@@ -913,7 +925,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             if (name) {
                 if (this.resolvedConfiguration.model.hasOwnProperty(name)) {
                     this.models[name] = this.resolvedConfiguration.model[name]
+
                     delete missingInputs[name]
+
                     if (
                         this.resolvedConfiguration.debug &&
                         this.models[name].showIfExpression
@@ -953,8 +967,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         `Given input "${name}" not found in current ` +
                         'configuration. Expected names are: "' +
                         `${this.modelNames.join('", "')}".`
+
                     continue
                 }
+
                 // Do not control "state" from the outside.
                 delete this.models[name].state
                 if (this.models[name].hasOwnProperty('value')) {
@@ -962,17 +978,21 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     domNode.initialValue = this.models[name].value
                     delete this.models[name].value
                 }
+
                 let model:Model = Tools.copy(this.models[name])
                 if (domNode.hasAttribute('model')) {
                     const result:EvaluationResult = Tools.stringEvaluate(
                         domNode.getAttribute('model') as string
                     )
+
                     if (result.error)
                         console.warn(
                             'Failed to evaluate field model configuration "' +
                             `${domNode.getAttribute('model')} for field "` +
                             `${name}".`
                         )
+
+                    // TODO Who should rewrite which one?
                     model = Tools.extend(true, result.result, model)
                 }
                 domNode.model = model
@@ -981,7 +1001,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     domNode.disabled = true
 
                 this.models[name].domNode = domNode
+
                 await this.digest()
+
                 Object.defineProperty(
                     this.models[name],
                     'value',
@@ -992,6 +1014,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         }
                     }
                 )
+
                 /*
                     NOTE: We have to determine initial value since the
                     component is already initialized by itself.
@@ -1015,15 +1038,20 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         model.value ??
                         domNode.initialValue ??
                         model.default
+
                 await this.digest()
+
                 this.inputs[name] = domNode
                 this.initialData[name] = domNode.value
             } else
                 this.message =
                     `Missing attribute "name" for ${index}. given input.`
+
             index += 1
         }
+
         this.determineModelNames()
+
         /*
             Set all environment variables as dependencies of no explicit
             dependencies are listed.
@@ -1034,6 +1062,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 this.models[name].dependsOn === null
             )
                 this.models[name].dependsOn = this.modelNames
+
         return missingInputs
     }
     /**
@@ -1082,6 +1111,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         domNode.getAttribute('data-name')
                     ) as string)
             }
+
             if (
                 domNode.getAttribute('show-if') ||
                 domNode.getAttribute('data-show-if')
@@ -1135,9 +1165,11 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                                 `${Tools.represent(error)}".`
                             )
                         }
+
                         return false
                     }
             }
+
             this.groups.set(domNode, specification)
         }
     }
@@ -1182,6 +1214,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     preCompileExpressions(name:string, type:string = 'transformer'):void {
         const typeName:'transformerExpression' = `${type}Expression` as
             'transformerExpression'
+
         if (this.models[name][typeName]) {
             const code:string = this.models[name][typeName] as string
             const {error, scopeNames, templateFunction} = Tools.stringCompile(
@@ -1312,11 +1345,13 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         ...(this.models[name].dependsOn || [])
                             .map((name:string):any => this.models[name])
                     ]
+
                     let index:number = 0
                     for (const name of scopeNames) {
                         scope[name] = context[index]
                         index += 1
                     }
+
                     try {
                         return Tools.isFunction(code) ?
                             code(event, scope) :
@@ -1399,6 +1434,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      */
     preCompileGenericExpressions():void {
         this.resolvedConfiguration.evaluations = []
+
         const expressionNames:Array<string> = []
         for (const expression of this.resolvedConfiguration.expressions) {
             const [name, code] = expression
@@ -1455,13 +1491,16 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     preCompileConfigurationExpressions():void {
         this.preCompileGenericExpressions()
         this.preCompileActionSources()
+
         for (const name in this.models)
             if (this.models.hasOwnProperty(name)) {
                 this.models[name].dependsOn = ([] as Array<string>).concat(
                     this.models[name].dependsOn || []
                 )
+
                 for (const type of ['serializer', 'transformer', 'showIf'])
                     this.preCompileExpressions(name, type)
+
                 this.preCompileDynamicExtendStructure(name)
             }
     }
@@ -1523,10 +1562,12 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 ) +
                 '.'
             )
+
             let target:string = action.target
             target = (target && typeof target === 'string') ?
                 target.trim() :
                 ''
+
             if (typeof actionResult === 'string')
                 if (/^([a-z]+:)?\/\/.+$/.test(actionResult))
                     target = actionResult
@@ -1540,8 +1581,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     target +=
                         `${target.includes('?') ? '&' : '?'}` +
                         actionResult
+
             return target
         }
+
         return null
     }
     /**
@@ -1563,6 +1606,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     ):Promise<void> => {
         event.preventDefault()
         event.stopPropagation()
+
         for (const name in this.inputs)
             try {
                 await this.resetInput(name, useDefault)
@@ -1601,9 +1645,12 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 this.inputs[name].value = Tools.copy(this.models[name].default)
             else
                 this.inputs[name].value = null
+
             await this.digest()
+
             return true
         }
+
         return false
     }
     // / endregion
@@ -1626,6 +1673,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         const documentNode:HTMLElement = document.documentElement
         const box:ReturnType<HTMLElement['getBoundingClientRect']> =
             domNode.getBoundingClientRect()
+
         return {
             left: box.left + window.pageXOffset - documentNode.clientLeft,
             top: box.top + window.pageYOffset - documentNode.clientTop
@@ -1775,6 +1823,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     } else
                         data[name] = value
             }
+
         return {data, invalidInputNames}
     }
     /**
@@ -1790,20 +1839,24 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             'The following inputs are invalid "' +
             `${invalidInputNames.join('", "')}".`
         )
+
         const invalidInputs:Array<AnnotatedModelDomNode> = Array.from(
             this.root.querySelectorAll(
                 `[name="${invalidInputNames.join('"], [name="')}"]`
             )
         )
+
         if (invalidInputs.length)
             this.scrollAndFocus(invalidInputs[0])
     }
     /**
      * Handle valid sent data and redirects to corresponding specified target
      * page.
+     *
      * @param data - Data given by the form.
      * @param newWindow - Indicates whether action targets should be opened in
      * a new window.
+     *
      * @returns Redirection target.
      */
     handleValidSentData(
@@ -1813,8 +1866,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             request: data,
             response: this.response.data
         }})
+
         let redirected:boolean = false
         let fallbackTarget:string = ''
+
         for (const name in this.resolvedConfiguration.actions)
             if (
                 this.resolvedConfiguration.actions.hasOwnProperty(name) &&
@@ -1830,6 +1885,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     const target:null|string = this.resolveAction(
                         this.resolvedConfiguration.actions[name], name
                     )
+
                     if (typeof target === 'string') {
                         if (newWindow)
                             window.open(target)
@@ -1837,13 +1893,17 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             redirected = true
                             location.href = target
                         }
+
                         return target
                     }
                 }
+
         if (!redirected && fallbackTarget) {
             location.href = fallbackTarget
+
             return fallbackTarget
         }
+
         return ''
     }
     /**
@@ -1934,6 +1994,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             ;(target.options.headers as Headers) = headers
         }
         // endregion
+
         let result:null|Response = null
         try {
             this.updateReCaptchaToken()
@@ -1959,6 +2020,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 `${Tools.represent(error)}".`
             )
         }
+
         if (result) {
             if (result.ok && result.data) {
                 if (
@@ -1970,10 +2032,13 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         'serverAuthenticationInvalid',
                         {reference: {request: rawData, response: result.data}}
                     )
+
                 return result
             }
+
             this.handleUnsuccessfulSentRequest(result, rawData)
         }
+
         return result
     }
     /**
@@ -2002,14 +2067,17 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         // endregion
         if (target?.url) {
             this.determinedTargetURL = target.url
+
             if (target.options.body && typeof target.options.body !== 'string')
                 target.options.body = JSON.stringify(target.options.body)
+
             this.latestResponse = this.response = null
+
             await this.startBackgroundProcess(event)
+
             // region trigger request
             this.latestResponse =
-            this.response =
-                await this.doRequest(target, data as PlainObject)
+            this.response = await this.doRequest(target, data as PlainObject)
             if (this.response && this.response.ok && this.response.data)
                 /*
                     NOTE: When redirecting to new page on the current active
@@ -2024,10 +2092,13 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             // endregion
         } else {
             this.determinedTargetURL = null
+
             await this.startBackgroundProcess(event)
+
             if (this.resolvedConfiguration.debug)
                 console.debug('Retrieved data:', Tools.represent(data))
         }
+
         await this.stopBackgroundProcess(event)
     }
     /**
@@ -2037,6 +2108,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      */
     mapTargetNames(data:Mapping<unknown>):Mapping<unknown> {
         const result:Mapping<unknown> = {}
+
         for (const name in data)
             if (data.hasOwnProperty(name))
                 if (
@@ -2050,6 +2122,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         result[this.models[name].target as string] = data[name]
                 } else
                     result[name] = data[name]
+
         return result
     }
     /**
@@ -2195,6 +2268,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     this.models[name].hasOwnProperty('changedEventName') ?
                         this.models[name].changedEventName as string :
                         'change'
+
                 const handler:EventListener = Tools.debounce(
                     async (event:Event):Promise<void> => {
                         await this.digest()
@@ -2210,6 +2284,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     },
                     400
                 )
+
                 this.inputs[name].addEventListener(eventName, handler)
                 this.inputEventBindings[name] = ():void => {
                     this.inputs[name].removeEventListener(eventName, handler)
@@ -2231,8 +2306,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Updates given input (by name) dynamic expression and its visibility
      * state.
+     *
      * @param name - Field name to update.
      * @param event - Triggering event object.
+     *
      * @returns A Promise resolving to a boolean indicator whether a state
      * changed happened or not.
      */
@@ -2244,8 +2321,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 const oldValue:any = this.models[name][key as keyof Model]
                 const newValue:any =
                     this.models[name].dynamicExtend![key](event)
+
                 if (oldValue !== newValue) {
                     changed = true
+
                     if (key !== 'value')
                         this.models[name][key as keyof Model] = newValue
                     if (
@@ -2269,13 +2348,16 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             this.inputs[name][key as keyof ModelAnnotation] as
                                 ValueOf<ModelAnnotation>
                         ) = newValue
+
                     await this.digest()
                 }
             }
+
         if ((await this.updateInputVisibility(name)) || changed) {
             await this.triggerModelUpdate(name)
             await this.updateInputDependencies(name, event)
         }
+
         return changed
     }
     /**
@@ -2339,9 +2421,11 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 )
                     return event.detail.parameter[0].type
             }
+
             if (typeof event.detail.type === 'string')
                 return event.detail.type
         }
+
         return typeof event.type === 'string' ? event.type : 'unknown'
     }
     /**
@@ -2351,11 +2435,14 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      */
     evaluateExpressions(current?:string):Array<any> {
         const scope:Array<any> = []
+
         for (const evaluation of this.resolvedConfiguration.evaluations) {
             if (current === evaluation[0])
                 break
+
             scope.push(evaluation[1]())
         }
+
         return scope
     }
     /**
@@ -2479,11 +2566,14 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             ) :
                             this.inputs[name].value
                     }
+
         parameter = Tools.mask<Partial<Configuration>>(
             parameter, this.resolvedConfiguration.urlModelMask
         )
+
         if (parameter.model && Object.keys(parameter.model).length === 0)
             delete parameter.model
+
         let encodedURL:string = document.URL
         let url:string = document.URL
         if (Object.keys(parameter).length) {
@@ -2523,6 +2613,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             encodedURL += encodedQueryParameter
             url += queryParameter
         }
+
         return {encoded: encodedURL, plain: url}
     }
     /**
@@ -2603,9 +2694,11 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 )
                 this.activate(this.reCaptchaFallbackInput)
             }
+
             return true
         } else
             this.reCaptchaPromise = Promise.resolve(null)
+
         return false
     }
     /**
@@ -2657,6 +2750,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             this.reCaptchaToken = null
             this.reCaptchaPromiseResolver(this.reCaptchaToken)
         }
+
         return this.reCaptchaPromise
     }
     // / endregion
