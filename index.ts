@@ -1527,10 +1527,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     // / endregion
     // / region initialize/submit/reset actions
     /**
-     * TODO determine when this method will be called.
-     *
-     * Handle initial request to get user specific state depending on remote
-     * data.
+     * Can be triggered vie provided action condition. Can e.g. retrieve
+     * initial user specific state depending on remote response.
      * @returns Promise resolving to nothing when initial request has been
      * done.
      */
