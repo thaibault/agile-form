@@ -4975,9 +4975,9 @@ flatten@^1.0.2:
   integrity sha512-dVsPA/UwQ8+2uoFe5GHtiBMu48dWLTdsuEd7CKGlZlD78r1TTWBvDuFaFGKCo/ZfEr95Uk56vZoX86OsHkUeIg==
 
 follow-redirects@^1.0.0:
-  version "1.14.2"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.2.tgz#cecb825047c00f5e66b142f90fed4f515dec789b"
-  integrity sha512-yLR6WaE2lbF0x4K2qE2p9PEXKLDjUjnR/xmjS3wHAYxtlsI9MLLBJUZirAHKzUZDGLxje7w/cXR49WOUo4rbsA==
+  version "1.14.3"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.3.tgz#6ada78118d8d24caee595595accdc0ac6abd022e"
+  integrity sha512-3MkHxknWMUtb23apkgz/83fDoe+y+qr0TdgacGIA7bew+QLBo3vdgEN2xEsuXNivpFy4CyDhBBZnNZOtalmenw==
 
 form-data@^3.0.0:
   version "3.0.1"
@@ -8055,9 +8055,9 @@ react-dom@*:
     scheduler "^0.20.2"
 
 react-input-material@*:
-  version "0.0.323"
-  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.323.tgz#08e3180eb9b6bab3bf7c98c23f3180fcf928b0b7"
-  integrity sha512-OcMaYQ25DfdsP23k639yAIHr/xkBeUz+ciBraeCoaSDQGZeVR5OvK0Ia4saFx9hrMY4Hxnqs2VTkp5A4warNLg==
+  version "0.0.324"
+  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.324.tgz#9fc7a1629f52606534c369d9131ff2a5c662b8f1"
+  integrity sha512-/VjdsiOby9gOb0EWkbSR5meFMnTw7yIAVDVRW5UxFK2Uyjuw/Ktj10zfGLvrw98DMjNKbXch4r8kFaE37PhrGg==
   dependencies:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.0.tgz"
 
@@ -8927,9 +8927,9 @@ terminal-link@^2.0.0:
     supports-hyperlinks "^2.0.0"
 
 terser-webpack-plugin@^5.1.3:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/terser-webpack-plugin/-/terser-webpack-plugin-5.2.0.tgz#694c54fcdfa5f5cb2ceaf31929e7535b32a8a50c"
-  integrity sha512-FpR4Qe0Yt4knSQ5u2bA1wkM0R8VlVsvhyfSHvomXRivS4vPLk0dJV2IhRBIHRABh7AFutdMeElIA5y1dETwMBg==
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/terser-webpack-plugin/-/terser-webpack-plugin-5.2.1.tgz#7baa96287ca8f29d22814d57c809cbae6be4de3c"
+  integrity sha512-mUAWsS2RDNL3rEr0ZTr7hm/R1DDxNwrED7Kf59F2rgFTfy+LrnciwA51MNWhGGQcqHnqvbPHgkW9LYr5HGBhfw==
   dependencies:
     jest-worker "^27.0.6"
     p-limit "^3.1.0"
@@ -9290,9 +9290,9 @@ web-component-wrapper@*:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.0.tgz"
 
 web-input-material@*:
-  version "0.0.202"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.202.tgz#63f441060fc835ec5f4313f0dcb602b6ea242afb"
-  integrity sha512-WRLF+i874gUGK8LtZCfNK9Y+vhjdlbpW2m8jC92DLeoJ0wNMRr8ZSFA7BG7VLxXv42otZ2jOs4G4Fc5r4/+2rw==
+  version "0.0.203"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.203.tgz#fcb6130fc3bb1545bf4a45b944dda30474e25692"
+  integrity sha512-pyFHzCGGU1ui7Xv5udrCXvNbCHqCY205bI3vrCKOqbxEVh9m4wEqWDwIcfW1yGmDXFQp4EvSqUPJQhD/bvprrQ==
   dependencies:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.0.tgz"
     prop-types "*"
@@ -9422,9 +9422,9 @@ webpack-sources@*, webpack-sources@^3.2.0:
   integrity sha512-fahN08Et7P9trej8xz/Z7eRu8ltyiygEo/hnRi9KqBUs80KeDcnf96ZJo++ewWd84fEf3xSX9bp4ZS9hbw0OBw==
 
 webpack@*:
-  version "5.51.1"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.51.1.tgz#41bebf38dccab9a89487b16dbe95c22e147aac57"
-  integrity sha512-xsn3lwqEKoFvqn4JQggPSRxE4dhsRcysWTqYABAZlmavcoTmwlOb9b1N36Inbt/eIispSkuHa80/FJkDTPos1A==
+  version "5.51.2"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.51.2.tgz#f765d258b0bf6abda3c5f21bf855a25720e9796f"
+  integrity sha512-odydxP4WA3XYYzwSQUivPxywdzMlY42bbfxMwCaEtHb+i/N9uzKSHcLgWkXo/Gsa+4Zlzf3Jg0hEHn1FnZpk2Q==
   dependencies:
     "@types/eslint-scope" "^3.7.0"
     "@types/estree" "^0.0.50"
