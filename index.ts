@@ -41,6 +41,7 @@ import {
     AnnotatedDomNode,
     AnnotatedModelDomNode,
     Configuration,
+    Constraint,
     Evaluation,
     Expression,
     IndicatorFunction,
@@ -93,6 +94,8 @@ import {
  * @property modelNames - Specified transformer environment variable names.
 
  * @property invalid - Indicates whether this form has invalid input.
+ * @property invalidConstraint - Indicates whether which constraint or none if
+ * none where determined as invalid.
  * @property onceSubmitted - Indicates whether this form was submitted once
  * already.
  * @property pending - Indicates whether a request is currently running.
@@ -123,6 +126,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         'getData',
         'initialResponse',
         'invalid',
+        'invalidConstraint',
         'latestResponse',
         'pending',
         'queryParameters',
@@ -273,6 +277,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     modelNames:Array<string> = []
 
     invalid:boolean|null = null
+    invalidConstraint:Constraint|null = null
     onceSubmitted:boolean = false
     pending:boolean = true
     submitted:boolean = false
@@ -706,6 +711,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             this.getData,
             this.initialResponse,
             this.invalid,
+            this.invalidConstraint,
             this.latestResponse,
             this.pending,
             this.queryParameters,
@@ -1160,6 +1166,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                                 this.getData,
                                 this.initialResponse,
                                 this.invalid,
+                                this.invalidConstraint,
                                 this.latestResponse,
                                 this.pending,
                                 this.queryParameters,
@@ -1258,6 +1265,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         this.getData,
                         this.initialResponse,
                         this.invalid,
+                        this.invalidConstraint,
                         this.latestResponse,
                         this.pending,
                         this.queryParameters,
@@ -1346,6 +1354,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         this.getData,
                         this.initialResponse,
                         this.invalid,
+                        this.invalidConstraint,
                         this.latestResponse,
                         this.pending,
                         this.queryParameters,
@@ -1423,6 +1432,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             this.getData,
                             this.initialResponse,
                             this.invalid,
+                            this.invalidConstraint,
                             this.latestResponse,
                             this.pending,
                             this.queryParameters,
@@ -1479,6 +1489,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         this.getData,
                         this.initialResponse,
                         this.invalid,
+                        this.invalidConstraint,
                         this.latestResponse,
                         this.pending,
                         this.queryParameters,
@@ -2171,6 +2182,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 return
 
             this.invalid = true
+            this.invalidConstraint = null
             this.valid = !this.invalid
 
             const target:HTMLElement|null = this.submitButtons.length ?
@@ -2219,6 +2231,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     this.getData,
                     this.initialResponse,
                     this.invalid,
+                    this.invalidConstraint,
                     this.latestResponse,
                     this.pending,
                     this.queryParameters,
@@ -2252,6 +2265,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         this.updateMessageBox(constraint.description)
 
                         this.invalid = true
+                        this.invalidConstraint = constraint
                         this.valid = !this.invalid
 
                         break
