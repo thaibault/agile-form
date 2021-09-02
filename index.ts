@@ -816,6 +816,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
         const parameter:Array<string>|null|string =
             Tools.stringGetURLParameter(name)
+        // TODO provide all url parameter in all expressions.
         if (typeof parameter === 'string') {
             const evaluated:EvaluationResult =
                 Tools.stringEvaluate(decodeURI(parameter))
