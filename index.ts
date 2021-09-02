@@ -25,6 +25,7 @@ import {
     Offset,
     PlainObject,
     ProcedureFunction,
+    QueryParameters,
     RecursiveEvaluateable,
     TemplateFunction,
     ValueOf
@@ -110,6 +111,7 @@ import {
 
  * @property resolvedConfiguration - Holds given configuration object.
  * @property urlConfiguration - URL given configurations object.
+ * @property queryParameters - All determined query parameters.
  *
  * @property tools - Holds tools instance for saving instance specific locks.
  */
@@ -123,6 +125,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         'invalid',
         'latestResponse',
         'pending',
+        'queryParameters',
         'response',
         'stateMessage',
         'submitted',
@@ -300,6 +303,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     dynamicConfiguration:Partial<Configuration>|undefined
     resolvedConfiguration:Configuration = {} as Configuration
     urlConfiguration:null|PlainObject = null
+    queryParameters:QueryParameters
 
     readonly self:typeof AgileForm = AgileForm
 
@@ -319,6 +323,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             interface properties to enable static type checks.
         */
         this.defineGetterAndSetterInterface()
+
+        this.queryParameters = Tools.stringGetURLParameter() as QueryParameters
+
         this.resolveConfiguration()
     }
     /**
@@ -701,6 +708,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             this.invalid,
             this.latestResponse,
             this.pending,
+            this.queryParameters,
             this.response,
             this.message,
             this.onceSubmitted,
@@ -814,9 +822,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         if (!name)
             name = this.resolvedConfiguration.name
 
-        const parameter:Array<string>|null|string =
-            Tools.stringGetURLParameter(name)
-        // TODO provide all url parameter in all expressions.
+        const parameter:Array<string>|string|undefined =
+            this.queryParameters[name]
         if (typeof parameter === 'string') {
             const evaluated:EvaluationResult =
                 Tools.stringEvaluate(decodeURI(parameter))
@@ -973,8 +980,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
                     continue
                 }
-
-                // TODO how to handle (default) value on input specific specs?
 
                 // Do not control "state" from the outside.
                 delete this.models[name].state
@@ -1157,6 +1162,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                                 this.invalid,
                                 this.latestResponse,
                                 this.pending,
+                                this.queryParameters,
                                 this.response,
                                 this.message,
                                 this.onceSubmitted,
@@ -1254,6 +1260,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         this.invalid,
                         this.latestResponse,
                         this.pending,
+                        this.queryParameters,
                         this.response,
                         this.message,
                         this.onceSubmitted,
@@ -1341,6 +1348,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         this.invalid,
                         this.latestResponse,
                         this.pending,
+                        this.queryParameters,
                         this.response,
                         this.message,
                         this.onceSubmitted,
@@ -1417,6 +1425,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             this.invalid,
                             this.latestResponse,
                             this.pending,
+                            this.queryParameters,
                             this.response,
                             this.message,
                             this.onceSubmitted,
@@ -1472,6 +1481,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         this.invalid,
                         this.latestResponse,
                         this.pending,
+                        this.queryParameters,
                         this.response,
                         this.message,
                         this.onceSubmitted,
@@ -1753,6 +1763,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Retrieves current raw data from given input fields and retrieves invalid
      * fields.
+     *
      * @returns An object containing raw data and a list of invalid input
      * fields.
      */
@@ -2053,10 +2064,12 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Send given data to server und interpret response.
+     *
      * @param event - Triggering event object.
      * @param data - Valid data given by the form.
-     * @param newWindow - Indicates whether action targets should be opened
-     * in a new window.
+     * @param newWindow - Indicates whether action targets should be opened in
+     * a new window.
+     *
      * @returns Promise holding nothing.
      */
     async handleValidSubmittedInput(
@@ -2200,6 +2213,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     this.invalid,
                     this.latestResponse,
                     this.pending,
+                    this.queryParameters,
                     this.response,
                     this.message,
                     this.onceSubmitted,
