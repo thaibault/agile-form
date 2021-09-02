@@ -1527,9 +1527,12 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     // / endregion
     // / region initialize/submit/reset actions
     /**
+     * TODO determine when this method will be called.
+     *
      * Handle initial request to get user specific state depending on remote
      * data.
-     * Returns Promise resolving to nothing when initial request has been done.
+     * @returns Promise resolving to nothing when initial request has been
+     * done.
      */
     async handleInitializeAction():Promise<void> {
         if (this.resolvedConfiguration.actions.hasOwnProperty('initialize')) {
@@ -1538,8 +1541,14 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             if (this.resolvedConfiguration.initializeTarget?.url) {
                 const target:TargetConfiguration =
                     Tools.evaluateDynamicData(
-                        Tools.copy(this.resolvedConfiguration.initializeTarget),
-                        {Tools, ...this.resolvedConfiguration}
+                        Tools.copy(
+                            this.resolvedConfiguration.initializeTarget
+                        ),
+                        {
+                            queryParameters: this.queryParameters,
+                            Tools,
+                            ...this.resolvedConfiguration
+                        }
                     )
 
                 await this.startBackgroundProcess(event)
@@ -1883,10 +1892,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     handleValidSentData(
         data:Mapping<unknown>, newWindow:boolean = false
     ):string {
-        this.triggerEvent('submitSuccessful', {reference: {
-            request: data,
-            response: this.response.data
-        }})
+        this.triggerEvent(
+            'submitSuccessful',
+            {reference: {request: data, response: this.response.data}}
+        )
 
         let redirected:boolean = false
         let fallbackTarget:string = ''
@@ -2083,6 +2092,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             Tools.copy(this.resolvedConfiguration.target),
             {
                 determineStateURL: this.determineStateURL,
+                queryParameters: this.queryParameters,
                 Tools,
                 ...this.resolvedConfiguration
             }
