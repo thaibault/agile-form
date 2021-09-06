@@ -31,7 +31,6 @@ import 'grecaptcha'
 import {
     RequestInit as FetchOptions,
     Response as FetchResponse,
-    RequestCache,
     RequestCredentials,
     RequestMode
 } from 'node-fetch'
@@ -101,10 +100,10 @@ export type Constraint = {
 }
 export type TargetConfiguration = {
     options:FetchOptions & Partial<{
-        cache:RequestCache
-        credentials:RequestCredentials
+        cache:'default'|'reload'|'no-cache'
+        credentials:'omit'|'same-origin'|'include'
         headers:Headers|Mapping
-        mode:RequestMode
+        mode:'cors'|'no-cors'|'same-origin'|'navigate'
     }>
     url:string
 }
