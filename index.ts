@@ -193,7 +193,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 body: {
                     __evaluate__: 'targetData'
                 },
-                cache: 'no-store',
+                cache: 'no-cache',
                 /*
                     NOTE: Send user credentials (cookies, basic http
                     authentication, etc..), even for cross-origin calls.
