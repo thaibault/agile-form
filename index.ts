@@ -989,9 +989,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
                 // Do not control "state" from the outside.
                 delete this.models[name].state
-                const hasInitialValue:boolean =
-                    this.models[name].hasOwnProperty('value')
-                if (hasInitialValue) {
+                if (this.models[name].hasOwnProperty('value')) {
                     // Control value via "value" property in dom node.
                     domNode.initialValue = this.models[name].value
                     delete this.models[name].value
@@ -1006,14 +1004,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     model = Tools.extend(
                         true, model, domNode.externalProperties.model
                     )
-                    if (
-                        hasInitialValue &&
-                        domNode.externalProperties.model.hasOwnProperty(
-                            'default'
-                        )
-                    )
-                        domNode.initialValue =
-                            domNode.externalProperties.model.default
                 }
                 domNode.model = model
 
