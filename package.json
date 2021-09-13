@@ -42,7 +42,7 @@
     "prepare": "yarn build",
     "serve": "weboptimizer serve",
     "start": "yarn serve",
-    "test": "weboptimizer test '{__reference__: \"target:test\"}'",
+    "test": "weboptimizer test",
     "test:browser": "weboptimizer test:browser",
     "test:coverage": "weboptimizer test:coverage",
     "test:coverage:report": "weboptimizer test:coverage:report",
@@ -105,13 +105,14 @@
   },
   "peerDependencies": {
     "@babel/runtime": "*",
-    "clientnode": "*"
+    "clientnode": "*",
+    "node-fetch": "*"
   },
   "peerDependenciesMeta": {
     "@babel/runtime": {
       "optional": true
     },
-    "clientnode": {
+    "node-fetch": {
       "optional": true
     }
   },
@@ -208,7 +209,29 @@
         }
       }
     },
-    "target:test": {
+    "test": {
+      "injection": {
+        "external": {
+          "implicit": {
+            "pattern": {
+              "exclude": {
+                "#": "NOTE: Theses files are ECMAscript file so have to be processed to work with test-runner.",
+                "__append__": [
+                  {
+                    "__evaluate__": "/^(.+\\/)?data-uri-to-buffer(\\/.+)?$/"
+                  },
+                  {
+                    "__evaluate__": "/^(.+\\/)?fetch-blob(\\/.+)?$/"
+                  },
+                  {
+                    "__evaluate__": "/^(.+\\/)?node-fetch(\\/.+)?$/"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
       "module": {
         "replacements": {
           "normal": {

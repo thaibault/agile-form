@@ -14,8 +14,13 @@
     endregion
 */
 // region imports
+import {globalContext} from 'clientnode'
+import nodeFetch from 'node-fetch'
+
 import api, {AgileForm} from './index'
 // endregion
+globalContext.fetch = nodeFetch as unknown as typeof fetch
+
 const name:string = 'test-form'
 api.register(name)
 
