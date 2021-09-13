@@ -189,6 +189,20 @@
       "injection": {
         "entry": {
           "__evaluate__": "{index: './index', styles: './index.css'}"
+        },
+        "external": {
+          "implicit": {
+            "pattern": {
+              "include": {
+                "#": "NOTE: Theses files are ECMAscript file so have to be processed to work; but only in node environments.",
+                "__append__": [
+                  {
+                    "__evaluate__": "/^(.+\\/)?node-fetch(\\/.+)?$/"
+                  }
+                ]
+              }
+            }
+          }
         }
       },
       "inPlace": {
