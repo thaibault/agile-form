@@ -1568,6 +1568,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * done.
      */
     async handleInitializeAction():Promise<void> {
+        // TODO ist this really needed to have?
         if (this.resolvedConfiguration.actions.hasOwnProperty('initialize')) {
             const event:Event = new Event('initialize')
 
