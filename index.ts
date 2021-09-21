@@ -1569,8 +1569,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      */
     async handleInitializeAction():Promise<void> {
         if (this.resolvedConfiguration.initializeTarget?.url) {
-            const event:Event = new Event('initialize')
-
             const target:TargetConfiguration =
                 Tools.evaluateDynamicData(
                     Tools.copy(
@@ -1582,6 +1580,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         ...this.resolvedConfiguration
                     }
                 )
+
+            const event:Event = new Event('initialize')
 
             await this.startBackgroundProcess(event)
 
@@ -2090,6 +2090,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         let result:null|Response = null
         try {
             this.updateReCaptchaToken()
+
             result = await (fetch as unknown as typeof FetchType)(
                 target.url, target.options || {}
             ) as Response
@@ -2100,6 +2101,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 responseString = responseString.substring(
                     this.resolvedConfiguration.securityResponsePrefix.length
                 )
+
             ;(result as Response).data = JSON.parse(responseString)
             ;(result as Response).data = Tools.getSubstructure(
                 (result as Response).data,
