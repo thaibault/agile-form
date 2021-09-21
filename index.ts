@@ -1568,42 +1568,47 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * done.
      */
     async handleInitializeAction():Promise<void> {
-        // TODO ist this really needed to have?
-        if (this.resolvedConfiguration.actions.hasOwnProperty('initialize')) {
+        if (this.resolvedConfiguration.initializeTarget?.url) {
             const event:Event = new Event('initialize')
 
-            if (this.resolvedConfiguration.initializeTarget?.url) {
-                const target:TargetConfiguration =
-                    Tools.evaluateDynamicData(
-                        Tools.copy(
-                            this.resolvedConfiguration.initializeTarget
-                        ),
-                        {
-                            queryParameters: this.queryParameters,
-                            Tools,
-                            ...this.resolvedConfiguration
-                        }
-                    )
+            const target:TargetConfiguration =
+                Tools.evaluateDynamicData(
+                    Tools.copy(
+                        this.resolvedConfiguration.initializeTarget
+                    ),
+                    {
+                        queryParameters: this.queryParameters,
+                        Tools,
+                        ...this.resolvedConfiguration
+                    }
+                )
 
-                await this.startBackgroundProcess(event)
+            await this.startBackgroundProcess(event)
 
-                this.initialResponse = this.latestResponse =
-                    await this.doRequest(target)
+            this.initialResponse = this.latestResponse =
+                await this.doRequest(target)
 
-                if (!this.initialResponse) {
-                    await this.stopBackgroundProcess(event)
+            if (!this.initialResponse) {
+                await this.stopBackgroundProcess(event)
+
+                return
+            }
+
+            if (this.resolvedConfiguration.actions.hasOwnProperty(
+                'initialize'
+            )) {
+                const target:null|string = this.resolveAction(
+                    this.resolvedConfiguration.actions.initialize, 'initialize'
+                )
+
+                if (typeof target === 'string') {
+                    location.href = target
 
                     return
                 }
             }
 
-            const target:null|string = this.resolveAction(
-                this.resolvedConfiguration.actions.initialize, 'initialize'
-            )
-
-            if (typeof target === 'string')
-                location.href = target
-            else if (this.pending)
+            if (this.pending)
                 await this.stopBackgroundProcess(event)
         }
     }
