@@ -2091,7 +2091,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         try {
             this.updateReCaptchaToken()
             result = await (fetch as unknown as typeof FetchType)(
-                target.url,target.options || {}
+                target.url, target.options || {}
             ) as Response
             let responseString:string = await (result as Response).text()
             if (responseString.startsWith(
@@ -2776,8 +2776,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             (
                 this.resolvedConfiguration.showAll ||
                 this.resolvedConfiguration.reCaptcha?.key?.v2 &&
-                this.resolvedConfiguration.target &&
-                (this.resolvedConfiguration.target as TargetConfiguration).url
+                (this.resolvedConfiguration.target as TargetConfiguration)?.url
             )
         ) {
             this.reCaptchaPromise =
@@ -2853,8 +2852,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         if (
             window.grecaptcha &&
             this.resolvedConfiguration.reCaptcha?.key?.v3 &&
-            this.resolvedConfiguration.target &&
-            (this.resolvedConfiguration.target as TargetConfiguration).url
+            (this.resolvedConfiguration.target as TargetConfiguration)?.url
         )
             try {
                 window.grecaptcha!.ready(async ():Promise<void> => {
