@@ -315,7 +315,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
     readonly tools:Tools = new Tools()
     // endregion
-    // region live cycle hoo ks
+    // region live cycle hooks
     /**
      * Defines dynamic getter and setter interface and resolves configuration
      * object.
@@ -455,6 +455,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         await this.stopBackgroundProcess(
             new CustomEvent('rendered', {detail: {reason}})
         )
+
+        await this.initialize()
     }
     // endregion
     // region handle visibility states
@@ -1567,7 +1569,12 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @returns Promise resolving to nothing when initial request has been
      * done.
      */
-    async handleInitializeAction():Promise<void> {
+    async initialize():Promise<void> {
+        this.triggerEvent(
+            'initialize',
+            {reference: this.resolvedConfiguration.initializeTarget}
+        )
+
         if (this.resolvedConfiguration.initializeTarget?.url) {
             const target:TargetConfiguration =
                 Tools.evaluateDynamicData(
@@ -1581,7 +1588,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     }
                 )
 
-            const event:Event = new Event('initialize')
+            const event:Event =
+                new CustomEvent('initialize', {detail: {target}})
 
             await this.startBackgroundProcess(event)
 
@@ -1610,6 +1618,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
             if (this.pending)
                 await this.stopBackgroundProcess(event)
+
+            this.triggerEvent('initialized', {target})
         }
     }
     /**
