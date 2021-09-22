@@ -222,11 +222,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             url: ''
         },
         targetData: null,
-        urlConfogurationMask: {
+        urlConfigurationMask: {
             exclude: false,
             include: {
-                model: false,
-
                 reCaptcha: {
                     secret: true,
                     skip: true
@@ -2507,7 +2505,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
                 const path:string =
                     index > 0 ? selector.substring(0, index) : []
-                const key:string = index > 0 ? selector.substring(index + 1)
+                const key:string =
+                    index > 0 ? selector.substring(index + 1) : selector
 
                 const target:unknown =
                     Tools.getSubstructure(this.inputConfigurations[name], path)
