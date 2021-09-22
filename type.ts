@@ -66,12 +66,12 @@ export type Annotation = {
     showIf?:IndicatorFunction
     shown:boolean
 }
-export type ModelAnnotation<Type = any> = {
+export type InputAnnotation<Type = any> = {
     changeTrigger?:any
     default:Type
     dirty:boolean
     disabled:boolean
-    externalProperties?:ModelAnnotation<Type>
+    externalProperties?:InputAnnotation<Type>
     initialValue?:Type
     invalid:boolean
     model:Model<Type>
@@ -84,7 +84,7 @@ export type ModelAnnotation<Type = any> = {
 }
 export type AnnotatedDomNode = HTMLElement & Annotation
 export type AnnotatedModelDomNode<Type = any> =
-    AnnotatedDomNode & ModelAnnotation<Type>
+    AnnotatedDomNode & InputAnnotation<Type>
 export type Action = {
     code:string
     indicator:() => any
@@ -114,9 +114,11 @@ export type Configuration = {
     debug:boolean
     evaluations:Array<Evaluation>
     expressions:Array<Expression>
+    fields?:Mapping<Model>
     initializeTarget:TargetConfiguration
-    model:Mapping<Model>
+    inputs:Mapping<Model>
     name:string
+    model?:Mapping<Model>
     offsetInPixel:number
     reCaptcha:{
         action:ReCaptchaV2.Action

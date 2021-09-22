@@ -62,7 +62,7 @@ describe('AgileForm', ():void => {
 
         expect(form).toHaveProperty('inputs', {})
 
-        form.resolvedConfiguration.model[inputName] = {}
+        form.resolvedConfiguration.inputs[inputName] = {}
         await form.render()
         expect(form.inputs).toHaveProperty(inputName, input)
     })
