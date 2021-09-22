@@ -457,8 +457,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         )
 
         await this.initialize()
-
-        this.updateMessageBox()
     }
     // endregion
     // region handle visibility states
@@ -2282,6 +2280,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 this.reCaptchaFallbackInput!.hasAttribute('invalid')
             ) {
                 this.updateMessageBox('Please do the re-captcha challenge.')
+
                 this.scrollAndFocus(
                     this.reCaptchaFallbackInput as AnnotatedDomNode
                 )
