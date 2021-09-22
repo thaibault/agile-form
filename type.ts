@@ -153,7 +153,7 @@ export type Configuration = {
     }
     target:RecursiveEvaluateable<TargetConfiguration>
     targetData:null|Mapping<unknown>
-    urlModelMask:ObjectMaskConfiguration
+    urlConfigurationMask:ObjectMaskConfiguration
     version:number
 }
 export type PropertyTypes = {
