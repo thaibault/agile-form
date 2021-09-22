@@ -315,7 +315,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
     readonly tools:Tools = new Tools()
     // endregion
-    // region live cycle hoo ks
+    // region live cycle hooks
     /**
      * Defines dynamic getter and setter interface and resolves configuration
      * object.
@@ -455,6 +455,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         await this.stopBackgroundProcess(
             new CustomEvent('rendered', {detail: {reason}})
         )
+
+        await this.initialize()
     }
     // endregion
     // region handle visibility states
@@ -1567,10 +1569,13 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @returns Promise resolving to nothing when initial request has been
      * done.
      */
-    async handleInitializeAction():Promise<void> {
-        if (this.resolvedConfiguration.initializeTarget?.url) {
-            const event:Event = new Event('initialize')
+    async initialize():Promise<void> {
+        this.triggerEvent(
+            'initialize',
+            {reference: this.resolvedConfiguration.initializeTarget}
+        )
 
+        if (this.resolvedConfiguration.initializeTarget?.url) {
             const target:TargetConfiguration =
                 Tools.evaluateDynamicData(
                     Tools.copy(
@@ -1582,6 +1587,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         ...this.resolvedConfiguration
                     }
                 )
+
+            const event:Event =
+                new CustomEvent('initialize', {detail: {target}})
 
             await this.startBackgroundProcess(event)
 
@@ -1610,6 +1618,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
             if (this.pending)
                 await this.stopBackgroundProcess(event)
+
+            this.triggerEvent('initialized', {target})
         }
     }
     /**
@@ -2090,8 +2100,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         let result:null|Response = null
         try {
             this.updateReCaptchaToken()
+
             result = await (fetch as unknown as typeof FetchType)(
-                target.url,target.options || {}
+                target.url, target.options || {}
             ) as Response
             let responseString:string = await (result as Response).text()
             if (responseString.startsWith(
@@ -2100,6 +2111,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 responseString = responseString.substring(
                     this.resolvedConfiguration.securityResponsePrefix.length
                 )
+
             ;(result as Response).data = JSON.parse(responseString)
             ;(result as Response).data = Tools.getSubstructure(
                 (result as Response).data,
@@ -2776,8 +2788,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             (
                 this.resolvedConfiguration.showAll ||
                 this.resolvedConfiguration.reCaptcha?.key?.v2 &&
-                this.resolvedConfiguration.target &&
-                (this.resolvedConfiguration.target as TargetConfiguration).url
+                (this.resolvedConfiguration.target as TargetConfiguration)?.url
             )
         ) {
             this.reCaptchaPromise =
@@ -2853,8 +2864,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         if (
             window.grecaptcha &&
             this.resolvedConfiguration.reCaptcha?.key?.v3 &&
-            this.resolvedConfiguration.target &&
-            (this.resolvedConfiguration.target as TargetConfiguration).url
+            (this.resolvedConfiguration.target as TargetConfiguration)?.url
         )
             try {
                 window.grecaptcha!.ready(async ():Promise<void> => {
