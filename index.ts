@@ -457,6 +457,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         )
 
         await this.initialize()
+
+        this.updateMessageBox()
     }
     // endregion
     // region handle visibility states
