@@ -122,7 +122,7 @@
         <agile-form
             base-configuration="{
                 debug: true,
-                model: {
+                inputs: {
                     type: {
                         default: 'A',
                         nullable: false,
@@ -139,7 +139,7 @@
                 urlModelMask: {include: true}
             }"
             configuration="{
-                model: {
+                inputs: {
                     anotherName: {},
                     feelsGood: {
                         nullable: false,
@@ -168,7 +168,7 @@
                 }
             }"
             dynamic-configuration="{
-                model: {
+                inputs: {
                     file: {},
                     legalNotesChecked: {
                         dependsOn: 'reCaptchaV3Challenge',
