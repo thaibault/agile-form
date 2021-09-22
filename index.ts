@@ -222,7 +222,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             url: ''
         },
         targetData: null,
-        urlModelMask: {
+        urlConfogurationMask: {
             exclude: false,
             include: {
                 model: false,
@@ -918,7 +918,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 typeof evaluated.result === 'object'
             ) {
                 this.urlConfiguration = Tools.mask<Configuration>(
-                    evaluated.result, this.resolvedConfiguration.urlModelMask
+                    evaluated.result,
+                    this.resolvedConfiguration.urlConfigurationMask
                 )
 
                 return this.urlConfiguration
@@ -1050,7 +1051,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         */
                         dependsOn: null,
                         name,
-                        ...domNode.model
+                        ...(domNode.model ? {model: domNode.model} : {})
                     }
                 else {
                     /*
@@ -1073,7 +1074,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     delete this.inputConfigurations[name].value
                 }
 
-                let model:Model = Tools.copy(this.inputConfigurations[name])
+                let model:Model =
+                    Tools.copy(this.inputConfigurations[name].model)
                 if (domNode.externalProperties?.model) {
                     /*
                         NOTE: Explicit input specific model configuration has
@@ -2441,9 +2443,11 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 const handler:EventListener = Tools.debounce(
                     async (event:Event):Promise<void> => {
                         await this.digest()
+
                         let tools:Tools
                         if (this.dependencyMapping[name].length) {
                             tools = new Tools()
+
                             await tools.acquireLock('digest')
                             await this.updateInputDependencies(name, event)
                         }
@@ -2488,39 +2492,42 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         // We have to check for real state changes to avoid endless loops.
         let changed:boolean = false
         if (this.inputConfigurations[name].hasOwnProperty('dynamicExtend'))
-            for (const key in this.inputConfigurations[name].dynamicExtend) {
-                const oldValue:any = this.inputConfigurations[name][key as keyof Model]
-                const newValue:any =
-                    this.inputConfigurations[name].dynamicExtend![key](event)
+            for (let selector in this.inputConfigurations[name].dynamicExtend) {
+                let invert:boolean = false
+                if (this.self.specificationToPropertyMapping.hasOwnProperty(
+                    selector
+                )) {
+                    selector =
+                        this.self.specificationToPropertyMapping[selector].name
+                    invert =
+                        this.self.specificationToPropertyMapping[path].invert
+                }
+
+                const index:number = selector.lastIndexOf('.')
+
+                const path:string =
+                    index > 0 ? selector.substring(0, index) : []
+                const key:string = index > 0 ? selector.substring(index + 1)
+
+                const target:unknown =
+                    Tools.getSubstructure(this.inputConfigurations[name], path)
+
+                const oldValue:unknown = target[key]
+                let newValue:unknown =
+                    this.inputConfigurations[name].dynamicExtend![selector](
+                        event
+                    )
+                if (invert)
+                    newValue = !newValue
 
                 if (oldValue !== newValue) {
                     changed = true
 
-                    if (key !== 'value')
-                        this.inputConfigurations[name][key as keyof Model] = newValue
+                    if (selector !== 'value')
+                        target[key] = newValue
 
-                    // TODO manage where to set given value.
-                    if (
-                        this.self.specificationToPropertyMapping
-                            .hasOwnProperty(key)
-                    )
-                        (
-                            this.inputs[name][
-                                this.self.specificationToPropertyMapping[
-                                    key
-                                ].name as keyof InputAnnotation
-                            ] as ValueOf<InputAnnotation>
-                        ) = (
-                            this.self.specificationToPropertyMapping[key]
-                                .invert ?
-                                    !newValue :
-                                    newValue
-                        )
-                    else
-                        (
-                            this.inputs[name][key as keyof InputAnnotation] as
-                                ValueOf<InputAnnotation>
-                        ) = newValue
+                    Tools.getSubstructure(this.inputs[name], path)[key] =
+                        newValue
 
                     await this.digest()
                 }
@@ -2528,6 +2535,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
         if ((await this.updateInputVisibility(name)) || changed) {
             await this.triggerModelUpdate(name)
+
             await this.updateInputDependencies(name, event)
         }
 
@@ -2770,7 +2778,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
         // Use only allowed configuration fields.
         parameter = Tools.mask<Partial<Configuration>>(
-            parameter, this.resolvedConfiguration.urlModelMask
+            parameter, this.resolvedConfiguration.urlConfigurationMask
         )
 
         if (parameter.inputs && Object.keys(parameter.inputs).length === 0)
