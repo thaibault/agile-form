@@ -27,6 +27,7 @@ import {
     ProcedureFunction,
     QueryParameters,
     RecursiveEvaluateable,
+    RecursivePartial,
     TemplateFunction,
     ValueOf
 } from 'clientnode/type'
@@ -39,13 +40,14 @@ import {WebComponentAPI, StaticWebComponent} from 'web-component-wrapper/type'
 import {
     Action,
     AnnotatedDomNode,
-    AnnotatedModelDomNode,
+    AnnotatedInputDomNode,
     Configuration,
     Constraint,
     Evaluation,
     Expression,
     IndicatorFunction,
     InputAnnotation,
+    InputConfiguration,
     Model,
     PropertyTypes,
     Response,
@@ -248,7 +250,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     static _name:string = 'AgileForm'
 
     clearButtons:Array<AnnotatedDomNode> = []
-    inputs:Mapping<AnnotatedModelDomNode> = {}
+    inputs:Mapping<AnnotatedInputDomNode> = {}
     resetButtons:Array<AnnotatedDomNode> = []
     spinner:Array<AnnotatedDomNode> = []
     statusMessageBoxes:Array<AnnotatedDomNode> = []
@@ -267,13 +269,13 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
     determinedTargetURL:null|string = null
     initialData:Mapping<unknown> = {}
-    initialResponse:any = null
-    latestResponse:any = null
+    initialResponse:null|Response = null
+    latestResponse:null|Response = null
     message:string = ''
-    response:any = null
+    response:null|Response = null
 
     inputEventBindings:Mapping<Function> = {}
-    inputConfigurations:Mapping<Model> = {}
+    inputConfigurations:Mapping<InputConfiguration> = {}
     inputNames:Array<string> = []
 
     invalid:boolean|null = null
@@ -606,7 +608,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * visibility change has been happen.
      */
     async updateInputVisibility(name:string):Promise<boolean> {
-        const model:Model = this.inputConfigurations[name]
+        const model:InputConfiguration = this.inputConfigurations[name]
         const oldState:boolean|undefined = model.shown
         this.inputs[name].shown =
         model.shown = !model.showIf || model.showIf!(false)
@@ -721,14 +723,14 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @returns Nothing.
      */
     updateGroupContent(domNode:AnnotatedDomNode):void {
-        const scope:Mapping<any> = {}
+        const scope:Mapping<unknown> = {}
         const keys:Array<string> = this.self.baseScopeNames.concat(
             this.resolvedConfiguration.expressions.map(
                 (expression:Array<string>):string => expression[0]
             ),
             this.inputNames
         )
-        const values:Array<any> = [
+        const values:Array<unknown> = [
             this.determineStateURL,
             this.determinedTargetURL,
             this.getData,
@@ -744,7 +746,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             Tools,
             this.valid,
             ...this.evaluateExpressions(),
-            ...this.inputNames.map((name:string):any =>
+            ...this.inputNames.map((name:string):InputConfiguration =>
                 this.inputConfigurations[name]
             )
         ]
@@ -812,7 +814,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 Tools.extend(
                     true,
                     currentConfiguration.inputs,
-                    currentConfiguration[name] as Partial<Model>
+                    currentConfiguration[name] as Partial<InputConfiguration>
                 )
 
                 delete currentConfiguration[name]
@@ -939,7 +941,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         const lockName:string = 'configureContentProjectedInputs'
         await this.tools.acquireLock(lockName)
 
-        const missingInputs:Mapping<Model> =
+        const missingInputs:Mapping<InputConfiguration> =
             await this.connectSpecificationWithDomNodes()
 
         // Configure input components to hide validation states first.
@@ -987,8 +989,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      *
      * @returns An object mapping with missing but specified fields.
      */
-    async connectSpecificationWithDomNodes():Promise<Mapping<Model>> {
-        const inputs:Array<AnnotatedModelDomNode> =
+    async connectSpecificationWithDomNodes():Promise<Mapping<
+        InputConfiguration
+    >> {
+        const inputs:Array<AnnotatedInputDomNode> =
             Array.from(this.root.querySelectorAll(
                 this.resolvedConfiguration.selector.inputs
             ))
@@ -1002,7 +1006,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 this.activate(domNode)
 
         this.inputConfigurations = {...this.resolvedConfiguration.inputs}
-        const missingInputs:Mapping<Model> = {...this.inputConfigurations}
+        const missingInputs:Mapping<InputConfiguration> = {...this.inputConfigurations}
         this.determineInputNames()
         this.inputs = {}
         this.initialData = {}
@@ -1050,7 +1054,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         dependsOn: null,
                         name,
                         ...(domNode.model ? {model: domNode.model} : {})
-                    }
+                    } as InputConfiguration
                 else {
                     /*
                         Specification exists but corresponding input couldn't
@@ -1064,16 +1068,20 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     continue
                 }
 
-                // Do not control "state" from the outside.
-                delete this.inputConfigurations[name].state
+                if (this.inputConfigurations[name].model) {
+                    // Do not control "state" from the outside.
+                    delete this.inputConfigurations[name].model!.state
+                }
+
                 if (this.inputConfigurations[name].hasOwnProperty('value')) {
                     // Control value via "value" property in dom node.
                     domNode.initialValue = this.inputConfigurations[name].value
                     delete this.inputConfigurations[name].value
                 }
 
-                let model:Model =
-                    Tools.copy(this.inputConfigurations[name].model)
+                let model:Model|undefined = Tools.copy(
+                    this.inputConfigurations[name].model as Model|undefined
+                )
                 if (domNode.externalProperties?.model) {
                     /*
                         NOTE: Explicit input specific model configuration has
@@ -1085,7 +1093,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 }
                 domNode.model = model
 
-                if ([model.mutable, model.writable].includes(false))
+                if ([model?.mutable, model?.writable].includes(false))
                     domNode.disabled = true
 
                 this.inputConfigurations[name].domNode = domNode
@@ -1096,8 +1104,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     this.inputConfigurations[name],
                     'value',
                     {
-                        get: ():any => domNode.value,
-                        set: (value:any):void => {
+                        get: ():unknown => domNode.value,
+                        set: (value:unknown):void => {
                             domNode.value = value
                         }
                     }
@@ -1109,23 +1117,26 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 */
                 if (
                     (
-                        [null, undefined].includes(domNode.value) ||
+                        [null, undefined].includes(domNode.value as null) ||
                         domNode.pristine
                     ) &&
                     !(
                         [null, undefined].includes(
                             domNode.initialValue as null
                         ) &&
-                        [null, undefined].includes(
-                            model.default as unknown as null
-                        ) &&
-                        [null, undefined].includes(model.value)
+                        (
+                            !model ||
+                            [null, undefined].includes(
+                                model.default as null
+                            ) &&
+                            [null, undefined].includes(model.value as null)
+                        )
                     )
                 )
                     domNode.value =
-                        model.value ??
+                        model?.value ??
                         domNode.initialValue ??
-                        model.default
+                        model?.default
 
                 await this.digest()
 
@@ -1191,12 +1202,12 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             } = {
                 childNames: (Array.from(domNode.querySelectorAll(
                     this.resolvedConfiguration.selector.inputs
-                )) as Array<AnnotatedModelDomNode>)
-                    .filter((domNode:AnnotatedModelDomNode):boolean =>
+                )) as Array<AnnotatedInputDomNode>)
+                    .filter((domNode:AnnotatedInputDomNode):boolean =>
                         typeof domNode.getAttribute('name') === 'string' ||
                         typeof domNode.getAttribute('data-name') === 'string'
                     )
-                    .map((domNode:AnnotatedModelDomNode):string => (
+                    .map((domNode:AnnotatedInputDomNode):string => (
                         domNode.getAttribute('name') ||
                         domNode.getAttribute('data-name')
                     ) as string)
@@ -1245,7 +1256,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                                 Tools,
                                 this.valid,
                                 ...this.evaluateExpressions(),
-                                ...this.inputNames.map((name:string):any =>
+                                ...this.inputNames.map((name:string):InputConfiguration =>
                                     this.inputConfigurations[name]
                                 )
                             ))
@@ -1329,7 +1340,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     `Failed to compile "${typeName}" "${name}": ${error}`
                 )
 
-            this.inputConfigurations[name][type as 'transformer'] = (value:any):any => {
+            this.inputConfigurations[name][type as 'transformer'] = (value:unknown):unknown => {
                 try {
                     return templateFunction(
                         this.determineStateURL,
@@ -1350,7 +1361,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         value,
                         ...this.evaluateExpressions(),
                         ...(this.inputConfigurations[name].dependsOn || [])
-                            .map((name:string):any => this.inputConfigurations[name])
+                            .map((name:string):InputConfiguration =>
+                                this.inputConfigurations[name]
+                            )
                     )
                 } catch (error) {
                     console.warn(
@@ -1382,7 +1395,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 this.inputConfigurations[name].dynamicExtendExpressions!
                     .hasOwnProperty(subName)
             ) {
-                const code:((event:Event, scope:any) => any)|string =
+                const code:((event:Event, scope:unknown) => unknown)|string =
                     this.inputConfigurations[name].dynamicExtendExpressions![subName]
 
                 let originalScopeNames:Array<string> =
@@ -1420,9 +1433,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
                 this.inputConfigurations[name].dynamicExtend![subName] = (
                     event:Event
-                ):any => {
-                    const scope:Mapping<any> = {}
-                    const context:Array<any> = [
+                ):unknown => {
+                    const scope:Mapping<unknown> = {}
+                    const context:Array<unknown> = [
                         this.determineStateURL,
                         this.determinedTargetURL,
                         this.getData,
@@ -1444,7 +1457,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         this.inputConfigurations[name],
                         ...this.evaluateExpressions(),
                         ...(this.inputConfigurations[name].dependsOn || [])
-                            .map((name:string):any => this.inputConfigurations[name])
+                            .map((name:string):InputConfiguration =>
+                                this.inputConfigurations[name]
+                            )
                     ]
 
                     let index:number = 0
@@ -1499,7 +1514,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     )
 
                 this.resolvedConfiguration.actions[name].indicator = (
-                ):any => {
+                ):unknown => {
                     try {
                         return templateFunction(
                             this.determineStateURL,
@@ -1517,7 +1532,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             Tools,
                             this.valid,
                             ...this.evaluateExpressions(),
-                            ...this.inputNames.map((name:string):any =>
+                            ...this.inputNames.map((
+                                name:string
+                            ):InputConfiguration =>
                                 this.inputConfigurations[name]
                             ),
                         )
@@ -1557,7 +1574,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
             expressionNames.push(name)
 
-            this.resolvedConfiguration.evaluations.push([name, ():any => {
+            this.resolvedConfiguration.evaluations.push([name, ():unknown => {
                 try {
                     return templateFunction(
                         this.determineStateURL,
@@ -1575,7 +1592,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         Tools,
                         this.valid,
                         ...this.evaluateExpressions(name),
-                        ...this.inputNames.map((name:string):any =>
+                        ...this.inputNames.map((name:string):InputConfiguration =>
                             this.inputConfigurations[name]
                         )
                     )
@@ -1683,7 +1700,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @returns An action url result or undefined.
      */
     resolveAction(action:Action, name:string):null|string {
-        const actionResult:any = action.indicator()
+        const actionResult:unknown = action.indicator()
         if (actionResult) {
             console.debug(
                 `Action "${name}" matched` +
@@ -1900,8 +1917,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
         for (const name in this.inputs)
             if (this.inputs.hasOwnProperty(name) && !name.includes('.')) {
-                const value:any = this.inputConfigurations[name].transformer ?
-                    (this.inputConfigurations[name].transformer as (value:any) => any)(
+                const value:unknown = this.inputConfigurations[name].transformer ?
+                    (this.inputConfigurations[name].transformer as (value:unknown) => unknown)(
                         this.inputs[name].value
                     ) :
                     this.inputs[name].value
@@ -1909,12 +1926,12 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 if (this.inputConfigurations[name].shown && this.inputs[name].invalid)
                     invalidInputNames.push(name)
 
-                if (name && ![null, undefined].includes(value))
+                if (name && ![null, undefined].includes(value as null))
                     if (
                         typeof value === 'object' &&
                         this.inputConfigurations[name].hasOwnProperty('dataMapping')
                     ) {
-                        const scope:Mapping<any> = {
+                        const scope:Mapping<unknown> = {
                             ...value,
                             data,
                             inputs: this.inputs,
@@ -1990,7 +2007,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             `${invalidInputNames.join('", "')}".`
         )
 
-        const invalidInputs:Array<AnnotatedModelDomNode> = Array.from(
+        const invalidInputs:Array<AnnotatedInputDomNode> = Array.from(
             this.root.querySelectorAll(
                 `[name="${invalidInputNames.join('"], [name="')}"]`
             )
@@ -2014,7 +2031,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     ):string {
         this.triggerEvent(
             'submitSuccessful',
-            {reference: {request: data, response: this.response.data}}
+            {reference: {request: data, response: this.response!.data}}
         )
 
         let redirected:boolean = false
@@ -2345,9 +2362,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 this.invalid = false
                 this.valid = !this.invalid
 
-                const fieldValues:Array<any> =
-                    this.inputNames.map((name:string):any => this.inputConfigurations[name])
-                const values:Array<any> = [
+                const fieldValues:Array<InputConfiguration> =
+                    this.inputNames.map((name:string):InputConfiguration => this.inputConfigurations[name])
+                const values:Array<unknown> = [
                     this.determineStateURL,
                     this.determinedTargetURL,
                     this.getData,
@@ -2364,12 +2381,12 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     this.valid,
                     ...fieldValues
                 ]
-                const scope:Mapping<any> = this.self.baseScopeNames
+                const scope:Mapping<unknown> = this.self.baseScopeNames
                     .concat(this.inputNames)
                     .reduce(
                         (
-                            scope:Mapping<any>, name:string, index:number
-                        ):Mapping<any> => {
+                            scope:Mapping<unknown>, name:string, index:number
+                        ):Mapping<unknown> => {
                             scope[name] = values[index]
                             return scope
                         },
@@ -2497,18 +2514,20 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 )) {
                     selector =
                         this.self.specificationToPropertyMapping[selector].name
-                    invert =
-                        this.self.specificationToPropertyMapping[path].invert
+                    invert = Boolean(
+                        this.self.specificationToPropertyMapping[selector]
+                            .invert
+                    )
                 }
 
                 const index:number = selector.lastIndexOf('.')
 
-                const path:string =
+                const path:Array<string>|string =
                     index > 0 ? selector.substring(0, index) : []
                 const key:string =
                     index > 0 ? selector.substring(index + 1) : selector
 
-                const target:unknown =
+                const target:Mapping<unknown> =
                     Tools.getSubstructure(this.inputConfigurations[name], path)
 
                 const oldValue:unknown = target[key]
@@ -2525,7 +2544,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     if (selector !== 'value')
                         target[key] = newValue
 
-                    Tools.getSubstructure(this.inputs[name], path)[key] =
+                    Tools.getSubstructure<AnnotatedInputDomNode, Mapping<unknown>>(this.inputs[name], path)[key] =
                         newValue
 
                     await this.digest()
@@ -2561,7 +2580,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     async triggerModelUpdate(name:string):Promise<void> {
         if (this.inputs.hasOwnProperty(name)) {
             if (typeof this.inputs[name].changeTrigger === 'function') {
-                const result:unknown = this.inputs[name].changeTrigger()
+                const result:unknown =
+                    (this.inputs[name].changeTrigger as Function)()
 
                 if ('then' in (result as Promise<unknown>))
                     await result
@@ -2625,8 +2645,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      *
      * @returns Evaluated scope.
      */
-    evaluateExpressions(current?:string):Array<any> {
-        const scope:Array<any> = []
+    evaluateExpressions(current?:string):Array<unknown> {
+        const scope:Array<unknown> = []
 
         for (const evaluation of this.resolvedConfiguration.evaluations) {
             if (current === evaluation[0])
@@ -2797,8 +2817,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             const keys:Array<string> = []
             JSON.stringify(
                 parameter,
-                (key:string, value:any):any => {
+                (key:string, value:unknown):unknown => {
                     keys.push(key)
+
                     return value
                 }
             )
