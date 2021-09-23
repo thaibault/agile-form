@@ -2578,12 +2578,12 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 if (this.self.specificationToPropertyMapping.hasOwnProperty(
                     selector
                 )) {
-                    selector =
-                        this.self.specificationToPropertyMapping[selector].name
                     invert = Boolean(
                         this.self.specificationToPropertyMapping[selector]
                             .invert
                     )
+                    selector =
+                        this.self.specificationToPropertyMapping[selector].name
                 }
 
                 const index:number = selector.lastIndexOf('.')
