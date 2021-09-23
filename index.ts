@@ -2573,8 +2573,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         // We have to check for real state changes to avoid endless loops.
         let changed:boolean = false
         if (this.inputConfigurations[name].hasOwnProperty('dynamicExtend'))
-            for (let selector in this.inputConfigurations[name].dynamicExtend) {
+            for (const selector in this.inputConfigurations[name].dynamicExtend) {
                 let invert:boolean = false
+                let mappedSelector:string = selector
                 if (this.self.specificationToPropertyMapping.hasOwnProperty(
                     selector
                 )) {
@@ -2582,16 +2583,17 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         this.self.specificationToPropertyMapping[selector]
                             .invert
                     )
-                    selector =
+                    mappedSelector =
                         this.self.specificationToPropertyMapping[selector].name
                 }
 
-                const index:number = selector.lastIndexOf('.')
+                const index:number = mappedSelector.lastIndexOf('.')
 
                 const path:Array<string>|string =
-                    index > 0 ? selector.substring(0, index) : []
-                const key:string =
-                    index > 0 ? selector.substring(index + 1) : selector
+                    index > 0 ? mappedSelector.substring(0, index) : []
+                const key:string = index > 0 ?
+                    mappedSelector.substring(index + 1) :
+                    mappedSelector
 
                 const target:Mapping<unknown> = Tools.getSubstructure(
                     this.inputConfigurations[name].properties, path
@@ -2608,7 +2610,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 if (oldValue !== newValue) {
                     changed = true
 
-                    if (selector !== 'value')
+                    if (mappedSelector !== 'value')
                         target[key] = newValue
 
                     Tools.getSubstructure<
