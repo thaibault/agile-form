@@ -31,34 +31,39 @@ import 'grecaptcha'
 import {
     RequestInit as FetchOptions, Response as FetchResponse
 } from 'node-fetch'
-import {Model as BaseModel} from 'web-input-material/type'
+import {Model, Properties} from 'web-input-material/type'
 // endregion
+export type {Model, Properties} from 'web-input-material/type'
+
 declare global {
     interface Window {
-        dataLayer:Array<any>
+        dataLayer:Array<unknown>
     }
 }
+
 export type IndicatorFunction = (defaultValue?:boolean) => boolean
-export type Model<Type = any> =
-    Omit<RecursivePartial<BaseModel<Type>>, 'value'> &
+
+export type InputConfiguration<Type = unknown> =
+    Omit<RecursivePartial<Properties<Type>>, 'value'> &
     {
         dataMapping?:Mapping|string
         dependsOn?:Array<string>|null
         domNode?:AnnotatedDomNode
-        dynamicExtend?:Mapping<(event:Event) => any>
-        dynamicExtendExpressions?:Mapping<((event:Event, scope:any) => any)|string>
+        dynamicExtend?:Mapping<(event:Event) => unknown>
+        dynamicExtendExpressions?:Mapping<((event:Event, scope:unknown) => unknown)|string>
         changedEventName?:string
-        serializer?:(value:any) => Primitive
+        serializer?:(value:unknown) => Primitive
         serializerExpression?:string
         showIf?:IndicatorFunction
         showIfExpression?:string
         shown?:boolean
         target?:string
-        transformer?:(value:any) => any
+        transformer?:(value:unknown) => unknown
         transformerExpression?:string
         value?:null|Type
         valuePersistence?:'persistent'|'resetOnHide'
     }
+
 export type Annotation = {
     clearFading?:ProcedureFunction
     oldDisplay?:string
@@ -66,15 +71,15 @@ export type Annotation = {
     showIf?:IndicatorFunction
     shown:boolean
 }
-export type InputAnnotation<Type = any> = {
-    changeTrigger?:any
+export type InputAnnotation<Type = unknown> = {
+    changeTrigger?:unknown
     default:Type
     dirty:boolean
     disabled:boolean
     externalProperties?:InputAnnotation<Type>
     initialValue?:Type
     invalid:boolean
-    model:Model<Type>
+    model?:Model<Type>
     pristine:boolean
     selection:Array<Type>
     showInitialValidationState:boolean
@@ -83,18 +88,21 @@ export type InputAnnotation<Type = any> = {
     value:Type
 }
 export type AnnotatedDomNode = HTMLElement & Annotation
-export type AnnotatedModelDomNode<Type = any> =
+export type AnnotatedInputDomNode<Type = unknown> =
     AnnotatedDomNode & InputAnnotation<Type>
+
 export type Action = {
     code:string
-    indicator:() => any
+    indicator:() => unknown
     name:string
     target:string
 }
+
 export type Constraint = {
     description:string
     evaluation:string
 }
+
 export type TargetConfiguration = {
     options:FetchOptions & Partial<{
         cache:'default'|'reload'|'no-cache'
@@ -104,8 +112,10 @@ export type TargetConfiguration = {
     }>
     url:string
 }
-export type Evaluation = [string, () => any]
+
+export type Evaluation = [string, () => unknown]
 export type Expression = [string, string]
+
 export type Configuration = {
     actions:Mapping<Action>
     animation:boolean
@@ -114,11 +124,11 @@ export type Configuration = {
     debug:boolean
     evaluations:Array<Evaluation>
     expressions:Array<Expression>
-    fields?:Mapping<Model>
+    fields?:Mapping<InputConfiguration>
     initializeTarget:TargetConfiguration
-    inputs:Mapping<Model>
+    inputs:Mapping<InputConfiguration>
     name:string
-    model?:Mapping<Model>
+    model?:Mapping<InputConfiguration>
     offsetInPixel:number
     reCaptcha:{
         action:ReCaptchaV2.Action
@@ -156,11 +166,13 @@ export type Configuration = {
     urlConfigurationMask:ObjectMaskConfiguration
     version:number
 }
+
 export type PropertyTypes = {
     baseConfiguration:ValueOf<typeof PropertyTypes>
     configuration:ValueOf<typeof PropertyTypes>
     dynamicConfiguration:ValueOf<typeof PropertyTypes>
 }
+
 export type Response = FetchResponse & {data:PlainObject}
 export type ResponseResult = {
     data:Mapping<unknown>
