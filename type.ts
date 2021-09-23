@@ -28,12 +28,9 @@ import {
     ValueOf
 } from 'clientnode/type'
 import 'grecaptcha'
-import {
-    RequestInit as FetchOptions, Response as FetchResponse
-} from 'node-fetch'
-import {Model, Properties} from 'web-input-material/type'
+import {Model} from 'web-input-material/type'
 // endregion
-export type {Model, Properties} from 'web-input-material/type'
+export type {Model} from 'web-input-material/type'
 
 declare global {
     interface Window {
@@ -43,43 +40,43 @@ declare global {
 
 export type IndicatorFunction = (defaultValue?:boolean) => boolean
 
-export type InputConfiguration<Type = unknown> =
-    Omit<RecursivePartial<Properties<Type>>, 'value'> &
-    {
-        dataMapping?:Mapping|string
-        dependsOn?:Array<string>|null
-        domNode?:AnnotatedDomNode
-        dynamicExtend?:Mapping<(event:Event) => unknown>
-        dynamicExtendExpressions?:Mapping<((event:Event, scope:unknown) => unknown)|string>
-        changedEventName?:string
-        serializer?:(value:unknown) => Primitive
-        serializerExpression?:string
-        showIf?:IndicatorFunction
-        showIfExpression?:string
-        shown?:boolean
-        target?:string
-        transformer?:(value:unknown) => unknown
-        transformerExpression?:string
-        value?:null|Type
-        valuePersistence?:'persistent'|'resetOnHide'
-    }
+export interface InputConfiguration<Type = unknown> {
+    changedEventName?:string
+    dataMapping?:Mapping|string
+    dependsOn?:Array<string>|null
+    domNode?:AnnotatedDomNode
+    dynamicExtend?:Mapping<(event:Event) => unknown>
+    dynamicExtendExpressions?:Mapping<((event:Event, scope:unknown) => unknown)|string>
+    name:string
+    properties:Partial<InputAnnotation<Type>>
+    serializer?:(value:unknown) => Primitive
+    serializerExpression?:string
+    showIf?:IndicatorFunction
+    showIfExpression?:string
+    shown?:boolean
+    target?:string
+    transformer?:(value:unknown) => unknown
+    transformerExpression?:string
+    value?:null|Type
+    valuePersistence?:'persistent'|'resetOnHide'
+}
 
-export type Annotation = {
+export interface Annotation {
     clearFading?:ProcedureFunction
     oldDisplay?:string
     oldOpacity?:number
     showIf?:IndicatorFunction
     shown:boolean
 }
-export type InputAnnotation<Type = unknown> = {
+export interface InputAnnotation<Type = unknown> {
     changeTrigger?:unknown
     default:Type
     dirty:boolean
     disabled:boolean
-    externalProperties?:InputAnnotation<Type>
+    externalProperties?:Partial<InputAnnotation<Type>>
     initialValue?:Type
     invalid:boolean
-    model?:Model<Type>
+    model?:RecursivePartial<Model<Type>>
     pristine:boolean
     selection:Array<Type>
     showInitialValidationState:boolean
@@ -89,22 +86,22 @@ export type InputAnnotation<Type = unknown> = {
 }
 export type AnnotatedDomNode = HTMLElement & Annotation
 export type AnnotatedInputDomNode<Type = unknown> =
-    AnnotatedDomNode & InputAnnotation<Type>
+    AnnotatedDomNode & Partial<InputAnnotation<Type>>
 
-export type Action = {
+export interface Action {
     code:string
     indicator:() => unknown
     name:string
     target:string
 }
 
-export type Constraint = {
+export interface Constraint {
     description:string
     evaluation:string
 }
 
-export type TargetConfiguration = {
-    options:FetchOptions & Partial<{
+export interface TargetConfiguration {
+    options:RequestInit & Partial<{
         cache:'default'|'reload'|'no-cache'
         credentials:'omit'|'same-origin'|'include'
         headers:Headers|Mapping
@@ -116,7 +113,7 @@ export type TargetConfiguration = {
 export type Evaluation = [string, () => unknown]
 export type Expression = [string, string]
 
-export type Configuration = {
+export interface Configuration {
     actions:Mapping<Action>
     animation:boolean
     constraints:Array<Constraint>
@@ -124,11 +121,11 @@ export type Configuration = {
     debug:boolean
     evaluations:Array<Evaluation>
     expressions:Array<Expression>
-    fields?:Mapping<InputConfiguration>
+    fields?:Mapping<Partial<InputConfiguration>>
     initializeTarget:TargetConfiguration
-    inputs:Mapping<InputConfiguration>
+    inputs:Mapping<Partial<InputConfiguration>>
     name:string
-    model?:Mapping<InputConfiguration>
+    model?:Mapping<Partial<InputConfiguration>>
     offsetInPixel:number
     reCaptcha:{
         action:ReCaptchaV2.Action
@@ -167,13 +164,13 @@ export type Configuration = {
     version:number
 }
 
-export type PropertyTypes = {
+export interface PropertyTypes {
     baseConfiguration:ValueOf<typeof PropertyTypes>
     configuration:ValueOf<typeof PropertyTypes>
     dynamicConfiguration:ValueOf<typeof PropertyTypes>
 }
 
-export type Response = FetchResponse & {data:PlainObject}
+export type FormResponse = Response & {data:PlainObject}
 export type ResponseResult = {
     data:Mapping<unknown>
     invalidInputNames:Array<string>

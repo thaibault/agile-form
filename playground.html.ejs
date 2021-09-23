@@ -124,9 +124,11 @@
                 debug: true,
                 inputs: {
                     type: {
-                        default: 'A',
-                        required: true,
-                        selection: ['A', 'B', 'C', 'D']
+                        properties: {
+                            default: 'A',
+                            required: true,
+                            selection: ['A', 'B', 'C', 'D']
+                        }
                     }
                 },
                 reCaptcha: {
@@ -142,35 +144,43 @@
                 inputs: {
                     anotherName: {},
                     feelsGood: {
-                        model: {
-                            nullable: false,
-                            type: 'boolean'
+                        properties: {
+                            model: {
+                                nullable: false,
+                                type: 'boolean'
+                            }
                         }
                     },
-                    items: {type: 'string[]'},
+                    items: {properties: {type: 'string[]'}},
                     name: {
-                        model: {
-                            default: 'Default Name',
-                            maximumLength: 15,
-                            minimumLength: 2,
-                            nullable: false,
-                            regularExpressionPattern: '[a-zA-Z]+'
+                        properties: {
+                            model: {
+                                default: 'Default Name',
+                                maximumLength: 15,
+                                minimumLength: 2,
+                                nullable: false,
+                                regularExpressionPattern: '[a-zA-Z]+'
+                            }
                         }
                     },
                     message: {
-                        model: {
-                            maximumLength: 50,
-                            minimumLength: 4,
-                            nullable: false,
-                            regularExpressionPattern: '[a-zA-Z0-9]+'
+                        properties: {
+                            model: {
+                                maximumLength: 50,
+                                minimumLength: 4,
+                                nullable: false,
+                                regularExpressionPattern: '[a-zA-Z0-9]+'
+                            }
                         }
                     },
                     pensum: {
-                        model: {
-                            default: 10,
-                            maximum: 100,
-                            minimum: 5,
-                            nullable: false
+                        properties: {
+                            model: {
+                                default: 10,
+                                maximum: 100,
+                                minimum: 5,
+                                nullable: false
+                            }
                         }
                     }
                 }
@@ -181,7 +191,7 @@
                     legalNotesChecked: {
                         dependsOn: 'reCaptchaV3Challenge',
                         dynamicExtendExpressions: {
-                            model.nullable: 'reCaptchaV3Challenge.value',
+                            'model.nullable': 'reCaptchaV3Challenge.value',
                             value: '(eventName === \'change\' && event.target && event.target.name === \'reCaptchaV3Challenge\' && reCaptchaV3Challenge.value) ? false : self.value'
                         }
                     },
