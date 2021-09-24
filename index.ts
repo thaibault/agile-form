@@ -2836,9 +2836,15 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 )
             )
                 if (parameter.inputs!.hasOwnProperty(name)) {
+                    if (!parameter.inputs![name as keyof Model].hasOwnProperty(
+                        'properties'
+                    ))
+                        parameter.inputs![name as keyof Model].properties = {}
+
                     if (
                         this.inputs[name].value !==
-                            parameter.inputs![name as keyof Model].value
+                            parameter.inputs![name as keyof Model].properties!
+                                .value
                     )
                         /*
                             NOTE: Initial values derived from existing state
@@ -2846,14 +2852,22 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             condition.
                          */
                         if (this.determinedStateValueIsNeeded(name))
-                            parameter.inputs![name].value =
+                            parameter.inputs![name].properties!.value =
                                 this.inputConfigurations[name].serializer ?
                                     this.inputConfigurations[name].serializer!(
                                         this.inputs[name].value
                                     ) :
                                     this.inputs[name].value
                         else {
-                            delete parameter.inputs![name as keyof Model].value
+                            delete parameter.inputs![name as keyof Model]
+                                .properties!.value
+
+                            if (Object.keys(
+                                parameter.inputs![name as keyof Model]
+                                    .properties!
+                            ).length === 0)
+                                delete parameter.inputs![name].properties
+
                             if (Object.keys(
                                 parameter.inputs![name as keyof Model]
                             ).length === 0)
@@ -2865,11 +2879,13 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                  */
                 } else if (this.determinedStateValueIsNeeded(name))
                     parameter.inputs![name] = {
-                        value: this.inputConfigurations[name].serializer ?
-                            this.inputConfigurations[name].serializer!(
+                        properties: {
+                            value: this.inputConfigurations[name].serializer ?
+                                this.inputConfigurations[name].serializer!(
+                                    this.inputs[name].value
+                                ) :
                                 this.inputs[name].value
-                            ) :
-                            this.inputs[name].value
+                        }
                     }
 
         if (parameter.evaluations!.length === 0)
