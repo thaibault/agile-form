@@ -1055,7 +1055,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         domNode,
                         dynamicExtendExpressions: {value: name},
                         name,
-                        properties: domNode,
+                        properties: {},
                         showIfExpression: name
                     }
                 else if (dummyMode)
@@ -1068,7 +1068,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         dependsOn: null,
                         domNode,
                         name,
-                        properties: domNode
+                        properties: {}
                     }
                 else {
                     /*
@@ -1254,6 +1254,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 ) as string)
                     .replace(/(#039;)|(&amp;)/g, '&')
                     .replace(/<br\/>/g, '')
+
                 let name:string = 'UNKNOWN'
                 if (typeof domNode.getAttribute('data-name') === 'string')
                     name = domNode.getAttribute('data-name') as string
@@ -2532,7 +2533,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             await tools.acquireLock('digest')
                             await this.updateInputDependencies(name, event)
                         }
+
                         this.updateAllGroups()
+
                         if (this.dependencyMapping[name].length)
                             await tools!.releaseLock('digest')
                     },
@@ -2612,6 +2615,11 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
                     if (mappedSelector !== 'value')
                         target[key] = newValue
+
+                    console.debug(
+                        `Change "${selector}" on "${name}" from "${oldValue}` +
+                        `" to "${newValue}".`
+                    )
 
                     Tools.getSubstructure<
                         Partial<InputAnnotation>, Mapping<unknown>
