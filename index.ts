@@ -49,6 +49,7 @@ import {
     InputAnnotation,
     InputConfiguration,
     Model,
+    NormalizedConfiguration,
     PropertyTypes,
     ResponseResult,
     TargetConfiguration
@@ -300,15 +301,15 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     reCaptchaToken:null|string = null
 
     @property({type: object})
-    additionalConfiguration:Partial<Configuration>|undefined
+    additionalConfiguration:RecursivePartial<Configuration>|undefined
     @property({type: object})
-    baseConfiguration:Partial<Configuration>|undefined
+    baseConfiguration:RecursivePartial<Configuration>|undefined
     @property({type: object})
-    configuration:Partial<Configuration>|undefined
+    configuration:RecursivePartial<Configuration>|undefined
     @property({type: object})
-    dynamicConfiguration:Partial<Configuration>|undefined
+    dynamicConfiguration:RecursivePartial<Configuration>|undefined
     resolvedConfiguration:Configuration = {} as Configuration
-    urlConfiguration:null|Partial<Configuration> = null
+    urlConfiguration:null|RecursivePartial<Configuration> = null
     queryParameters:QueryParameters
 
     readonly self:typeof AgileForm = AgileForm
@@ -803,9 +804,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @returns Normalized configuration.
      */
     static normalizeConfiguration(
-        configuration:Partial<Configuration>
-    ):Partial<Configuration> {
-        const currentConfiguration:Partial<Configuration> =
+        configuration:RecursivePartial<Configuration>
+    ):NormalizedConfiguration {
+        const currentConfiguration:RecursivePartial<Configuration> =
             Tools.copy(configuration)
 
         // Consolidate aliases for "input" configuration item.
@@ -815,68 +816,85 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 Tools.extend(
                     true,
                     currentConfiguration.inputs,
-                    currentConfiguration[name] as Partial<InputConfiguration>
+                    currentConfiguration[name] as
+                        Mapping<Partial<InputConfiguration>>
                 )
 
                 delete currentConfiguration[name]
             }
 
         currentConfiguration.evaluations = ([] as Array<Evaluation>).concat(
-            currentConfiguration.evaluations || []
+            currentConfiguration.evaluations as unknown as Array<Evaluation> ||
+            []
         )
         currentConfiguration.expressions = ([] as Array<Expression>).concat(
-            currentConfiguration.expressions || []
+            currentConfiguration.expressions as unknown as Array<Expression> ||
+            []
         )
 
-        return currentConfiguration
+        if (currentConfiguration.tag?.values) {
+            // NOTE: We migrate alternate tag option formats.
+            currentConfiguration.tag.values =
+                ([] as Array<string>).concat(currentConfiguration.tag.values)
+            if (currentConfiguration.hasOwnProperty('tags'))
+                currentConfiguration.tag.values =
+                    currentConfiguration.tag.values.concat((
+                        currentConfiguration as unknown as {tags:Array<string>}
+                    ).tags)
+        }
+
+        return currentConfiguration as NormalizedConfiguration
     }
     /**
-     * Merges configuration sources into final object.
+     * Merge given configuration into resolved configuration object.
+     *
+     * @param configuration - Configuration to merge.
+     *
+     * @return Nothing.
+     */
+    mergeConfiguration(configuration:RecursivePartial<Configuration>):void {
+        const normalizedConfiguration:NormalizedConfiguration =
+            this.self.normalizeConfiguration(configuration)
+
+        // Merge evaluations and expressions.
+        this.resolvedConfiguration.evaluations =
+            this.resolvedConfiguration.evaluations
+                .concat(normalizedConfiguration.evaluations)
+        this.resolvedConfiguration.expressions =
+            this.resolvedConfiguration.expressions
+                .concat(normalizedConfiguration.expressions)
+
+        Tools.extend(
+            true,
+            this.resolvedConfiguration,
+            normalizedConfiguration as RecursivePartial<Configuration>
+        )
+    }
+    /**
+     * Resolve and merges configuration sources into final object.
      *
      * @returns Nothing.
      */
     resolveConfiguration():void {
-        this.resolvedConfiguration =
-            this.self.normalizeConfiguration(this.self.defaultConfiguration) as
-                Configuration
+        this.resolvedConfiguration = this.self.normalizeConfiguration(
+            this.self.defaultConfiguration as RecursivePartial<Configuration>
+        ) as Configuration
 
-        let evaluations:Array<Evaluation> = []
-        let expressions:Array<Expression> = []
-        for (const configuration of [
-            this.baseConfiguration || {},
-            this.configuration || {},
-            this.dynamicConfiguration || {},
-            this.additionalConfiguration || {},
-            this.getConfigurationFromURL()
-        ]) {
-            const normalizedConfiguration:Partial<Configuration> =
-                this.self.normalizeConfiguration(configuration)
-
-            Tools.extend(
-                true,
-                this.resolvedConfiguration,
-                normalizedConfiguration
-            )
-
-            // Merge evaluations and expressions.
-            evaluations =
-                evaluations.concat(normalizedConfiguration.evaluations!)
-            expressions =
-                expressions.concat(normalizedConfiguration.expressions!)
-        }
-
-        this.resolvedConfiguration.evaluations = evaluations
-        this.resolvedConfiguration.expressions = expressions
-
-        // NOTE: We migrate alternate tag option formats.
-        this.resolvedConfiguration.tag.values =
-            ([] as Array<string>).concat(this.resolvedConfiguration.tag.values)
-        if (this.resolvedConfiguration.hasOwnProperty('tags'))
-            this.resolvedConfiguration.tag.values =
-                this.resolvedConfiguration.tag.values.concat((
-                    this.resolvedConfiguration as
-                        unknown as {tags:Array<string>}
-                ).tags)
+        for (let configuration of [
+            this.baseConfiguration,
+            this.configuration,
+            this.dynamicConfiguration,
+            this.additionalConfiguration
+        ])
+            if (configuration)
+                this.mergeConfiguration(configuration)
+        /*
+            NOTE: We have to determine url parameter after resolving
+            configuration to have the final url mask available.
+        */
+        
+        if (this.getConfigurationFromURL())
+            this.mergeConfiguration(this.urlConfiguration!)
 
         this.resolvedConfiguration.initializeTarget =
             Tools.extend<TargetConfiguration>(
@@ -898,12 +916,11 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      *
      * @returns Nothing.
      */
-    getConfigurationFromURL():Partial<Configuration> {
+    getConfigurationFromURL():null|RecursivePartial<Configuration> {
         const parameter:Array<string>|string|undefined =
             this.queryParameters[this.resolvedConfiguration.name]
         if (typeof parameter === 'string') {
-            const evaluated:EvaluationResult =
-                Tools.stringEvaluate(decodeURI(parameter))
+            const evaluated:EvaluationResult = Tools.stringEvaluate(parameter)
 
             if (evaluated.error) {
                 console.warn(
@@ -911,7 +928,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     `${this.resolvedConfiguration.name}": ${evaluated.error}`
                 )
 
-                return {} as Partial<Configuration>
+                return null
             }
 
             if (
@@ -927,7 +944,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             }
         }
 
-        return {} as Partial<Configuration>
+        return null
     }
     // / endregion
     // / region apply configurations to components
@@ -2815,7 +2832,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @returns URL.
      */
     determineStateURL = ():{encoded:string;plain:string} => {
-        let parameter:Partial<Configuration> =
+        let parameter:NormalizedConfiguration =
             this.self.normalizeConfiguration(this.urlConfiguration || {})
 
         for (const name in this.inputConfigurations)
@@ -2835,15 +2852,15 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     ).webComponentAdapterWrapped !== 'react'
                 )
             )
-                if (parameter.inputs!.hasOwnProperty(name)) {
-                    if (!parameter.inputs![name as keyof Model].hasOwnProperty(
+                if (parameter.inputs.hasOwnProperty(name)) {
+                    if (!parameter.inputs[name as keyof Model].hasOwnProperty(
                         'properties'
                     ))
-                        parameter.inputs![name as keyof Model].properties = {}
+                        parameter.inputs[name as keyof Model].properties = {}
 
                     if (
                         this.inputs[name].value !==
-                            parameter.inputs![name as keyof Model].properties!
+                            parameter.inputs[name as keyof Model].properties!
                                 .value
                     )
                         /*
@@ -2852,33 +2869,33 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             condition.
                          */
                         if (this.determinedStateValueIsNeeded(name))
-                            parameter.inputs![name].properties!.value =
+                            parameter.inputs[name].properties!.value =
                                 this.inputConfigurations[name].serializer ?
                                     this.inputConfigurations[name].serializer!(
                                         this.inputs[name].value
                                     ) :
                                     this.inputs[name].value
                         else {
-                            delete parameter.inputs![name as keyof Model]
+                            delete parameter.inputs[name as keyof Model]
                                 .properties!.value
 
                             if (Object.keys(
-                                parameter.inputs![name as keyof Model]
+                                parameter.inputs[name as keyof Model]
                                     .properties!
                             ).length === 0)
-                                delete parameter.inputs![name].properties
+                                delete parameter.inputs[name].properties
 
                             if (Object.keys(
-                                parameter.inputs![name as keyof Model]
+                                parameter.inputs[name as keyof Model]
                             ).length === 0)
-                                delete parameter.inputs![name]
+                                delete parameter.inputs[name]
                         }
                 /*
                     NOTE: Initial values derived from existing state url
                     shouldn't be a problem because of the prior condition.
                  */
                 } else if (this.determinedStateValueIsNeeded(name))
-                    parameter.inputs![name] = {
+                    parameter.inputs[name] = {
                         properties: {
                             value: this.inputConfigurations[name].serializer ?
                                 this.inputConfigurations[name].serializer!(
@@ -2888,22 +2905,26 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         }
                     }
 
-        if (parameter.evaluations!.length === 0)
-            delete parameter.evaluations
-        if (parameter.expressions!.length === 0)
-            delete parameter.expressions
+        if (parameter.evaluations.length === 0)
+            delete (parameter as Partial<NormalizedConfiguration>).evaluations
+        if (parameter.expressions.length === 0)
+            delete (parameter as Partial<NormalizedConfiguration>).expressions
 
         // Use only allowed configuration fields.
-        parameter = Tools.mask<Partial<Configuration>>(
-            parameter, this.resolvedConfiguration.urlConfigurationMask
-        )
+        const maskedParameter:RecursivePartial<NormalizedConfiguration> =
+            Tools.mask<NormalizedConfiguration>(
+                parameter, this.resolvedConfiguration.urlConfigurationMask
+            )
 
-        if (parameter.inputs && Object.keys(parameter.inputs).length === 0)
-            delete parameter.inputs
+        if (
+            maskedParameter.inputs &&
+            Object.keys(maskedParameter.inputs).length === 0
+        )
+            delete maskedParameter.inputs
 
         let encodedURL:string = document.URL
         let url:string = document.URL
-        if (Object.keys(parameter).length) {
+        if (Object.keys(maskedParameter).length) {
             encodedURL = url = url.replace(
                 new RegExp(
                     `[?&]${this.resolvedConfiguration.name}=[^&]*`, 'g'
@@ -2914,7 +2935,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             // Ensure normalized urls via recursive property sorting.
             const keys:Array<string> = []
             JSON.stringify(
-                parameter,
+                maskedParameter,
                 (key:string, value:unknown):unknown => {
                     keys.push(key)
 
@@ -2922,7 +2943,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 }
             )
             keys.sort()
-            const value:string = JSON.stringify(parameter, keys, '')
+            const value:string = JSON.stringify(maskedParameter, keys, '')
 
             const encodedQueryParameter:string =
                 `${this.resolvedConfiguration.name}=` +

@@ -163,6 +163,16 @@ export interface Configuration {
     urlConfigurationMask:ObjectMaskConfiguration
     version:number
 }
+export type NormalizedConfiguration =
+    Omit<
+        RecursivePartial<Configuration>,
+        'evaluations'|'expressions'|'fields'|'inputs'|'model'
+    > &
+    {
+        evaluations:Array<Evaluation>
+        expressions:Array<Expression>
+        inputs:Configuration['inputs']
+    }
 
 export interface PropertyTypes {
     baseConfiguration:ValueOf<typeof PropertyTypes>
