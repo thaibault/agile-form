@@ -1123,8 +1123,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 ))
                     (domNode[key as keyof InputAnnotation] as unknown) = value
 
-                await this.digest()
-
                 /*
                     NOTE: We synchronize input configuration value with dom
                     node value property.
@@ -1139,6 +1137,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         }
                     }
                 )
+
+                await this.digest()
 
                 /*
                     NOTE: We have to determine initial value since the

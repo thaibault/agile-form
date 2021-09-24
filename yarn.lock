@@ -2062,7 +2062,6 @@
 
 "@types/webpack@https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.1.tgz":
   version "1.1.1"
-  uid f8cae15d883ffc0abc663b5eaaa711fcc64bb5c2
   resolved "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.1.tgz#f8cae15d883ffc0abc663b5eaaa711fcc64bb5c2"
 
 "@types/workbox-webpack-plugin@*":
@@ -4447,9 +4446,9 @@ ejs@*:
     jake "^10.6.1"
 
 electron-to-chromium@^1.3.47, electron-to-chromium@^1.3.846:
-  version "1.3.848"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.848.tgz#94cc196e496f33c0d71cd98561448f10018584cc"
-  integrity sha512-wchRyBcdcmibioggdO7CbMT5QQ4lXlN/g7Mkpf1K2zINidnqij6EVu94UIZ+h5nB2S9XD4bykqFv9LonAWLFyw==
+  version "1.3.849"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.849.tgz#45a65a392565abc5b864624b9753393336426f4b"
+  integrity sha512-RweyW60HPOqIcxoKTGr38Yvtf2aliSUqX8dB3e9geJ0Bno0YLjcOX5F7/DPVloBkJWaPZ7xOM1A0Yme2T1A34w==
 
 emittery@^0.8.1:
   version "0.8.1"
@@ -6590,9 +6589,9 @@ marked@^2.0.3:
   integrity sha512-/Q+7MGzaETqifOMWYEA7HVMaZb4XbcRfaOzcSsHZEith83KGlvaSG33u0SKu89Mj5h+T8V2hM+8O45Qc5XTgwA==
 
 material-icons@*:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/material-icons/-/material-icons-1.4.0.tgz#9aec71e0b2b42f2440110dc89cb92a7c33dcf771"
-  integrity sha512-g2JOxWJrTw65M/QXyA2qKeCaOeh73pgX1EL8J1O4/CG6nQrQaTG+gf/DimdNX5lgNNPgM3ufVO2BAaM6pPJfrA==
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/material-icons/-/material-icons-1.4.1.tgz#60921e28a6f9ac099656141907f3870399486dac"
+  integrity sha512-FGxv5Xn4SiR4xJecUA18reiIlM3MBzb2Un6mxeIXJbWCX/zbhflDLHwLHyiqlnGxjhWIcbhzcp2N7FXEes2XLQ==
 
 mdn-data@2.0.14:
   version "2.0.14"
@@ -8057,9 +8056,9 @@ react-dom@*:
     scheduler "^0.20.2"
 
 react-input-material@*:
-  version "0.0.341"
-  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.341.tgz#1910f9cc64c4c1d241f6768c3af653e64671d895"
-  integrity sha512-nii3JcfrP+aOaNR6KnWlK9M9PdKjbU9mxA8pHTUYPvsQ5ByPgbbrYQyUzn4b1TajmSdrMdTUR146N0gNPYLs2g==
+  version "0.0.342"
+  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.342.tgz#531bf0a3ebc6ad777422b008d9ad0269acfb4ada"
+  integrity sha512-AS1YU7pSF/KL0t+7kYi6YjEJ2bzMEqeGT/JaL1ox24xhKMiEaNx/xGpGv40MBzc00hU2MUQOrYMbJHtYPEdZhw==
   dependencies:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.1.tgz"
 
@@ -9285,16 +9284,16 @@ wbuf@^1.1.0, wbuf@^1.7.3:
     minimalistic-assert "^1.0.0"
 
 web-component-wrapper@*:
-  version "0.0.313"
-  resolved "https://registry.yarnpkg.com/web-component-wrapper/-/web-component-wrapper-0.0.313.tgz#fd0d4a0aec5e61305f86c3b72f8cdedbedd0fee3"
-  integrity sha512-d7g2tqvRsiBZlHQarxdlDwdjBmsjjR/ahUcxbNrYxZ+VPw5tslUkeRqPJl1L4jGFf5J/57D87tw6eaVFW4Tw7g==
+  version "0.0.314"
+  resolved "https://registry.yarnpkg.com/web-component-wrapper/-/web-component-wrapper-0.0.314.tgz#6b99b99738701766f95ae921004ef8e31443e768"
+  integrity sha512-pgQXCy75uJ0yWmvTmMI3N8PSqgjCW7lG5s6qhFvyleaLzZwRn/EJixhkrjgomHo4qYQTE+7fK6URfgJlFCvOdg==
   dependencies:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.1.tgz"
 
 web-input-material@*:
-  version "0.0.219"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.219.tgz#c924bb677ff7ce9998822865220c1b8bc940986c"
-  integrity sha512-BP2Ot/CCMmFsAISw3yZF26CYqjpiujqLfcH9SSWDagOvMR83qmLjG8a8tJJBK2Gdvir+VGRUMd6vqSwfYzZmYg==
+  version "0.0.220"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.220.tgz#41b15d5d298533e604a78dc24091bbe056de52c4"
+  integrity sha512-1AuiePfjSuSppBpKNaMEya8Y42L0ow2Xym+f0BRrd7GmH7Xi1/qXqiUAXpeOHTSNLKUUxNdg5aDq09d1JP0LEg==
   dependencies:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.1.tgz"
     prop-types "*"
