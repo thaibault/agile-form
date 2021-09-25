@@ -122,6 +122,8 @@
         <agile-form
             base-configuration="{
                 debug: true,
+                evaluations: [['testEvaluation', function() { return 'testEvaluation'}]],
+                expressions: [['testExpression', '5']],
                 inputs: {
                     type: {
                         properties: {
@@ -313,6 +315,10 @@
             <hr/>
 
             <div class="agile-form__group" data-name="url">
+                TestEvaluationValue: "${true && testEvaluation}"
+                <br />
+                TestExpressionValue: "${testExpression}"
+                <br />
                 State-URL:
                 <a href="${determineStateURL().encoded}">
                     ${determineStateURL().plain}
