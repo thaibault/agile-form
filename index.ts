@@ -116,6 +116,10 @@ import {
  * @property reCaptchaToken - Last challenge result token.
  * promise resolver.
 
+ * @property additionalConfiguration - Holds given configuration object.
+ * @property baseConfiguration - Holds given configuration object.
+ * @property configuration - Holds given configuration object.
+ * @property dynamicConfiguration - Holds given configuration object.
  * @property resolvedConfiguration - Holds given configuration object.
  * @property urlConfiguration - URL given configurations object.
  * @property queryParameters - All determined query parameters.
@@ -258,6 +262,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     truncateButtons:Array<AnnotatedDomNode> = []
 
     dependencyMapping:Mapping<Array<string>> = {}
+
+    evaluations:Array<Evaluation> = []
 
     groups:Map<
         AnnotatedDomNode,
@@ -727,8 +733,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     updateGroupContent(domNode:AnnotatedDomNode):void {
         const scope:Mapping<unknown> = {}
         const keys:Array<string> = this.self.baseScopeNames.concat(
-            this.resolvedConfiguration.expressions.map(
-                (expression:Array<string>):string => expression[0]
+            this.evaluations.map(
+                (evaluation:Evaluation):string => evaluation[0]
             ),
             this.inputNames
         )
@@ -747,7 +753,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             this.onceSubmitted,
             Tools,
             this.valid,
-            ...this.evaluateExpressions(),
+            ...this.runEvaluations(),
             ...this.inputNames.map((name:string):InputConfiguration =>
                 this.inputConfigurations[name]
             )
@@ -857,10 +863,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             this.self.normalizeConfiguration(configuration)
 
         // Merge evaluations and expressions.
-        this.resolvedConfiguration.evaluations =
+        normalizedConfiguration.evaluations =
             this.resolvedConfiguration.evaluations
                 .concat(normalizedConfiguration.evaluations)
-        this.resolvedConfiguration.expressions =
+        normalizedConfiguration.expressions =
             this.resolvedConfiguration.expressions
                 .concat(normalizedConfiguration.expressions)
 
@@ -892,7 +898,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             NOTE: We have to determine url parameter after resolving
             configuration to have the final url mask available.
         */
-        
         if (this.getConfigurationFromURL())
             this.mergeConfiguration(this.urlConfiguration!)
 
@@ -1236,12 +1241,13 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             )
         )
 
-        const originalScopeNames:Array<string> = this.self.baseScopeNames.concat(
-            this.resolvedConfiguration.expressions.map(
-                (expression:Array<string>):string => expression[0]
-            ),
-            this.inputNames
-        )
+        const originalScopeNames:Array<string> =
+            this.self.baseScopeNames.concat(
+                this.evaluations.map(
+                    (evaluation:Evaluation):string => evaluation[0]
+                ),
+                this.inputNames
+            )
 
         for (const domNode of groups) {
             const specification:{
@@ -1304,7 +1310,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                                 this.onceSubmitted,
                                 Tools,
                                 this.valid,
-                                ...this.evaluateExpressions(),
+                                ...this.runEvaluations(),
                                 ...this.inputNames.map((name:string):InputConfiguration =>
                                     this.inputConfigurations[name]
                                 )
@@ -1378,8 +1384,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 this.self.baseScopeNames.concat(
                     'self',
                     'value',
-                    this.resolvedConfiguration.expressions.map(
-                        (expression:Array<string>):string => expression[0]
+                    this.evaluations.map(
+                        (evaluation:Evaluation):string => evaluation[0]
                     ),
                     this.inputConfigurations[name].dependsOn || []
                 )
@@ -1411,7 +1417,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         this.valid,
                         this.inputConfigurations[name],
                         value,
-                        ...this.evaluateExpressions(),
+                        ...this.runEvaluations(),
                         ...(this.inputConfigurations[name].dependsOn || [])
                             .map((name:string):InputConfiguration =>
                                 this.inputConfigurations[name]
@@ -1461,8 +1467,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         'scope',
                         'selfName',
                         'self',
-                        this.resolvedConfiguration.expressions.map(
-                            (expression:Array<string>):string => expression[0]
+                        this.evaluations.map(
+                            (evaluation:Evaluation):string => evaluation[0]
                         ),
                         this.inputConfigurations[name].dependsOn || []
                     )
@@ -1511,7 +1517,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         scope,
                         name,
                         this.inputConfigurations[name],
-                        ...this.evaluateExpressions(),
+                        ...this.runEvaluations(),
                         ...(this.inputConfigurations[name].dependsOn || [])
                             .map((name:string):InputConfiguration =>
                                 this.inputConfigurations[name]
@@ -1548,8 +1554,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     preCompileActionSources():void {
         const originalScopeNames:Array<string> = this.self.baseScopeNames
             .concat(
-                this.resolvedConfiguration.expressions.map(
-                    (expression:Array<string>):string => expression[0]
+                this.evaluations.map(
+                    (evaluation:Evaluation):string => evaluation[0]
                 ),
                 this.inputNames
             )
@@ -1587,7 +1593,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             this.onceSubmitted,
                             Tools,
                             this.valid,
-                            ...this.evaluateExpressions(),
+                            ...this.runEvaluations(),
                             ...this.inputNames.map((
                                 name:string
                             ):InputConfiguration =>
@@ -1611,26 +1617,30 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @returns Nothing.
      */
     preCompileGenericExpressions():void {
-        this.resolvedConfiguration.evaluations = []
+        this.evaluations = [...this.resolvedConfiguration.evaluations]
 
-        const expressionNames:Array<string> = []
+        const names:Array<string> =
+            this.evaluations.map((evaluation:Evaluation):string =>
+                evaluation[0]
+            )
         for (const expression of this.resolvedConfiguration.expressions) {
             const [name, code] = expression
 
             const {error, scopeNames, templateFunction} = Tools.stringCompile(
-                code,
-                this.self.baseScopeNames.concat(
-                    expressionNames, this.inputNames
-                )
+                code, this.self.baseScopeNames.concat(names, this.inputNames)
             )
             if (error)
                 console.error(
                     `Failed to compile generic expression "${name}": ${error}`
                 )
 
-            expressionNames.push(name)
+            /*
+                NOTE: An expression cannot reference itself; so we are adding
+                corresponding scope name after compiling (successfully).
+            */
+            names.push(name)
 
-            this.resolvedConfiguration.evaluations.push([name, ():unknown => {
+            this.evaluations.push([name, ():unknown => {
                 try {
                     return templateFunction(
                         this.determineStateURL,
@@ -1647,7 +1657,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         this.onceSubmitted,
                         Tools,
                         this.valid,
-                        ...this.evaluateExpressions(name),
+                        ...this.runEvaluations(name),
                         ...this.inputNames.map((name:string):InputConfiguration =>
                             this.inputConfigurations[name]
                         )
@@ -2744,10 +2754,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      *
      * @returns Evaluated scope.
      */
-    evaluateExpressions(current?:string):Array<unknown> {
+    runEvaluations(current?:string):Array<unknown> {
         const scope:Array<unknown> = []
 
-        for (const evaluation of this.resolvedConfiguration.evaluations) {
+        for (const evaluation of this.evaluations) {
             if (current === evaluation[0])
                 break
 
