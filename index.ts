@@ -1114,36 +1114,46 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 if (this.inputConfigurations[name].properties.hasOwnProperty(
                     'value'
                 )) {
-                    // Control value via "value" property in dom node.
-                    domNode.initialValue =
+                    /*
+                        Interpret configured values as initial values only to
+                        be able to respect dom specific configurations also.
+                        We will derive initial value for each input after
+                        again when each input has been configured.
+                    */
+                    this.inputConfigurations[name].properties.initialValue =
                         this.inputConfigurations[name].properties.value
+
                     delete this.inputConfigurations[name].properties.value
                 }
 
-                if (this.inputConfigurations[name].properties.model) {
-                    // Merge dom node and form model configurations.
-                    let model:RecursivePartial<Model> = Tools.copy(
-                        this.inputConfigurations[name].properties.model!
+                if (
+                    this.inputConfigurations[name].properties.model &&
+                    domNode.externalProperties?.model
+                )
+                    /*
+                        Merge dom node and form model configurations.
+
+                        NOTE: Explicit input specific model configuration
+                        has higher priority than form specifications.
+                    */
+                    Tools.extend<RecursivePartial<Model>>(
+                        true,
+                        this.inputConfigurations[name].properties.model,
+                        domNode.externalProperties.model as
+                            RecursivePartial<Model>
                     )
-                    if (domNode.externalProperties?.model) {
-                        /*
-                            NOTE: Explicit input specific model configuration
-                            has higher priority than form specifications.
-                        */
-                        model = Tools.extend<RecursivePartial<Model>>(
-                            true,
-                            model,
-                            domNode.externalProperties.model as
-                                RecursivePartial<Model>
-                        )
-                    }
-                }
 
                 // Apply all specified properties to its corresponding node.
                 for (const [key, value] of Object.entries(
                     this.inputConfigurations[name].properties
-                ))
-                    (domNode[key as keyof InputAnnotation] as unknown) = value
+                ).sort(([firstKey]):number => firstKey === 'model' ? -1 : 1)) {
+                    console.debug(
+                        `Apply form configuration for input "${name}" with ` +
+                        `property "${key}" and value "${value}".`
+                    )
+
+                    ;(domNode[key as keyof InputAnnotation] as unknown) = value
+                }
 
                 /*
                     NOTE: We synchronize input configuration value with dom
@@ -1155,41 +1165,59 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     {
                         get: ():unknown => domNode.value,
                         set: (value:unknown):void => {
+                            this.inputConfigurations[name].properties.value =
+                                value
                             domNode.value = value
                         }
                     }
                 )
 
+                // Ensure each input has been fully initialized itself.
                 await this.digest()
 
                 /*
-                    NOTE: We have to determine initial value since the
-                    component is already initialized by itself.
+                    NOTE: We have to determine initial value again since the
+                    component usually has initialized itself now. So we have to
+                    respect changed default or initial value configuration
+                    again.
                 */
                 if (
+                    // Value not initialized or untouched.
                     (
                         [null, undefined].includes(domNode.value as null) ||
                         domNode.pristine
                     ) &&
+                    // There is no initial value configured yet.
                     !(
                         [null, undefined].includes(
                             domNode.initialValue as null
                         ) &&
                         (
-                            !domNode.model ||
+                            !this.inputConfigurations[name].properties.model ||
                             [null, undefined].includes(
-                                domNode.model.default as unknown as null
+                                this.inputConfigurations[name].properties
+                                    .model!.default as unknown as null
                             ) &&
                             [null, undefined].includes(
-                                domNode.model.value as unknown as null
+                                this.inputConfigurations[name].properties
+                                    .model!.value as unknown as null
                             )
                         )
                     )
-                )
-                    domNode.value =
-                        domNode.model?.value ??
+                ) {
+                    this.inputConfigurations[name].value =
+                        this.inputConfigurations[name].properties
+                            .model?.value ??
                         domNode.initialValue ??
-                        domNode.model?.default
+                        this.inputConfigurations[name].properties
+                            .model?.default
+
+                    console.debug(
+                        `Derive final initial value for input "${name}" to "` +
+                        `${this.inputConfigurations[name].value}".`
+                    )
+                }
+
 
                 await this.digest()
 
