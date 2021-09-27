@@ -246,10 +246,12 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         invert?:boolean
         name:string
     }> = {
-        nullable: {
-            invert: true,
-            name: 'required'
-        }
+        /* e.g.:
+            nullable: {
+                invert: true,
+                name: 'required'
+            }
+        */
     }
     static _name:string = 'AgileForm'
 
@@ -803,6 +805,78 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     // region helper
     // / region configuration
     /**
+     * Normalizes given url configuration to support deprecated formats.
+     *
+     * 1. Alias top level configuration key "model" to "inputs".
+     * 2. Respect top level property configuration (not having nested
+     *    "properties" key in input configuration).
+     * 3. Alias top level input property configuration "mutable" and "writable"
+     *    into properties top level inverted "disabled" configuration.
+     * 4. Alias top level input property configuration "nullable" into
+     *    properties top level inverted "required" configuration.
+     *
+     * @param configuration - Configuration object to normalize.
+     *
+     * @returns Normalized configuration.
+     */
+    static normalizeURLConfiguration(
+        configuration:PlainObject
+    ):RecursivePartial<Configuration> {
+        const currentConfiguration:PlainObject = Tools.copy(configuration)
+
+        // Consolidate aliases for "input" configuration item.
+        const inputs:Mapping<RecursivePartial<InputConfiguration>> =
+            currentConfiguration.inputs as Mapping<RecursivePartial<InputConfiguration>> ||
+            {}
+        if (currentConfiguration.model) {
+            Tools.extend(
+                true,
+                inputs,
+                currentConfiguration.model as
+                    Mapping<RecursivePartial<InputConfiguration>>
+            )
+
+            delete currentConfiguration.model
+        }
+
+
+        /*
+            Normalize deprecated top level input configurations into
+            "properties" configuration.
+        */
+        for (const name in inputs)
+            if (inputs.hasOwnProperty(name)) {
+                if (!inputs[name].properties)
+                    inputs[name].properties = {}
+
+                if ((inputs[name] as {nullable?:boolean}).nullable) {
+                    (inputs[name].properties as InputAnnotation).required =
+                        !Boolean((inputs[name] as {nullable:boolean}).nullable)
+
+                    delete (inputs[name] as {nullable?:boolean}).nullable
+                }
+
+                for (const key of ['mutable', 'writable'] as const)
+                    if ((inputs[name] as {
+                        mutable?:boolean
+                        writable?:boolean
+                    })[key]) {
+                        (inputs[name].properties as InputAnnotation).disabled =
+                            !Boolean((inputs[name] as {
+                                mutable?:boolean
+                                writable?:boolean
+                            })[key])
+
+                        delete (inputs[name] as {
+                            mutable?:boolean
+                            writable?:boolean
+                        })[key]
+                    }
+            }
+
+        return currentConfiguration
+    }
+    /**
      * Normalizes given configuration.
      *
      * @param configuration - Configuration object to normalize.
@@ -814,20 +888,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     ):NormalizedConfiguration {
         const currentConfiguration:RecursivePartial<Configuration> =
             Tools.copy(configuration)
-
-        // Consolidate aliases for "input" configuration item.
-        currentConfiguration.inputs = currentConfiguration.inputs || {}
-        for (const name of ['fields', 'model'] as const)
-            if (currentConfiguration.hasOwnProperty(name)) {
-                Tools.extend(
-                    true,
-                    currentConfiguration.inputs,
-                    currentConfiguration[name] as
-                        Mapping<Partial<InputConfiguration>>
-                )
-
-                delete currentConfiguration[name]
-            }
 
         currentConfiguration.evaluations = ([] as Array<Evaluation>).concat(
             currentConfiguration.evaluations as unknown as Array<Evaluation> ||
@@ -898,8 +958,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             NOTE: We have to determine url parameter after resolving
             configuration to have the final url mask available.
         */
-        if (this.getConfigurationFromURL())
-            this.mergeConfiguration(this.urlConfiguration!)
+        this.urlConfiguration = this.getConfigurationFromURL()
+        if (this.urlConfiguration)
+            this.mergeConfiguration(this.urlConfiguration)
 
         this.resolvedConfiguration.initializeTarget =
             Tools.extend<TargetConfiguration>(
@@ -939,14 +1000,11 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             if (
                 evaluated.result !== null &&
                 typeof evaluated.result === 'object'
-            ) {
-                this.urlConfiguration = Tools.mask<Configuration>(
-                    evaluated.result,
+            )
+                return Tools.mask<RecursivePartial<Configuration>>(
+                    this.self.normalizeURLConfiguration(evaluated.result),
                     this.resolvedConfiguration.urlConfigurationMask
-                )
-
-                return this.urlConfiguration
-            }
+                ) as RecursivePartial<Configuration>
         }
 
         return null
