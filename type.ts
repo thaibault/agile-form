@@ -78,6 +78,7 @@ export interface InputAnnotation<Type = unknown> {
     invalid:boolean
     model?:RecursivePartial<Model<Type>>
     pristine:boolean
+    required?:boolean
     selection:Array<Type>
     showInitialValidationState:boolean
     type:string
@@ -121,11 +122,9 @@ export interface Configuration {
     debug:boolean
     evaluations:Array<Evaluation>
     expressions:Array<Expression>
-    fields?:Mapping<Partial<InputConfiguration>>
     initializeTarget:TargetConfiguration
     inputs:Mapping<Partial<InputConfiguration>>
     name:string
-    model?:Mapping<Partial<InputConfiguration>>
     offsetInPixel:number
     reCaptcha:{
         action:ReCaptchaV2.Action
@@ -165,8 +164,7 @@ export interface Configuration {
 }
 export type NormalizedConfiguration =
     Omit<
-        RecursivePartial<Configuration>,
-        'evaluations'|'expressions'|'fields'|'inputs'|'model'
+        RecursivePartial<Configuration>, 'evaluations'|'expressions'|'inputs'
     > &
     {
         evaluations:Array<Evaluation>
