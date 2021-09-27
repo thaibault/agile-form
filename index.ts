@@ -52,6 +52,7 @@ import {
     NormalizedConfiguration,
     PropertyTypes,
     ResponseResult,
+    StateURL,
     TargetConfiguration
 } from './type'
 // endregion
@@ -861,7 +862,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         })[key]
                     }
 
-                if ((inputs[name] as {nullable?:boolean}).nullable) {
+                if (inputs[name].hasOwnProperty('nullable')) {
                     ;(inputs[name].properties as InputAnnotation).required =
                         !Boolean((inputs[name] as {nullable:boolean}).nullable)
 
@@ -869,10 +870,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 }
 
                 for (const key of ['mutable', 'writable'] as const)
-                    if ((inputs[name] as {
-                        mutable?:boolean
-                        writable?:boolean
-                    })[key]) {
+                    if (inputs[name].hasOwnProperty(key)) {
                         ;(inputs[name].properties as InputAnnotation)
                             .disabled = !Boolean((inputs[name] as {
                                 mutable?:boolean
@@ -2944,7 +2942,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      *
      * @returns URL.
      */
-    determineStateURL = ():{encoded:string;plain:string} => {
+    determineStateURL = ():StateURL => {
         let parameter:NormalizedConfiguration =
             this.self.normalizeConfiguration(this.urlConfiguration || {})
 
@@ -3035,48 +3033,67 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         )
             delete maskedParameter.inputs
 
-        let encodedURL:string = document.URL
-        let url:string = document.URL
+        const result:StateURL = {
+            encoded: document.URL, plain: decodeURI(document.URL)
+        }
         if (Object.keys(maskedParameter).length) {
-            encodedURL = url = url.replace(
-                new RegExp(
-                    `[?&]${this.resolvedConfiguration.name}=[^&]*`, 'g'
-                ),
-                ''
-            )
+            for (const [key, value] of Object.entries(result))
+                result[key as keyof StateURL] = value
+                    .replace(
+                        new RegExp(
+                            `\\?${this.resolvedConfiguration.name}=[^&]*&`, 'g'
+                        ),
+                        '?'
+                    )
+                    .replace(
+                        new RegExp(
+                            `([&?]${this.resolvedConfiguration.name}=[^&]*$)` +
+                            `|(&${this.resolvedConfiguration.name}=[^&]*)`,
+                            'g'
+                        ),
+                        ''
+                    )
 
             // Ensure normalized urls via recursive property sorting.
-            const keys:Array<string> = []
+            const allKeys:Array<string> = []
+            const seenKeys:Mapping<null> = {}
+            // First just determine all available keys.
             JSON.stringify(
                 maskedParameter,
                 (key:string, value:unknown):unknown => {
-                    keys.push(key)
+                    if (!seenKeys.hasOwnProperty(key)) {
+                        allKeys.push(key)
+                        seenKeys[key] = null
+                    }
 
                     return value
                 }
             )
-            keys.sort()
-            const value:string = JSON.stringify(maskedParameter, keys, '')
+            allKeys.sort()
+            // Now do the real serializing job.
+            const value:string = JSON.stringify(maskedParameter, allKeys, '')
 
             const encodedQueryParameter:string =
                 `${this.resolvedConfiguration.name}=` +
                 encodeURIComponent(value)
             const queryParameter:string =
                 `${this.resolvedConfiguration.name}=${value}`
-            if (url.includes('?')) {
-                if (!(url.endsWith('?') || url.endsWith('&'))) {
-                    encodedURL += '&'
-                    url += '&'
+            if (result.plain.includes('?')) {
+                if (!(
+                    result.plain.endsWith('?') || result.plain.endsWith('&')
+                )) {
+                    result.encoded += '&'
+                    result.plain += '&'
                 }
             } else {
-                encodedURL += '?'
-                url += '?'
+                result.encoded += '?'
+                result.plain += '?'
             }
-            encodedURL += encodedQueryParameter
-            url += queryParameter
+            result.encoded += encodedQueryParameter
+            result.plain += queryParameter
         }
 
-        return {encoded: encodedURL, plain: url}
+        return result
     }
     /**
      * Tracks given data if tracking environment exists.

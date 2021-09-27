@@ -101,6 +101,11 @@ export interface Constraint {
     evaluation:string
 }
 
+export interface StateURL {
+    encoded:string
+    plain:string
+}
+
 export interface TargetConfiguration {
     options:RequestInit & Partial<{
         cache:'default'|'reload'|'no-cache'
