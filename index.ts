@@ -849,12 +849,17 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 if (!inputs[name].properties)
                     inputs[name].properties = {}
 
-                if (inputs[name].hasOwnProperty('value')) {
-                    ;(inputs[name].properties as InputAnnotation).value =
-                        inputs[name].value
+                for (const key of ['selection', 'value'] as const)
+                    if (inputs[name].hasOwnProperty(key)) {
+                        ;(inputs[name].properties as InputAnnotation)[
+                            key as 'value'
+                        ] = (inputs[name] as InputAnnotation)[key as 'value']
 
-                    delete inputs[name].value
-                }
+                        delete (inputs[name] as {
+                            selection?:unknown
+                            value?:unknown
+                        })[key]
+                    }
 
                 if ((inputs[name] as {nullable?:boolean}).nullable) {
                     ;(inputs[name].properties as InputAnnotation).required =
