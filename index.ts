@@ -826,7 +826,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
         // Consolidate aliases for "input" configuration item.
         const inputs:Mapping<RecursivePartial<InputConfiguration>> =
-            currentConfiguration.inputs as Mapping<RecursivePartial<InputConfiguration>> ||
+            currentConfiguration.inputs as
+                Mapping<RecursivePartial<InputConfiguration>> ||
             {}
         if (currentConfiguration.model) {
             Tools.extend(
@@ -839,7 +840,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             delete currentConfiguration.model
         }
 
-
         /*
             Normalize deprecated top level input configurations into
             "properties" configuration.
@@ -849,8 +849,15 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 if (!inputs[name].properties)
                     inputs[name].properties = {}
 
+                if (inputs[name].hasOwnProperty('value')) {
+                    ;(inputs[name].properties as InputAnnotation).value =
+                        inputs[name].value
+
+                    delete inputs[name].value
+                }
+
                 if ((inputs[name] as {nullable?:boolean}).nullable) {
-                    (inputs[name].properties as InputAnnotation).required =
+                    ;(inputs[name].properties as InputAnnotation).required =
                         !Boolean((inputs[name] as {nullable:boolean}).nullable)
 
                     delete (inputs[name] as {nullable?:boolean}).nullable
@@ -861,8 +868,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         mutable?:boolean
                         writable?:boolean
                     })[key]) {
-                        (inputs[name].properties as InputAnnotation).disabled =
-                            !Boolean((inputs[name] as {
+                        ;(inputs[name].properties as InputAnnotation)
+                            .disabled = !Boolean((inputs[name] as {
                                 mutable?:boolean
                                 writable?:boolean
                             })[key])
@@ -962,6 +969,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             configuration to have the final url mask available.
         */
         this.urlConfiguration = this.getConfigurationFromURL()
+
         if (this.urlConfiguration)
             this.mergeConfiguration(this.urlConfiguration)
 
@@ -1210,7 +1218,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 ).sort(([firstKey]):number => firstKey === 'model' ? -1 : 1)) {
                     console.debug(
                         `Apply form configuration for input "${name}" with ` +
-                        `property "${key}" and value "${value}".`
+                        `property "${key}" and value "` +
+                        `${Tools.represent(value)}".`
                     )
 
                     ;(domNode[key as keyof InputAnnotation] as unknown) = value
