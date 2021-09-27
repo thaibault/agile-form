@@ -874,7 +874,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     }
             }
 
-        return currentConfiguration
+        ;(currentConfiguration as RecursivePartial<Configuration>).inputs =
+            inputs
+
+        return currentConfiguration as RecursivePartial<Configuration>
     }
     /**
      * Normalizes given configuration.
