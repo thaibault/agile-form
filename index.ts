@@ -3121,8 +3121,13 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      */
     updateReCaptchaFallbackToken():boolean {
         // NOTE: IE 11 sometimes does not load reCAPTCHA properly.
-        if (window.grecaptcha && !window.grecaptcha.render && window.location)
+        if (
+            window.grecaptcha && !window.grecaptcha.render && window.location
+        ) {
             location.reload()
+
+            return false
+        }
 
         if (
             window.grecaptcha &&
@@ -3173,6 +3178,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         sitekey: this.resolvedConfiguration.reCaptcha.key.v2
                     }
                 )
+
                 this.activate(this.reCaptchaFallbackInput)
             }
 
