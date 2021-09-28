@@ -2946,6 +2946,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         let parameter:NormalizedConfiguration =
             this.self.normalizeConfiguration(this.urlConfiguration || {})
 
+        if (!Tools.isPlainObject(parameter.inputs))
+            parameter.inputs = {}
+
         for (const name in this.inputConfigurations)
             if (
                 this.inputConfigurations.hasOwnProperty(name) &&
@@ -2964,14 +2967,14 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 )
             )
                 if (parameter.inputs.hasOwnProperty(name)) {
-                    if (!parameter.inputs[name as keyof Model].hasOwnProperty(
+                    if (!parameter.inputs[name as keyof Model]!.hasOwnProperty(
                         'properties'
                     ))
-                        parameter.inputs[name as keyof Model].properties = {}
+                        parameter.inputs[name as keyof Model]!.properties = {}
 
                     if (
                         this.inputs[name].value !==
-                            parameter.inputs[name as keyof Model].properties!
+                            parameter.inputs[name as keyof Model]!.properties!
                                 .value
                     )
                         /*
@@ -2980,24 +2983,24 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             condition.
                          */
                         if (this.determinedStateValueIsNeeded(name))
-                            parameter.inputs[name].properties!.value =
+                            parameter.inputs[name]!.properties!.value =
                                 this.inputConfigurations[name].serializer ?
                                     this.inputConfigurations[name].serializer!(
                                         this.inputs[name].value
                                     ) :
                                     this.inputs[name].value
                         else {
-                            delete parameter.inputs[name as keyof Model]
+                            delete parameter.inputs[name as keyof Model]!
                                 .properties!.value
 
                             if (Object.keys(
-                                parameter.inputs[name as keyof Model]
+                                parameter.inputs[name as keyof Model]!
                                     .properties!
                             ).length === 0)
-                                delete parameter.inputs[name].properties
+                                delete parameter.inputs[name]!.properties
 
                             if (Object.keys(
-                                parameter.inputs[name as keyof Model]
+                                parameter.inputs[name as keyof Model]!
                             ).length === 0)
                                 delete parameter.inputs[name]
                         }

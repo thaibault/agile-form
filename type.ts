@@ -168,13 +168,10 @@ export interface Configuration {
     version:number
 }
 export type NormalizedConfiguration =
-    Omit<
-        RecursivePartial<Configuration>, 'evaluations'|'expressions'|'inputs'
-    > &
+    Omit<RecursivePartial<Configuration>, 'evaluations'|'expressions'> &
     {
         evaluations:Array<Evaluation>
         expressions:Array<Expression>
-        inputs:Configuration['inputs']
     }
 
 export interface PropertyTypes {
