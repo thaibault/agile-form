@@ -911,16 +911,24 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             []
         )
 
-        if (currentConfiguration.tag?.values) {
-            // NOTE: We migrate alternate tag option formats.
-            currentConfiguration.tag.values =
-                ([] as Array<string>).concat(currentConfiguration.tag.values)
-            if (currentConfiguration.hasOwnProperty('tags'))
+        if (!currentConfiguration.tag)
+            currentConfiguration.tag = {values: []}
+        if (!currentConfiguration.tag.values)
+            currentConfiguration.tag.values = []
+        currentConfiguration.tag.values = ([] as Array<string>).concat(
+            currentConfiguration.tag.values
+        )
+
+        // NOTE: We migrate alternate tag option formats.
+        if (currentConfiguration.hasOwnProperty('tags'))
+            if (currentConfiguration.hasOwnProperty('tags')) {
                 currentConfiguration.tag.values =
                     currentConfiguration.tag.values.concat((
                         currentConfiguration as unknown as {tags:Array<string>}
                     ).tags)
-        }
+
+                delete currentConfiguration.tags
+            }
 
         return currentConfiguration as NormalizedConfiguration
     }
