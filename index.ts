@@ -698,6 +698,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 */
                 if (domNode.shown)
                     this.updateGroupContent(domNode)
+
                 return
             }
 
@@ -719,8 +720,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             if (domNode.shown || this.resolvedConfiguration.showAll) {
                 domNode.style.opacity = '0'
                 domNode.style.display = 'block'
+
                 if (domNode.shown)
                     this.updateGroupContent(domNode)
+
                 this.fade(domNode)
             } else
                 this.fade(domNode, 0)
@@ -772,15 +775,16 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 applyBindings: false,
                 filter: (domNode:HTMLElement):boolean =>
                     /*
-                        NOTE: Avoid updating nested nodes which are grouped by
-                        their own.
+                        NOTE: Avoid updating nested grouped nodes which are
+                        managed by their group component.
                     */
                     !(
                         domNode.matches &&
                         domNode.matches(
                             this.resolvedConfiguration.selector.groups
                         )
-                    )
+                    ),
+                ignoreComponents: false
             }
         )
     }
