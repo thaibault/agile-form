@@ -160,18 +160,26 @@ export interface Configuration {
     showAll:boolean
     tag:{
         secret:string
-        values:Array<string>
+        values:Array<string>|string
     }
+    tags?:Array<string>|string
     target:RecursiveEvaluateable<TargetConfiguration>
     targetData:null|Mapping<unknown>
     urlConfigurationMask:ObjectMaskConfiguration
     version:number
 }
 export type NormalizedConfiguration =
-    Omit<RecursivePartial<Configuration>, 'evaluations'|'expressions'> &
+    Omit<
+        RecursivePartial<Configuration>,
+        'evaluations'|'expressions'|'tag'|'tags'
+    > &
     {
         evaluations:Array<Evaluation>
         expressions:Array<Expression>
+        tag:{
+            secret:string
+            values:Array<string>
+        }
     }
 
 export interface PropertyTypes {
