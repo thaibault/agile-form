@@ -3036,6 +3036,12 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         if (parameter.expressions.length === 0)
             delete (parameter as Partial<NormalizedConfiguration>).expressions
 
+        if (parameter.tag.values.length === 0)
+            delete (parameter.tag as Partial<NormalizedConfiguration['tag']>)
+                .values
+        if (Object.keys(parameter.tag).length === 0)
+            delete (parameter as Partial<NormalizedConfiguration>).tag
+
         // Use only allowed configuration fields.
         const maskedParameter:RecursivePartial<NormalizedConfiguration> =
             Tools.mask<NormalizedConfiguration>(
