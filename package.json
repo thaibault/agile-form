@@ -170,8 +170,8 @@
       },
       "optimizer": {
         "babelMinify": {
-          "#": "To provide a logging output we need to exclude this feature.",
-          "__evaluate__": "self.debug ? {bundle: null, module: null} : {bundle: {transform: {removeConsole: false}}, module: {removeConsole: false}}"
+          "#": "To provide a logging output we need to exclude this feature. NOTE: We currently have to disable name mangling to avoid this traceback: \"Cannot read properties of undefined (reading 'add') at ScopeTracker.addReference\".",
+          "__evaluate__": "self.debug ? {bundle: null, module: null} : {bundle: {transform: {removeConsole: false}}, module: {removeConsole: false, mangle: false}}"
         }
       }
     },

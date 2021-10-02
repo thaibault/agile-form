@@ -146,7 +146,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         'valid'
     ]
     static content:string = '<form novalidate><slot></slot></form>'
-    static defaultConfiguration:Configuration = {
+    static defaultConfiguration:RecursiveEvaluateable<Configuration> = {
         actions: {},
         animation: true,
         constraints: [],
@@ -199,9 +199,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         },
         target: {
             options: {
-                body: {
-                    __evaluate__: 'targetData'
-                },
+                body: {__evaluate__: 'targetData'} as
+                    unknown as
+                    TargetConfiguration['options']['body'],
                 cache: 'no-cache',
                 /*
                     NOTE: Send user credentials (cookies, basic http
@@ -916,7 +916,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         if (!currentConfiguration.tag.values)
             currentConfiguration.tag.values = []
         currentConfiguration.tag.values = ([] as Array<string>).concat(
-            currentConfiguration.tag.values
+            currentConfiguration.tag.values as Array<string>|string
         )
 
         // NOTE: We migrate alternate tag option formats.
@@ -1582,25 +1582,25 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         this.inputConfigurations[name].dependsOn || []
                     )
                 let scopeNames:Array<string>
-                let templateFunction:TemplateFunction
+                let templateFunction:TemplateFunction<unknown>
 
                 if (typeof code === 'string') {
-                    const result:CompilationResult =
-                        Tools.stringCompile(code, originalScopeNames)
+                    const result:CompilationResult<unknown> =
+                        Tools.stringCompile<unknown>(code, originalScopeNames)
+
                     scopeNames = result.scopeNames
                     templateFunction = result.templateFunction
+
                     if (result.error)
                         console.error(
                             `Failed to compile "dynamicExtendExpression" for` +
                             ` property "${subName}" in field "${name}":`,
                             result.error
                         )
-                } else {
+                } else
                     scopeNames = originalScopeNames.map((name:string):string =>
                         Tools.stringConvertToValidVariableName(name)
                     )
-                    templateFunction = code
-                }
 
                 this.inputConfigurations[name].dynamicExtend![subName] = (
                     event:Event
