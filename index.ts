@@ -45,6 +45,7 @@ import {
     Evaluation,
     Expression,
     FormResponse,
+    GroupSpecification,
     IndicatorFunction,
     InputAnnotation,
     InputConfiguration,
@@ -268,13 +269,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
     evaluations:Array<Evaluation> = []
 
-    groups:Map<
-        AnnotatedDomNode,
-        {
-            childNames:Array<string>
-            showIf?:IndicatorFunction
-        }
-    > = new Map()
+    groups:Map<AnnotatedDomNode, GroupSpecification> = new Map()
 
     determinedTargetURL:null|string = null
     initialData:Mapping<unknown> = {}
@@ -665,29 +660,30 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      */
     updateAllGroups():void {
         this.groups.forEach((
-            specification:{
-                childNames:Array<string>
-                showIf?:IndicatorFunction
-            },
-            domNode:AnnotatedDomNode
+            specification:GroupSpecification, domNode:AnnotatedDomNode
         ):void => {
             const name:string = domNode.getAttribute('name') ?? 'unknown'
             const oldState:boolean|null = domNode.shown
 
-            domNode.shown = (
-                specification.showIf &&
-                specification.showIf() ||
-                !specification.showIf &&
-                (
-                    specification.childNames.some((name:string):boolean =>
+            specification.showReason = null
+            if (specification.showIf) {
+                if (specification.showIf())
+                    specification.showReason = specification.showIfExpression
+            } else {
+                const shownInputNames:Array<string> = (
+                    specification.childNames.filter((name:string):boolean =>
                         Boolean(
                             !this.inputConfigurations.hasOwnProperty(name) ||
                             this.inputConfigurations[name].shown
                         )
-                    ) ||
-                    specification.childNames.length === 0
+                    )
                 )
-            )
+
+                if (shownInputNames.length)
+                    specification.showReason = shownInputNames
+            }
+
+            domNode.shown = Boolean(domNode.reason)
 
             if (domNode.shown === oldState) {
                 /*
@@ -1363,10 +1359,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             )
 
         for (const domNode of groups) {
-            const specification:{
-                childNames:Array<string>
-                showIf?:IndicatorFunction
-            } = {
+            const specification:GroupSpecification = {
                 childNames: (Array.from(domNode.querySelectorAll(
                     this.resolvedConfiguration.selector.inputs
                 )) as Array<AnnotatedInputDomNode>)
@@ -1377,7 +1370,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     .map((domNode:AnnotatedInputDomNode):string => (
                         domNode.getAttribute('name') ||
                         domNode.getAttribute('data-name')
-                    ) as string)
+                    ) as string),
+                showReason: null
             }
 
             if (
@@ -1396,6 +1390,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     name = domNode.getAttribute('data-name') as string
                 if (typeof domNode.getAttribute('name') === 'string')
                     name = domNode.getAttribute('name') as string
+
+                specification.showIfExpression = code
 
                 const {error, scopeNames, templateFunction} =
                     Tools.stringCompile(code, originalScopeNames)

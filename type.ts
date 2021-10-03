@@ -65,8 +65,16 @@ export interface Annotation {
     clearFading?:ProcedureFunction
     oldDisplay?:string
     oldOpacity?:number
+    reason:null|Array<string>|string
     showIf?:IndicatorFunction
+    showIfExpression?:string
     shown:boolean
+}
+export interface GroupSpecification {
+    childNames:Array<string>
+    showIf?:IndicatorFunction
+    showIfExpression?:string
+    showReason?:Array<string>|null|string
 }
 export interface InputAnnotation<Type = unknown> {
     changeTrigger?:unknown
