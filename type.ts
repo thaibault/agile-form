@@ -38,7 +38,7 @@ declare global {
     }
 }
 
-export type IndicatorFunction = (defaultValue?:boolean) => boolean
+export type IndicatorFunction = (...parameters:Array<unknown>) => boolean
 
 export interface InputConfiguration<Type = unknown> {
     changedEventName?:string
