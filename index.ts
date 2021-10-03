@@ -670,17 +670,14 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 if (specification.showIf())
                     specification.showReason = specification.showIfExpression
             } else {
-                const shownInputNames:Array<string> = (
-                    specification.childNames.filter((name:string):boolean =>
-                        Boolean(
-                            !this.inputConfigurations.hasOwnProperty(name) ||
-                            this.inputConfigurations[name].shown
-                        )
-                    )
+                const shownNodes:Array<AnnotatedDomNode> = (
+                    specification.childs.filter((
+                        node:AnnotatedDomNode
+                    ):boolean => node.shown)
                 )
 
-                if (shownInputNames.length)
-                    specification.showReason = shownInputNames
+                if (shownNodes.length)
+                    specification.showReason = shownNodes
             }
 
             domNode.shown = Boolean(domNode.reason)
@@ -1358,21 +1355,33 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 this.inputNames
             )
 
+        // Determine all first level nested groups or input nodes.
         for (const domNode of groups) {
+            const candidates:Array<AnnotatedDomNode> = groups.filter((
+                otherDomNode:AnnotatedDomNode
+            ):boolean =>
+                domNode !== otherDomNode && domNode.contains(otherDomNode)
+            )
+
             const specification:GroupSpecification = {
-                childNames: (Array.from(domNode.querySelectorAll(
-                    this.resolvedConfiguration.selector.inputs
-                )) as Array<AnnotatedInputDomNode>)
-                    .filter((domNode:AnnotatedInputDomNode):boolean =>
-                        typeof domNode.getAttribute('name') === 'string' ||
-                        typeof domNode.getAttribute('data-name') === 'string'
+                childs: candidates.filter((domNode:AnnotatedDomNode):boolean =>
+                    !candidates.some((otherDomNode:AnnotatedDomNode):boolean =>
+                        otherDomNode.contains(domNode)
                     )
-                    .map((domNode:AnnotatedInputDomNode):string => (
-                        domNode.getAttribute('name') ||
-                        domNode.getAttribute('data-name')
-                    ) as string),
+                ),
                 showReason: null
             }
+
+            specification.childs.concat(
+                Object.values(this.inputs)
+                    .filter((inputDomNode:AnnotatedDomNode):boolean =>
+                        domNode.contains(inputDomNode) &&
+                        !specification.childs.some(
+                            (domNode:AnnotatedDomNode):boolean =>
+                                domNode.contains(inputDomNode)
+                        )
+                    )
+            )
 
             if (
                 domNode.getAttribute('show-if') ||

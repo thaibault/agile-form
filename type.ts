@@ -70,12 +70,6 @@ export interface Annotation {
     showIfExpression?:string
     shown:boolean
 }
-export interface GroupSpecification {
-    childNames:Array<string>
-    showIf?:IndicatorFunction
-    showIfExpression?:string
-    showReason?:Array<string>|null|string
-}
 export interface InputAnnotation<Type = unknown> {
     changeTrigger?:unknown
     default:Type
@@ -96,6 +90,12 @@ export interface InputAnnotation<Type = unknown> {
 export type AnnotatedDomNode = HTMLElement & Annotation
 export type AnnotatedInputDomNode<Type = unknown> =
     AnnotatedDomNode & Partial<InputAnnotation<Type>>
+export interface GroupSpecification {
+    childs:Array<AnnotatedInputDomNode>
+    showIf?:IndicatorFunction
+    showIfExpression?:string
+    showReason?:Array<AnnotatedDomNode>|null|string
+}
 
 export interface Action {
     code:string
