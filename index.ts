@@ -269,7 +269,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
     evaluations:Array<Evaluation> = []
 
-    groups:Map<AnnotatedDomNode, GroupSpecification> = new Map()
+    groups:Array<[AnnotatedDomNode, GroupSpecification]> = []
 
     determinedTargetURL:null|string = null
     initialData:Mapping<unknown> = {}
@@ -617,7 +617,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         const oldState:boolean|undefined = inputConfiguration.shown
         this.inputs[name].shown =
         inputConfiguration.shown =
-            !inputConfiguration.showIf || inputConfiguration.showIf!(false)
+            !inputConfiguration.showIf || inputConfiguration.showIf!()
 
         if (inputConfiguration.shown !== oldState) {
             if (this.resolvedConfiguration.debug)
@@ -659,28 +659,29 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @returns Nothing.
      */
     updateAllGroups():void {
-        this.groups.forEach((
-            specification:GroupSpecification, domNode:AnnotatedDomNode
-        ):void => {
-            const name:string = domNode.getAttribute('name') ?? 'unknown'
+        for (const [domNode, specification] of this.groups) {
+            const name:string =
+                domNode.getAttribute('name') ??
+                domNode.getAttribute('data-name') ??
+                'unknown'
             const oldState:boolean|null = domNode.shown
+
+            const shownSubNodes:Array<AnnotatedDomNode> = (
+                specification.childs.filter((
+                    node:AnnotatedDomNode
+                ):boolean => node.shown)
+            )
 
             specification.showReason = null
             if (specification.showIf) {
-                if (specification.showIf())
+                if (specification.showIf(shownSubNodes, specification.childs))
                     specification.showReason = specification.showIfExpression
-            } else {
-                const shownNodes:Array<AnnotatedDomNode> = (
-                    specification.childs.filter((
-                        node:AnnotatedDomNode
-                    ):boolean => node.shown)
-                )
+            } else if (
+                shownSubNodes.length || specification.childs.length === 0
+            )
+                specification.showReason = shownSubNodes
 
-                if (shownNodes.length)
-                    specification.showReason = shownNodes
-            }
-
-            domNode.shown = Boolean(domNode.reason)
+            domNode.shown = Boolean(specification.showReason)
 
             if (domNode.shown === oldState) {
                 /*
@@ -692,7 +693,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 if (domNode.shown)
                     this.updateGroupContent(domNode)
 
-                return
+                continue
             }
 
             if (this.resolvedConfiguration.debug)
@@ -720,7 +721,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 this.fade(domNode)
             } else
                 this.fade(domNode, 0)
-        })
+        }
     }
     /**
      * Evaluate dynamic text content.
@@ -773,8 +774,13 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     */
                     !(
                         domNode.matches &&
-                        domNode.matches(
-                            this.resolvedConfiguration.selector.groups
+                        (
+                            domNode.matches(
+                                this.resolvedConfiguration.selector.groups
+                            ) ||
+                            domNode.matches(
+                                this.resolvedConfiguration.selector.inputs
+                            )
                         )
                     ),
                 ignoreComponents: false
@@ -1340,7 +1346,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @returns Nothing.
      */
     setGroupSpecificConfigurations():void {
-        this.groups = new Map()
+        this.groups = []
+
         const groups:Array<AnnotatedDomNode> = Array.from(
             this.root.querySelectorAll(
                 this.resolvedConfiguration.selector.groups
@@ -1349,6 +1356,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
         const originalScopeNames:Array<string> =
             this.self.baseScopeNames.concat(
+                'shownSubNodes',
+                'subNodes',
+                'visibility',
                 this.evaluations.map(
                     (evaluation:Evaluation):string => evaluation[0]
                 ),
@@ -1366,13 +1376,14 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             const specification:GroupSpecification = {
                 childs: candidates.filter((domNode:AnnotatedDomNode):boolean =>
                     !candidates.some((otherDomNode:AnnotatedDomNode):boolean =>
+                        otherDomNode !== domNode &&
                         otherDomNode.contains(domNode)
                     )
                 ),
                 showReason: null
             }
 
-            specification.childs.concat(
+            specification.childs = specification.childs.concat(
                 Object.values(this.inputs)
                     .filter((inputDomNode:AnnotatedDomNode):boolean =>
                         domNode.contains(inputDomNode) &&
@@ -1411,7 +1422,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         `attribute "${name}": ${error}`
                     )
                 else
-                    specification.showIf = ():boolean => {
+                    specification.showIf = ((
+                        shownSubNodes:Array<AnnotatedDomNode>,
+                        subNodes:Array<AnnotatedDomNode>
+                    ):boolean => {
                         try {
                             return Boolean(templateFunction(
                                 this.determineStateURL,
@@ -1428,8 +1442,14 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                                 this.onceSubmitted,
                                 Tools,
                                 this.valid,
+                                shownSubNodes,
+                                subNodes,
+                                subNodes.length === 0 ||
+                                shownSubNodes.length > 0,
                                 ...this.runEvaluations(),
-                                ...this.inputNames.map((name:string):InputConfiguration =>
+                                ...this.inputNames.map((
+                                    name:string
+                                ):InputConfiguration =>
                                     this.inputConfigurations[name]
                                 )
                             ))
@@ -1443,11 +1463,18 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         }
 
                         return false
-                    }
+                    }) as IndicatorFunction
             }
 
-            this.groups.set(domNode, specification)
+            this.groups.push([domNode, specification])
         }
+
+        /*
+            NOTE: We have to reverse order to update visibility states on
+            bottom up order since parents visibility states depends on nested
+            ones.
+        */
+        this.groups.reverse()
     }
     /**
      * Generates a mapping from each field name to their corresponding
