@@ -125,6 +125,12 @@
                 evaluations: [['testEvaluation', function() { return 'testEvaluation'}]],
                 expressions: [['testExpression', '5']],
                 inputs: {
+                    simple: {
+                        properties: {
+                            placeholder: 'Simple placeholder',
+                            required: true
+                        }
+                    },
                     type: {
                         properties: {
                             default: 'A',
@@ -239,6 +245,8 @@
                 name="result-message-divider"
                 show-if="submitted"
             />
+
+            <input name="simple" />
 
             <generic-input
                 declaration="Please fill in your type."

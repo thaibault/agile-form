@@ -1,0 +1,2 @@
+WARN  2021-10-04T09:16:02.587 17537 log_path_init:95: Failed to create directory /home/torben/.cache/nvim for writing logs: Unknown system error 1
+WARN  2021-10-04T09:16:02.624 17537 ga_set_growsize:66: trying to set an invalid ga_growsize: 0
