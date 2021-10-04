@@ -69,6 +69,8 @@ import {
  * @property static:specificationToPropertyMapping - Mapping model
  * specification keys to their corresponding input field property name (if not
  * equal).
+ * @property static:knownPropertyOrdering - Order of known properties to
+ * apply on inputs.
  *
  * @property clearButtons - Reference to form clear button nodes.
  * @property inputs - Mapping from field names to their corresponding input
@@ -182,10 +184,15 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         selector: {
             clearButtons: 'button[clear]',
             groups: '.agile-form__group',
-            // TODO do not allow nested elements, as long as not supported
-            // prefer high-level inputs over native "<input />"
             // TODO support buttons (with two states).
-            inputs: 'button[name], file-input, generic-input, generic-inputs, requireable-checkbox, slider-input',
+            inputs: `
+                button[name],
+
+                file-input, generic-input, generic-inputs,
+                requireable-checkbox, slider-input, input,
+
+                select, textarea
+            `.replace(/\n+/g, ' ').replace(/  +/g, ' '),
             reCaptchaFallbackInput: '.agile-form__re-captcha-fallback',
             resetButtons: 'button[reset], [type=reset]',
             spinner: 'circular-spinner',
@@ -255,6 +262,30 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             }
         */
     }
+    static knownPropertyOrdering:Array<string> = [
+        'model',
+        'name',
+        'type',
+        'maximum',
+        'minimum',
+        'maximumLength',
+        'maximum-length',
+        'minimumLength',
+        'minimum-length',
+        'pattern',
+        'invertedPattern',
+        'inverted-pattern',
+        'emptyEqualsNull',
+        'empty-equals-null',
+        'required',
+        'selection',
+        'suggestionCreator',
+        'suggestion-creator',
+        'suggestSelection',
+        'suggest-selection',
+        'default',
+        'initialValue'
+    ]
     static _name:string = 'AgileForm'
 
     clearButtons:Array<AnnotatedDomNode> = []
@@ -1098,10 +1129,20 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     async connectSpecificationWithDomNodes():Promise<Mapping<
         InputConfiguration
     >> {
-        const inputs:Array<AnnotatedInputDomNode> =
+        const inputCandidates:Array<AnnotatedInputDomNode> =
             Array.from(this.root.querySelectorAll(
                 this.resolvedConfiguration.selector.inputs
             ))
+
+        const inputs:Array<AnnotatedInputDomNode> = inputCandidates.filter((
+            domNode:AnnotatedDomNode
+        ):boolean =>
+            !inputCandidates.some((
+                otherDomNode:AnnotatedInputDomNode
+            ):boolean =>
+                domNode !== otherDomNode && otherDomNode.contains(domNode)
+            )
+        )
 
         // If no input is specified simply consider all provided inputs.
         const dummyMode:boolean =
@@ -1226,10 +1267,39 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             RecursivePartial<Model>
                     )
 
+                /*
+                    Sort known properties by known inter-dependencies and
+                    unknown to ensure deterministic behavior.
+                */
+                const properties:Array<[string, unknown]> =
+                    Object.entries(this.inputConfigurations[name].properties)
+                        .sort(([firstKey], [secondKey]):number => {
+                            if (firstKey === secondKey)
+                                return 0
+
+                            const firstIndex:number =
+                                this.self.knownPropertyOrdering.indexOf(
+                                    firstKey
+                                )
+                            const secondIndex:number =
+                                this.self.knownPropertyOrdering.indexOf(
+                                    secondKey
+                                )
+
+                            if (firstIndex === -1 && secondIndex === -1)
+                                return firstKey < secondKey ? -1 : 1
+
+                            return firstIndex === secondIndex ?
+                                0 :
+                                firstIndex === -1 ?
+                                    1 :
+                                    firstIndex < secondIndex ?
+                                        -1 :
+                                        1
+                        })
+
                 // Apply all specified properties to its corresponding node.
-                for (const [key, value] of Object.entries(
-                    this.inputConfigurations[name].properties
-                ).sort(([firstKey]):number => firstKey === 'model' ? -1 : 1)) {
+                for (const [key, value] of properties) {
                     console.debug(
                         `Apply form configuration for input "${name}" with ` +
                         `property "${key}" and value "` +
@@ -1276,6 +1346,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         [null, undefined].includes(
                             domNode.initialValue as null
                         ) &&
+                        [null, undefined].includes(
+                            this.inputConfigurations[name].properties
+                                .default as unknown as null
+                        ) &&
                         (
                             !this.inputConfigurations[name].properties.model ||
                             [null, undefined].includes(
@@ -1293,6 +1367,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         this.inputConfigurations[name].properties
                             .model?.value ??
                         domNode.initialValue ??
+                        this.inputConfigurations[name].properties.default ??
                         this.inputConfigurations[name].properties
                             .model?.default
 
@@ -2922,6 +2997,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      */
     async startBackgroundProcess(event:Event):Promise<void> {
         this.showSpinner()
+
         this.pending = true
 
         await this.updateAllInputs(event)
@@ -2943,6 +3019,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         await this.updateAllInputs(event)
 
         this.updateAllGroups()
+
         this.hideSpinner()
     }
     /**
@@ -3250,6 +3327,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     updateReCaptchaToken():Promise<null|string> {
         if (this.reCaptchaFallbackRendered) {
             this.updateReCaptchaFallbackToken()
+
             return Promise.resolve(null)
         }
 
