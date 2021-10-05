@@ -45,6 +45,7 @@ export interface InputConfiguration<Type = unknown> {
     dataMapping?:Mapping|string
     dependsOn?:Array<string>|null
     domNode?:AnnotatedDomNode
+    domNodes:Array<AnnotatedDomNode>
     dynamicExtend?:Mapping<(event:Event) => unknown>
     dynamicExtendExpressions?:Mapping<((event:Event, scope:unknown) => unknown)|string>
     name:string
