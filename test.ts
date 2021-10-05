@@ -52,7 +52,7 @@ describe('AgileForm', ():void => {
         const form:AgileForm = document.createElement(name) as AgileForm
         document.body.appendChild(form)
 
-        expect(form).toHaveProperty('inputs', {})
+        expect(form).toHaveProperty('inputConfigurations', {})
 
         const input:HTMLElement = document.createElement('generic-input')
         const inputName:string = 'test'
@@ -60,11 +60,12 @@ describe('AgileForm', ():void => {
         form.appendChild(input)
         await form.render()
 
-        expect(form).toHaveProperty('inputs', {})
+        expect(form).toHaveProperty('inputConfigurations', {})
 
         form.resolvedConfiguration.inputs[inputName] = {}
         await form.render()
-        expect(form.inputs).toHaveProperty(inputName, input)
+        expect(form.inputConfigurations)
+            .toHaveProperty([inputName, 'domNode'], input)
     })
 })
 // region vim modline
