@@ -1103,7 +1103,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 'Missing input for expected model name "' +
                 `${Object.keys(missingInputs).join('", "')}".`
             )
-
         this.createDependencyMapping()
         this.applyInputBindings()
 
@@ -1149,7 +1148,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
         // If no input is specified simply consider all provided inputs.
         const dummyMode:boolean =
-            Object.keys(this.inputConfigurations).length === 0
+            Object.keys(this.resolvedConfiguration.inputs).length === 0
         // Show all inputs in dummy mode.
         if (dummyMode)
             for (const domNode of inputs)
