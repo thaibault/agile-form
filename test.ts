@@ -60,7 +60,13 @@ describe('AgileForm', ():void => {
         form.appendChild(input)
         await form.render()
 
-        expect(form).toHaveProperty('inputConfigurations', {})
+        expect(form.inputConfigurations).toHaveProperty('test.domNode', input)
+        expect(form.inputConfigurations)
+            .toHaveProperty('test.domNodes', [input])
+        expect(form.inputConfigurations).toHaveProperty('test.dependsOn', null)
+        expect(form.inputConfigurations).toHaveProperty('test.name', 'test')
+        expect(form.inputConfigurations).toHaveProperty('test.properties', {})
+        expect(form.inputConfigurations).toHaveProperty('test.shown', true)
 
         form.resolvedConfiguration.inputs[inputName] = {}
         await form.render()
