@@ -647,7 +647,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         const oldState:boolean|undefined = inputConfiguration.shown
 
         inputConfiguration.shown =
-            !inputConfiguration.showIf || inputConfiguration.showIf!()
+            !inputConfiguration.showIf || Boolean(inputConfiguration.showIf!())
         for (const domNode of this.inputConfigurations[name].domNodes)
             domNode.shown = inputConfiguration.shown
 
@@ -2771,6 +2771,11 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         await this.digest()
 
                         let tools:Tools
+
+                        if (event.target)
+                            this.inputConfigurations[name].domNode =
+                                event.target as AnnotatedInputDomNode
+
                         if (this.dependencyMapping[name].length) {
                             tools = new Tools()
 
