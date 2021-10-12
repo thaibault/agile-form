@@ -1265,44 +1265,27 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     delete configuration.properties.value
                 }
 
-                if (
-                    configuration.properties.model &&
-                    domNode.externalProperties?.model
-                )
-                    /*
-                        Merge dom node and form model configurations.
-
-                        NOTE: Explicit input specific model configuration
-                        has higher priority than form specifications.
-                    */
-                    Tools.extend<RecursivePartial<Model>>(
-                        true,
-                        configuration.properties.model,
-                        domNode.externalProperties.model as
-                            RecursivePartial<Model>
-                    )
-
                 /*
                     Sort known properties by known inter-dependencies and
                     unknown to ensure deterministic behavior.
                 */
-                const properties:Array<[string, unknown]> =
-                    Object.entries(configuration.properties)
-                        .sort(([firstKey], [secondKey]):number => {
-                            if (firstKey === secondKey)
+                const sortedPropertyNames:Array<string> =
+                    Object.keys(configuration.properties)
+                        .sort((firstName, secondName):number => {
+                            if (firstName === secondName)
                                 return 0
 
                             const firstIndex:number =
                                 this.self.knownPropertyOrdering.indexOf(
-                                    firstKey
+                                    firstName
                                 )
                             const secondIndex:number =
                                 this.self.knownPropertyOrdering.indexOf(
-                                    secondKey
+                                    secondName
                                 )
 
                             if (firstIndex === -1 && secondIndex === -1)
-                                return firstKey < secondKey ? -1 : 1
+                                return firstName < secondName ? -1 : 1
 
                             return firstIndex === secondIndex ?
                                 0 :
@@ -1313,16 +1296,47 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                                         1
                         })
 
-                // Apply all specified properties to its corresponding node.
-                for (const [key, value] of properties) {
-                    console.debug(
-                        `Apply form configuration for input "${name}" with ` +
-                        `property "${key}" and value "` +
-                        `${Tools.represent(value)}".`
+                if (
+                    configuration.properties.model &&
+                    domNode.externalProperties?.model
+                )
+                    // Merge dom node and form model configurations.
+                    Tools.extend<RecursivePartial<Model>>(
+                        true,
+                        configuration.properties.model,
+                        domNode.externalProperties.model as
+                            RecursivePartial<Model>
                     )
 
-                    ;(domNode[key as keyof InputAnnotation] as unknown) = value
-                }
+                // Apply all specified properties to its corresponding node.
+                for (const key of sortedPropertyNames)
+                    if (
+                        key === 'model' ||
+                        !domNode.externalProperties?.hasOwnProperty(key)
+                    ) {
+                        /*
+                            NOTE: Explicit input specific model configuration
+                            has higher priority than form specifications.
+                        */
+                        console.debug(
+                            `Apply form configuration for input "${name}" ` +
+                            `with property "${key}" and value "` +
+                            Tools.represent(configuration.properties[key]) +
+                            '".'
+                        )
+
+                        ;(domNode[key as keyof InputAnnotation] as unknown) =
+                            configuration.properties[key]
+                    } else
+                        console.debug(
+                            `Form configuration for input "${name}" with ` +
+                            `property "${key}" and value "` +
+                            Tools.represent(configuration.properties[key]) +
+                            '" has been shadows by dom nodes configuration ' +
+                            'value "' +
+                            Tools.represent(domNode.externalProperties[key]) +
+                            '".'
+                        )
 
                 try {
                     /*
