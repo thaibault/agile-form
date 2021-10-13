@@ -17,7 +17,7 @@
     endregion
 */
 // region imports
-import Tools, {$} from 'clientnode'
+import Tools, {Lock, $} from 'clientnode'
 import {
     CompilationResult,
     EvaluationResult,
@@ -126,7 +126,7 @@ import {
  * @property urlConfiguration - URL given configurations object.
  * @property queryParameters - All determined query parameters.
  *
- * @property tools - Holds tools instance for saving instance specific locks.
+ * @property lock - Holds lock instance for saving instance specific locks.
  */
 export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     // region properties
@@ -346,7 +346,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
     readonly self:typeof AgileForm = AgileForm
 
-    readonly tools:Tools = new Tools()
+    readonly lock:Lock = new Lock()
     // endregion
     // region live cycle hooks
     /**
@@ -1079,7 +1079,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      */
     async configureContentProjectedInputs():Promise<void> {
         const lockName:string = 'configureContentProjectedInputs'
-        await this.tools.acquireLock(lockName)
+        await this.lock.acquire(lockName)
 
         const missingInputs:Mapping<InputConfiguration> =
             await this.connectSpecificationWithDomNodes()
@@ -1106,7 +1106,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         this.createDependencyMapping()
         this.applyInputBindings()
 
-        await this.tools.releaseLock(lockName)
+        await this.lock.release(lockName)
     }
     /**
      * Determine all environment variables to ran expressions again. We have to
@@ -2783,23 +2783,23 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     async (event:Event):Promise<void> => {
                         await this.digest()
 
-                        let tools:Tools
+                        let lock:Lock
 
                         if (event.target)
                             this.inputConfigurations[name].domNode =
                                 event.target as AnnotatedInputDomNode
 
                         if (this.dependencyMapping[name].length) {
-                            tools = new Tools()
+                            lock = new Lock()
 
-                            await tools.acquireLock('digest')
+                            await lock.acquire('digest')
                             await this.updateInputDependencies(name, event)
                         }
 
                         this.updateAllGroups()
 
                         if (this.dependencyMapping[name].length)
-                            await tools!.releaseLock('digest')
+                            await lock!.release('digest')
                     },
                     400
                 )
