@@ -127,6 +127,8 @@ import {
  * @property queryParameters - All determined query parameters.
  *
  * @property lock - Holds lock instance for saving instance specific locks.
+ *
+ * @property _evaluationResults - Last known evaluation result cache.
  */
 export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     // region properties
@@ -347,6 +349,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     readonly self:typeof AgileForm = AgileForm
 
     readonly lock:Lock = new Lock()
+
+    _evaluationResults:Array<unknown> = []
     // endregion
     // region live cycle hooks
     /**
@@ -370,7 +374,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Parses given configuration object and delegates to forward them to
      * nested input nodes.
-     *
      * @param name - Attribute name which was updates.
      * @param oldValue - Old attribute value.
      * @param newValue - New updated value.
@@ -386,7 +389,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Registers new re-captcha token.
-     *
      * @returns Nothing.
      */
     connectedCallback():void {
@@ -396,7 +398,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * De-registers all needed event listener.
-     *
      * @returns Nothing.
      */
     disconnectedCallback():void {
@@ -419,7 +420,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Triggered when content projected and nested dom nodes are ready to be
      * traversed. Selects all needed dom nodes.
-     *
      * @param reason - Description why rendering is necessary.
      *
      * @returns A promise resolving to nothing.
@@ -495,7 +495,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     // region handle visibility states
     /**
      * Fades given dom node to given opacity.
-     *
      * @param domNode - Node to fade.
      * @param opacity - Opacity value between 0 and 1.
      * @param durationInMilliseconds - Duration of animation.
@@ -592,7 +591,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Adds given dom nodes visual representation.
-     *
      * @param domNode - Node to show.
      *
      * @returns Nothing.
@@ -602,7 +600,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Removes given dom nodes visual representation.
-     *
      * @param domNode - Node to hide.
      *
      * @returns Nothing.
@@ -612,7 +609,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Shows the spinner.
-     *
      * @returns Nothing.
      */
     showSpinner():void {
@@ -625,7 +621,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Hides the spinner.
-     *
      * @returns Nothing.
      */
     hideSpinner():void {
@@ -634,7 +629,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Updates given field (by name) visibility state.
-     *
      * @param name - Field name to update.
      *
      * @returns A promise resolving to a boolean value indicating whether a
@@ -689,7 +683,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Updates all group visibility states.
-     *
      * @returns Nothing.
      */
     updateAllGroups():void {
@@ -759,7 +752,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Evaluate dynamic text content.
-     *
      * @param domNode - Dom node to render its content.
      *
      * @returns Nothing.
@@ -772,6 +764,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             ),
             this.inputNames
         )
+
         const values:Array<unknown> = [
             this.determineStateURL,
             this.determinedTargetURL,
@@ -787,7 +780,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             this.onceSubmitted,
             Tools,
             this.valid,
-            ...this.runEvaluations(),
+            ...this._evaluationResults,
             ...this.inputNames.map((name:string):InputConfiguration =>
                 this.inputConfigurations[name]
             )
@@ -823,7 +816,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Updates current error message box state.
-     *
      * @returns Nothing.
      */
     updateMessageBox(message?:null|string):void {
@@ -844,7 +836,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     // / region configuration
     /**
      * Normalizes given url configuration to support deprecated formats.
-     *
      * 1. Alias top level configuration key "model" to "inputs".
      * 2. Respect top level property configuration (not having nested
      *    "properties" key in input configuration).
@@ -852,7 +843,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      *    into properties top level inverted "disabled" configuration.
      * 4. Alias top level input property configuration "nullable" into
      *    properties top level inverted "required" configuration.
-     *
      * @param configuration - Configuration object to normalize.
      *
      * @returns Normalized configuration.
@@ -928,7 +918,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Normalizes given configuration.
-     *
      * @param configuration - Configuration object to normalize.
      *
      * @returns Normalized configuration.
@@ -971,7 +960,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Merge given configuration into resolved configuration object.
-     *
      * @param configuration - Configuration to merge.
      *
      * @return Nothing.
@@ -996,7 +984,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Resolve and merges configuration sources into final object.
-     *
      * @returns Nothing.
      */
     resolveConfiguration():void {
@@ -1038,7 +1025,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Determines configuration by existing url parameter.
-     *
      * @returns Nothing.
      */
     getConfigurationFromURL():null|RecursivePartial<Configuration> {
@@ -1074,7 +1060,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * Forwards all input specifications to their corresponding input node.
      * Observes fields for changes to apply specified inter-constraints between
      * them.
-     *
      * @returns Nothing.
      */
     async configureContentProjectedInputs():Promise<void> {
@@ -1112,7 +1097,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * Determine all environment variables to ran expressions again. We have to
      * do this a second time to include dynamically added inputs in prototyping
      * mode.
-     *
      * @returns Nothing.
      */
     determineInputNames():void {
@@ -1125,7 +1109,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Finds all fields and connects them with their corresponding model
      * specification.
-     *
      * @returns An object mapping with missing but specified fields.
      */
     async connectSpecificationWithDomNodes():Promise<Mapping<
@@ -1441,7 +1424,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Whenever a component is re-configured a digest is needed to ensure that
      * its internal state has been reflected.
-     *
      * @returns A promise resolving when digest hast been finished.
     */
     digest():ReturnType<typeof Tools.timeout> {
@@ -1451,7 +1433,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * Finds all groups and connects them with their corresponding compiled
      * show if indicator functions. Additionally some description will be
      * supplied.
-     *
      * @returns Nothing.
      */
     setGroupSpecificConfigurations():void {
@@ -1557,7 +1538,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                                 subNodes,
                                 subNodes.length === 0 ||
                                 shownSubNodes.length > 0,
-                                ...this.runEvaluations(),
+                                ...this._evaluationResults,
                                 ...this.inputNames.map((
                                     name:string
                                 ):InputConfiguration =>
@@ -1618,7 +1599,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     // / region expression compiler
     /**
      * Pre-compiles specified given expression for given field.
-     *
      * @param type - Indicates which expression type should be compiled.
      * @param name - Field name to pre-compile their expression.
      *
@@ -1668,7 +1648,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         this.valid,
                         configuration,
                         value,
-                        ...this.runEvaluations(),
+                        ...this._evaluationResults,
                         ...(configuration.dependsOn || [])
                             .map((name:string):InputConfiguration =>
                                 this.inputConfigurations[name]
@@ -1689,7 +1669,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Pre-compiles specified given dynamic extend expressions for given field.
-     *
      * @param name - Field name to pre-compile their expression.
      *
      * @returns Nothing.
@@ -1765,7 +1744,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         scope,
                         name,
                         configuration,
-                        ...this.runEvaluations(),
+                        ...this._evaluationResults,
                         ...(configuration.dependsOn || [])
                             .map((name:string):InputConfiguration =>
                                 this.inputConfigurations[name]
@@ -1796,7 +1775,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Pre-compiles all specified action source expressions.
-     *
      * @returns Nothing.
      */
     preCompileActionSources():void {
@@ -1841,7 +1819,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             this.onceSubmitted,
                             Tools,
                             this.valid,
-                            ...this.runEvaluations(),
+                            ...this._evaluationResults,
                             ...this.inputNames.map((
                                 name:string
                             ):InputConfiguration =>
@@ -1861,7 +1839,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Pre-compiles all specified generic expressions.
-     *
      * @returns Nothing.
      */
     preCompileGenericExpressions():void {
@@ -1905,7 +1882,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         this.onceSubmitted,
                         Tools,
                         this.valid,
-                        ...this.runEvaluations(name),
+                        ...this._evaluationResults,
                         ...this.inputNames.map((name:string):InputConfiguration =>
                             this.inputConfigurations[name]
                         )
@@ -1924,7 +1901,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Pre-compiles all specified expressions given by the current
      * configuration.
-     *
      * @returns Nothing.
      */
     preCompileConfigurationExpressions():void {
@@ -1948,7 +1924,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Can be triggered vie provided action condition. Can e.g. retrieve
      * initial user specific state depending on remote response.
-     *
      * @returns Promise resolving to nothing when initial request has been
      * done.
      */
@@ -1989,6 +1964,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             if (this.resolvedConfiguration.actions.hasOwnProperty(
                 'initialize'
             )) {
+                this.runEvaluations()
+
                 const target:null|string = this.resolveAction(
                     this.resolvedConfiguration.actions.initialize, 'initialize'
                 )
@@ -2008,7 +1985,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Resolve action.
-     *
      * @param action - Action to resolve.
      * @param name - Action description.
      *
@@ -2053,7 +2029,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Sets all given input fields to their initial value.
-     *
      * @param event - Triggered event object.
      *
      * @returns A promise resolving to nothing.
@@ -2063,7 +2038,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Sets all given input fields to their initial value.
-     *
      * @param event - Triggered event object.
      * @param useDefault - Indicates to use default value while resetting.
      *
@@ -2087,7 +2061,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Empties all given input fields.
-     *
      * @param event - Triggered event object.
      *
      * @returns A promise resolving to nothing.
@@ -2097,7 +2070,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Sets given input field their initial value.
-     *
      * @param name - Name of the field to clear.
      * @param useDefault - Indicates to use default value while resetting.
      *
@@ -2146,7 +2118,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Calculates current document relative offset of given dom node's
      * position.
-     *
      * @param domNode - Target node to calculate from.
      *
      * @returns Calculated values.
@@ -2211,7 +2182,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     // / region form submission
     /**
      * Sets all hidden non persistent input fields to their initial value.
-     *
      * @returns A promise resolving to nothing.
      */
     async resetAllHiddenNonPersistentInputs():Promise<void> {
@@ -2227,7 +2197,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Retrieves current raw data from given input fields and retrieves invalid
      * fields.
-     *
      * @returns An object containing raw data and a list of invalid input
      * fields.
      */
@@ -2311,7 +2280,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Sets global validation message and scrolls to first invalid field.
-     *
      * @param data - Data given by the form.
      * @param invalidInputNames - All currently invalid fields names.
      *
@@ -2337,7 +2305,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Handle valid sent data and redirects to corresponding specified target
      * page.
-     *
      * @param data - Data given by the form.
      * @param newWindow - Indicates whether action targets should be opened in
      * a new window.
@@ -2354,6 +2321,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
         let redirected:boolean = false
         let fallbackTarget:string = ''
+
+        this.runEvaluations()
 
         for (const name in this.resolvedConfiguration.actions)
             if (
@@ -2394,7 +2363,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Handles invalid sent data by setting a message and tracking resulting
      * events.
-     *
      * @param response - Servers response.
      * @param data - Data given by the form.
      *
@@ -2451,7 +2419,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Sends a request to provided target configuration and triggers different
      * response dependent events.
-     *
      * @param target - Configuration how to request.
      * @param rawData - Initial data to sent, needed for tracking additional
      * informations for triggered request.
@@ -2534,7 +2501,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Send given data to server und interpret response.
-     *
      * @param event - Triggering event object.
      * @param data - Valid data given by the form.
      * @param newWindow - Indicates whether action targets should be opened in
@@ -2547,6 +2513,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     ):Promise<void> {
         this.triggerEvent('validSubmit', {reference: data})
         // region prepare request
+        this.runEvaluations()
+
         this.resolvedConfiguration.data = data
         this.resolvedConfiguration.targetData = this.mapTargetNames(data)
         const target:TargetConfiguration = Tools.evaluateDynamicData(
@@ -2598,7 +2566,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Maps given field names to endpoint's expected ones.
-     *
      * @param - Data to transform.
      *
      * @returns Resulting transformed data.
@@ -2629,7 +2596,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Check validation state of all content projected inputs, represents
      * overall validation state and sends data to configured target.
-     *
      * @param event - Triggered event object.
      *
      * @returns Nothing.
@@ -2656,6 +2622,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             this.setAttribute('submitted', '')
             if (this.reCaptchaFallbackRendered)
                 this.setAttribute('re-captcha-fallback-rendered', '')
+
+            this.runEvaluations()
 
             await this.resetAllHiddenNonPersistentInputs()
 
@@ -2738,6 +2706,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
                 if (this.valid) {
                     this.updateMessageBox(null)
+
                     await this.handleValidSubmittedInput(
                         event, data, newWindow
                     )
@@ -2789,6 +2758,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             this.inputConfigurations[name].domNode =
                                 event.target as AnnotatedInputDomNode
 
+                        this.runEvaluations()
+
                         if (this.dependencyMapping[name].length) {
                             lock = new Lock()
 
@@ -2832,7 +2803,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Updates given input (by name) dynamic expression and its visibility
      * state.
-     *
      * @param name - Field name to update.
      * @param event - Triggering event object.
      *
@@ -2840,6 +2810,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * changed happened or not.
      */
     async updateInput(name:string, event:Event):Promise<boolean> {
+        this.runEvaluations()
+
         // We have to check for real state changes to avoid endless loops.
         let changed:boolean = false
         if (this.inputConfigurations[name].hasOwnProperty('dynamicExtend'))
@@ -2916,7 +2888,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Updates all related fields for given field name.
-     *
      * @param name - Field to check their dependent fields.
      *
      * @returns Promise holding nothing.
@@ -2927,7 +2898,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Trigger inputs internal change detection.
-     *
      * @param name - Field name to update their model.
      *
      * @returns A promise resolving to nothing.
@@ -2959,7 +2929,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     // / region utility
     /**
      * Derives event name from given event.
-     *
      * @param event - Event to derive name from.
      *
      * @return Derived name.
@@ -2995,28 +2964,18 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         return typeof event.type === 'string' ? event.type : 'unknown'
     }
     /**
-     * Generates scope based on generic expressions.
-     *
-     * @param current - Current evaluation (to ignore).
-     *
-     * @returns Evaluated scope.
+     * Evaluate all generic expression results.
+     * @returns Nothing.
      */
-    runEvaluations(current?:string):Array<unknown> {
-        const scope:Array<unknown> = []
+    runEvaluations():void {
+        this._evaluationResults = []
 
-        for (const evaluation of this.evaluations) {
-            if (current === evaluation[0])
-                break
-
-            scope.push(evaluation[1]())
-        }
-
-        return scope
+        for (const evaluation of this.evaluations)
+            this._evaluationResults.push(evaluation[1]())
     }
     /**
      * Indicates a background running process. Sets "pending" property and
      * triggers a loading spinner.
-     *
      * @param event - Triggering event object.
      *
      * @returns A Promise resolving when all items render updates has been
@@ -3027,6 +2986,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
         this.pending = true
 
+        this.runEvaluations()
+
         await this.updateAllInputs(event)
 
         this.updateAllGroups()
@@ -3034,7 +2995,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Stops indicating a background running process. Sets "pending" property
      * and stop showing a loading spinner.
-     *
      * @param event - Triggering event object.
      *
      * @returns A Promise resolving when all items render updates has been
@@ -3042,6 +3002,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      */
     async stopBackgroundProcess(event:Event):Promise<void> {
         this.pending = false
+
+        this.runEvaluations()
 
         await this.updateAllInputs(event)
 
@@ -3052,7 +3014,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Determines whether the current value state can be derived by given
      * configuration or has to be saved.
-     *
      * @param name - Model name to derive from.
      *
      * @returns A boolean indicating the neediness.
@@ -3091,7 +3052,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Determines current state url.
-     *
      * @returns URL.
      */
     determineStateURL = ():StateURL => {
@@ -3260,7 +3220,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Tracks given data if tracking environment exists.
-     *
      * @param name - Event name to trigger.
      * @param data - Data to track.
      *
@@ -3279,7 +3238,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Renders user interaction re-captcha version if corresponding placeholder
      * is available.
-     *
      * @returns A boolean indicating if a fallback node was found to render.
      */
     updateReCaptchaFallbackToken():boolean {
@@ -3353,7 +3311,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Updates internal saved re-captcha token.
-     *
      * @returns Promise resolving to challenge token or null if initialisation
      * was unsuccessful.
      */
