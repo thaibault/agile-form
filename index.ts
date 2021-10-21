@@ -1228,10 +1228,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 const configuration:InputConfiguration =
                     this.inputConfigurations[name]
 
-                if (configuration.properties.model)
-                    // Do not control "state" from the outside.
-                    delete configuration.properties.model!.state
-
                 if (
                     domNode.nodeName.includes('-') &&
                     configuration.properties.hasOwnProperty('value')
@@ -1248,13 +1244,49 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     delete configuration.properties.value
                 }
 
+                // Merge dom node and form model configurations.
+                if (domNode.externalProperties)
+                    if (
+                        domNode.externalProperties
+                            .model?.dynamicExtendExpressions ||
+                        domNode.externalProperties.dynamicExtendExpressions
+                    ) {
+                        if (!configuration.dynamicExtendExpressions)
+                            configuration.dynamicExtendExpressions = {}
+
+                        Tools.extend<RecursivePartial<Model>>(
+                            true,
+                            configuration.dynamicExtendExpressions,
+                            domNode.externalProperties
+                                .model?.dynamicExtendExpressions ||
+                                {},
+                            domNode.externalProperties
+                                .dynamicExtendExpressions ||
+                                {}
+                        )
+                    }
+                if (configuration.properties.model) {
+                    // Do not control "state" from the outside.
+                    delete configuration.properties.model!.state
+
+                    if (domNode.externalProperties?.model)
+                        // Merge dom node and form model configurations.
+                        Tools.extend<RecursivePartial<Model>>(
+                            true,
+                            configuration.properties.model,
+                            domNode.externalProperties.model as
+                                RecursivePartial<Model>
+                        )
+                }
+
                 /*
                     Sort known properties by known inter-dependencies and
                     unknown to ensure deterministic behavior.
                 */
-                const sortedPropertyNames:Array<string> =
-                    Object.keys(configuration.properties)
-                        .sort((firstName, secondName):number => {
+                type Key = keyof Partial<InputAnnotation>
+                const sortedPropertyNames:Array<Key> =
+                    (Object.keys(configuration.properties) as Array<Key>)
+                        .sort((firstName:Key, secondName:Key):number => {
                             if (firstName === secondName)
                                 return 0
 
@@ -1278,18 +1310,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                                         -1 :
                                         1
                         })
-
-                if (
-                    configuration.properties.model &&
-                    domNode.externalProperties?.model
-                )
-                    // Merge dom node and form model configurations.
-                    Tools.extend<RecursivePartial<Model>>(
-                        true,
-                        configuration.properties.model,
-                        domNode.externalProperties.model as
-                            RecursivePartial<Model>
-                    )
 
                 // Apply all specified properties to its corresponding node.
                 for (const key of sortedPropertyNames)

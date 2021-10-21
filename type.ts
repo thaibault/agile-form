@@ -28,10 +28,8 @@ import {
     ValueOf
 } from 'clientnode/type'
 import 'grecaptcha'
-import {Model} from 'web-input-material/type'
+import {Model as BaseModel} from 'web-input-material/type'
 // endregion
-export type {Model} from 'web-input-material/type'
-
 declare global {
     interface Window {
         dataLayer:Array<unknown>
@@ -40,6 +38,12 @@ declare global {
 
 export type IndicatorFunction = (...parameters:Array<unknown>) => boolean
 
+export type DynamicExtendExpression =
+    ((event:Event, scope:unknown) => unknown)|string
+
+export interface Model<T = unknown> extends BaseModel<T> {
+    dynamicExtendExpressions?:Mapping<DynamicExtendExpression>
+}
 export interface InputConfiguration<Type = unknown> {
     changedEventName?:string
     dataMapping?:Mapping|string
@@ -47,7 +51,7 @@ export interface InputConfiguration<Type = unknown> {
     domNode?:AnnotatedInputDomNode
     domNodes:Array<AnnotatedInputDomNode>
     dynamicExtend?:Mapping<(event:Event) => unknown>
-    dynamicExtendExpressions?:Mapping<((event:Event, scope:unknown) => unknown)|string>
+    dynamicExtendExpressions?:Mapping<DynamicExtendExpression>
     name:string
     properties:Partial<InputAnnotation<Type>>
     serializer?:(value:unknown) => Primitive
@@ -76,6 +80,7 @@ export interface InputAnnotation<Type = unknown> {
     default:Type
     dirty:boolean
     disabled:boolean
+    dynamicExtendExpressions?:Mapping<DynamicExtendExpression>
     externalProperties?:Partial<InputAnnotation<Type>>
     initialValue?:Type
     invalid:boolean
