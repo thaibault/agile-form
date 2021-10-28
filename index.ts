@@ -1266,7 +1266,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         )
                     }
 
-                if (configuration.properties.model?.state) {
+                if (configuration.properties.model) {
                     // Do not control "state" from the outside.
                     delete configuration.properties.model!.state
 
