@@ -1266,26 +1266,18 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         )
                     }
 
-                if (configuration.properties.model?.state)
+                if (configuration.properties.model?.state) {
                     // Do not control "state" from the outside.
-                    delete configuration.properties.model.state
+                    delete configuration.properties.model!.state
 
-                /*
-                    NOTE: We have to add "model" to configurations if set via
-                    dom node to re-set this property in correct order when
-                    form input configuration is applied in next steps.
-                */
-                if (domNode.externalProperties?.model) {
-                    if (!configuration.properties.model)
-                        configuration.properties.model = {}
-
-                    // Merge dom node and form model configurations.
-                    Tools.extend<RecursivePartial<Model>>(
-                        true,
-                        configuration.properties.model,
-                        domNode.externalProperties.model as
-                            RecursivePartial<Model>
-                    )
+                    if (domNode.externalProperties?.model)
+                        // Merge dom node and form model configurations.
+                        Tools.extend<RecursivePartial<Model>>(
+                            true,
+                            configuration.properties.model,
+                            domNode.externalProperties.model as
+                                RecursivePartial<Model>
+                        )
                 }
 
                 /*
@@ -1344,7 +1336,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             `Form configuration for input "${name}" with ` +
                             `property "${key}" and value "` +
                             Tools.represent(configuration.properties[key]) +
-                            '" has been shadows by dom nodes configuration ' +
+                            '" has been shadowed by dom nodes configuration ' +
                             'value "' +
                             Tools.represent(domNode.externalProperties[key]) +
                             '".'
