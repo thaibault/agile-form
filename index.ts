@@ -29,6 +29,7 @@ import {
     RecursiveEvaluateable,
     RecursivePartial,
     TemplateFunction,
+    UnknownFunction,
     ValueOf
 } from 'clientnode/type'
 import {object} from 'clientnode/property-types'
@@ -2769,8 +2770,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         configuration.changedEventName as string :
                         'change'
 
-                const handler:EventListener = Tools.debounce(
-                    async (event:Event):Promise<void> => {
+                const handler:EventListener = Tools.debounce<void>(
+                    (async (event:Event):Promise<void> => {
                         await this.digest()
 
                         let lock:Lock
@@ -2792,7 +2793,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
                         if (this.dependencyMapping[name].length)
                             await lock!.release('digest')
-                    },
+                    }) as UnknownFunction,
                     400
                 )
 
