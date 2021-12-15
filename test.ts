@@ -21,7 +21,7 @@ import api, {AgileForm} from './index'
 // endregion
 globalContext.fetch = nodeFetch as unknown as typeof fetch
 
-const name:string = 'test-form'
+const name = 'test-form'
 api.register(name)
 
 describe('api', ():void => {
@@ -55,7 +55,7 @@ describe('AgileForm', ():void => {
         expect(form).toHaveProperty('inputConfigurations', {})
 
         const input:HTMLElement = document.createElement('generic-input')
-        const inputName:string = 'test'
+        const inputName = 'test'
         input.setAttribute('name', inputName)
         form.appendChild(input)
         await form.render()

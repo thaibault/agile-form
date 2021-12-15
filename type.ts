@@ -36,10 +36,10 @@ declare global {
     }
 }
 
-export type IndicatorFunction = (...parameters:Array<unknown>) => boolean
+export type IndicatorFunction = (..._parameters:Array<unknown>) => boolean
 
 export type DynamicExtendExpression =
-    ((event:Event, scope:unknown) => unknown)|string
+    ((_event:Event, _scope:unknown) => unknown)|string
 
 export interface Model<T = unknown> extends BaseModel<T> {
     dynamicExtendExpressions?:Mapping<DynamicExtendExpression>
@@ -50,17 +50,17 @@ export interface InputConfiguration<Type = unknown> {
     dependsOn?:Array<string>|null
     domNode?:AnnotatedInputDomNode
     domNodes:Array<AnnotatedInputDomNode>
-    dynamicExtend?:Mapping<(event:Event) => unknown>
+    dynamicExtend?:Mapping<(_event:Event) => unknown>
     dynamicExtendExpressions?:Mapping<DynamicExtendExpression>
     name:string
     properties:Partial<InputAnnotation<Type>>
-    serializer?:(value:unknown) => Primitive
+    serializer?:(_value:unknown) => Primitive
     serializerExpression?:string
     showIf?:IndicatorFunction
     showIfExpression?:string
     shown?:boolean
     target?:string
-    transformer?:(value:unknown) => unknown
+    transformer?:(_value:unknown) => unknown
     transformerExpression?:string
     value?:null|Type
     valuePersistence?:'persistent'|'resetOnHide'

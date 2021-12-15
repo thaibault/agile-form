@@ -24,7 +24,6 @@ import {
     Mapping,
     Offset,
     PlainObject,
-    ProcedureFunction,
     QueryParameters,
     RecursiveEvaluateable,
     RecursivePartial,
@@ -325,7 +324,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         change order here.
     */
     reCaptchaPromiseResolver:(_result:null|string) => void =
-        (_result:null|string) => {}
+        (_result:null|string) => {
+            // Does nothing yet.
+        }
     reCaptchaPromise:Promise<null|string> = new Promise(
         (resolve:(_result:null|string) => void):void => {
             this.reCaptchaPromiseResolver = resolve
@@ -969,7 +970,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * Merge given configuration into resolved configuration object.
      * @param configuration - Configuration to merge.
      *
-     * @return Nothing.
+     * @returns Nothing.
      */
     mergeConfiguration(configuration:RecursivePartial<Configuration>):void {
         const normalizedConfiguration:NormalizedConfiguration =
@@ -998,7 +999,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             this.self.defaultConfiguration as RecursivePartial<Configuration>
         ) as Configuration
 
-        for (let configuration of [
+        for (const configuration of [
             this.baseConfiguration,
             this.configuration,
             this.dynamicConfiguration,
@@ -1070,7 +1071,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @returns Nothing.
      */
     async configureContentProjectedInputs():Promise<void> {
-        const lockName:string = 'configureContentProjectedInputs'
+        const lockName = 'configureContentProjectedInputs'
         await this.lock.acquire(lockName)
 
         const missingInputs:Mapping<InputConfiguration> =
@@ -1162,7 +1163,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         this.determineInputNames()
         this.initialData = {}
 
-        let index:number = 0
+        let index = 0
         /*
             Match all found inputs against existing specified fields or load
             not specified input into the specification (model configuration).
@@ -1170,7 +1171,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         for (const domNode of inputs) {
             const name:null|string = domNode.getAttribute('name')
             if (name) {
-                if (this.inputConfigurations.hasOwnProperty(name)) {
+                if (Object.prototype.hasOwnProperty.call(
+                    this.inputConfigurations, name
+                )) {
                     /*
                         Exclusive property for retrieving dom node when a
                         single value is needed. Can be used here (for e.g. via
@@ -1237,7 +1240,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
                 if (
                     domNode.nodeName.includes('-') &&
-                    configuration.properties.hasOwnProperty('value')
+                    Object.prototype.hasOwnProperty.call(
+                        configuration.properties, 'value'
+                    )
                 ) {
                     /*
                         Interpret configured values as initial values only to
@@ -1275,15 +1280,14 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
                 if (configuration.properties.model) {
                     // Do not control "state" from the outside.
-                    delete configuration.properties.model!.state
+                    delete configuration.properties.model.state
 
                     if (domNode.externalProperties?.model)
                         // Merge dom node and form model configurations.
                         Tools.extend<RecursivePartial<Model>>(
                             true,
                             configuration.properties.model,
-                            domNode.externalProperties.model as
-                                RecursivePartial<Model>
+                            domNode.externalProperties.model
                         )
                 }
 
@@ -1323,7 +1327,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 for (const key of sortedPropertyNames)
                     if (
                         key === 'model' ||
-                        !domNode.externalProperties?.hasOwnProperty(key)
+                        domNode.externalProperties &&
+                        !Object.prototype.hasOwnProperty.call(
+                            domNode.externalProperties, key
+                        )
                     ) {
                         /*
                             NOTE: Explicit input specific model configuration
@@ -1336,8 +1343,16 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             '".'
                         )
 
+                        /*
+                            eslint-disable
+                            @typescript-eslint/no-unnecessary-type-assertion
+                        */
                         ;(domNode[key as keyof InputAnnotation] as unknown) =
                             configuration.properties[key]
+                        /*
+                            eslint-disable
+                            @typescript-eslint/no-unnecessary-type-assertion
+                        */
                     } else
                         console.debug(
                             `Form configuration for input "${name}" with ` +
@@ -1345,7 +1360,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             Tools.represent(configuration.properties[key]) +
                             '" has been shadowed by dom nodes configuration ' +
                             'value "' +
-                            Tools.represent(domNode.externalProperties[key]) +
+                            Tools.represent(domNode.externalProperties![key]) +
                             '".'
                         )
 
@@ -1392,21 +1407,15 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             domNode.initialValue as null
                         ) &&
                         [null, undefined].includes(
-                            configuration.properties.default as
-                                unknown as
-                                null
+                            configuration.properties.default as null
                         ) &&
                         (
                             !configuration.properties.model ||
                             [null, undefined].includes(
-                                configuration.properties.model!.default as
-                                    unknown as
-                                    null
+                                configuration.properties.model.default as null
                             ) &&
                             [null, undefined].includes(
-                                configuration.properties.model!.value as
-                                    unknown as
-                                    null
+                                configuration.properties.model.value as null
                             )
                         )
                     )
@@ -1419,7 +1428,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
                     console.debug(
                         `Derive final initial value for input "${name}" to "` +
-                        `${configuration.value}".`
+                        `${configuration.value as string}".`
                     )
                 }
 
@@ -1442,7 +1451,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         */
         for (const configuration of Object.values(this.inputConfigurations))
             if (
-                configuration.hasOwnProperty('dependsOn') &&
+                Object.prototype.hasOwnProperty.call(
+                    configuration, 'dependsOn'
+                ) &&
                 configuration.dependsOn === null
             )
                 configuration.dependsOn = this.inputNames
@@ -1455,7 +1466,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @returns A promise resolving when digest hast been finished.
     */
     digest():ReturnType<typeof Tools.timeout> {
-         return Tools.timeout()
+        return Tools.timeout()
     }
     /**
      * Finds all groups and connects them with their corresponding compiled
@@ -1525,7 +1536,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     .replace(/(#039;)|(&amp;)/g, '&')
                     .replace(/<br\/>/g, '')
 
-                let name:string = 'UNKNOWN'
+                let name = 'UNKNOWN'
                 if (typeof domNode.getAttribute('data-name') === 'string')
                     name = domNode.getAttribute('data-name') as string
                 if (typeof domNode.getAttribute('name') === 'string')
@@ -1607,14 +1618,18 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         for (const [name, configuration] of Object.entries(
             this.inputConfigurations
         )) {
-            if (!this.dependencyMapping.hasOwnProperty(name))
+            if (!Object.prototype.hasOwnProperty.call(
+                this.dependencyMapping, name
+            ))
                 this.dependencyMapping[name] = []
 
             if (configuration.dependsOn)
                 for (const dependentName of ([] as Array<string>).concat(
                     configuration.dependsOn as Array<string>
                 ))
-                    if (this.dependencyMapping.hasOwnProperty(dependentName)) {
+                    if (Object.prototype.hasOwnProperty.call(
+                        this.dependencyMapping, dependentName
+                    )) {
                         if (!this.dependencyMapping[dependentName].includes(
                             name
                         ))
@@ -1627,12 +1642,12 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     // / region expression compiler
     /**
      * Pre-compiles specified given expression for given field.
-     * @param type - Indicates which expression type should be compiled.
      * @param name - Field name to pre-compile their expression.
+     * @param type - Indicates which expression type should be compiled.
      *
      * @returns Nothing.
      */
-    preCompileExpressions(name:string, type:string = 'transformer'):void {
+    preCompileExpressions(name:string, type = 'transformer'):void {
         const typeName:'transformerExpression' = `${type}Expression` as
             'transformerExpression'
 
@@ -1710,12 +1725,15 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         configuration.dynamicExtend = {}
         for (const subName in configuration.dynamicExtendExpressions)
             if (
-                configuration.dynamicExtendExpressions!.hasOwnProperty(subName)
+                configuration.dynamicExtendExpressions &&
+                Object.prototype.hasOwnProperty.call(
+                    configuration.dynamicExtendExpressions, subName
+                )
             ) {
-                const code:((event:Event, scope:unknown) => unknown)|string =
+                const code:((_event:Event, _scope:unknown) => unknown)|string =
                     configuration.dynamicExtendExpressions![subName]
 
-                let originalScopeNames:Array<string> =
+                const originalScopeNames:Array<string> =
                     this.self.baseScopeNames.concat(
                         'event',
                         'eventName',
@@ -1779,7 +1797,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             )
                     ]
 
-                    let index:number = 0
+                    let index = 0
                     for (const name of scopeNames) {
                         scope[name] = context[index]
                         index += 1
@@ -1792,8 +1810,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     } catch (error) {
                         console.error(
                             `Failed running "dynamicExtendExpression" "` +
-                            `${code}" for property "${subName}" in field "` +
-                            `${name}" with bound names "` +
+                            `${code as string}" for property "${subName}" in` +
+                            ` field "${name}" with bound names "` +
                             `${scopeNames.join('", "')}": "` +
                             `${Tools.represent(error)}".`
                         )
@@ -1815,7 +1833,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             )
 
         for (const name in this.resolvedConfiguration.actions)
-            if (this.resolvedConfiguration.actions.hasOwnProperty(name)) {
+            if (Object.prototype.hasOwnProperty.call(
+                this.resolvedConfiguration.actions, name
+            )) {
                 const code:string =
                     this.resolvedConfiguration.actions[name].code
                 if (code.trim() === 'fallback')
@@ -1852,7 +1872,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                                 name:string
                             ):InputConfiguration =>
                                 this.inputConfigurations[name]
-                            ),
+                            )
                         )
                     } catch (error) {
                         console.error(
@@ -1911,8 +1931,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         Tools,
                         this.valid,
                         ...this._evaluationResults,
-                        ...this.inputNames.map((name:string):InputConfiguration =>
-                            this.inputConfigurations[name]
+                        ...this.inputNames.map(
+                            (name:string):InputConfiguration =>
+                                this.inputConfigurations[name]
                         )
                     )
                 } catch (error) {
@@ -1950,7 +1971,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     // / endregion
     // / region initialize/submit/reset actions
     /**
-     * Can be triggered vie provided action condition. Can e.g. retrieve
+     * Can be triggered vie provided action condition. Can for example retrieve
      * initial user specific state depending on remote response.
      * @returns Promise resolving to nothing when initial request has been
      * done.
@@ -1989,8 +2010,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 return
             }
 
-            if (this.resolvedConfiguration.actions.hasOwnProperty(
-                'initialize'
+            if (Object.prototype.hasOwnProperty.call(
+                this.resolvedConfiguration.actions, 'initialize'
             )) {
                 this.runEvaluations()
 
@@ -2025,8 +2046,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 `Action "${name}" matched` +
                 (
                     typeof actionResult === 'boolean' ?
-                       '' :
-                       ` (with result "${actionResult}")`
+                        '' :
+                        ` (with result "${actionResult as string}")`
                 ) +
                 '.'
             )
@@ -2137,16 +2158,23 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     async resetInput(
         name:string, useDefault:boolean|null = false
     ):Promise<boolean> {
-        if (this.inputConfigurations.hasOwnProperty(name)) {
+        if (Object.prototype.hasOwnProperty.call(
+            this.inputConfigurations, name
+        )) {
             const configuration:InputConfiguration =
                 this.inputConfigurations[name]
 
-            if (useDefault === false && this.initialData.hasOwnProperty(name))
+            if (
+                useDefault === false &&
+                Object.prototype.hasOwnProperty.call(this.initialData, name)
+            )
                 for (const domNode of configuration.domNodes)
                     domNode.value = Tools.copy(this.initialData[name])
             else if (
                 useDefault &&
-                configuration.properties.hasOwnProperty('default')
+                Object.prototype.hasOwnProperty.call(
+                    configuration.properties, 'default'
+                )
             )
                 for (const domNode of configuration.domNodes)
                     domNode.value =
@@ -2185,10 +2213,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @param targetDomNode - Dom node to scroll to.
      * @param smooth - Indicates whether to animate scrolling.
      *
-     * @returns a Promise resolving when focusing has finished.
+     * @returns A promise resolving when focusing has finished.
      */
     scrollAndFocus(
-        targetDomNode:AnnotatedDomNode, smooth:boolean = true
+        targetDomNode:AnnotatedDomNode, smooth = true
     ):Promise<void> {
         return new Promise<void>((resolve:() => void):void => {
             const offset:Offset = this.getOffset(targetDomNode)
@@ -2196,7 +2224,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 0, offset.top - this.resolvedConfiguration.offsetInPixel
             )
 
-            const onScroll:ProcedureFunction = ():void => {
+            const onScroll = ():void => {
                 if (
                     window.pageYOffset.toFixed() ===
                         newScrollPosition.toFixed()
@@ -2267,7 +2295,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 if (name && ![null, undefined].includes(value as null))
                     if (
                         typeof value === 'object' &&
-                        configuration.hasOwnProperty('dataMapping')
+                        Object.prototype.hasOwnProperty.call(
+                            configuration, 'dataMapping'
+                        )
                     ) {
                         const scope:Mapping<unknown> = {
                             ...value,
@@ -2292,9 +2322,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                             for (const subName in (
                                 configuration.dataMapping as Mapping
                             ))
-                                if ((
-                                    configuration.dataMapping as Mapping
-                                ).hasOwnProperty(subName)) {
+                                if (Object.prototype.hasOwnProperty.call(
+                                    configuration.dataMapping as Mapping,
+                                    subName
+                                )) {
                                     const evaluated:EvaluationResult =
                                         Tools.stringEvaluate(
                                             (configuration.dataMapping as
@@ -2308,11 +2339,12 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
                                     data[subName] = evaluated.result
                                 }
-                    } else if (Array.isArray(value)) {
+                    } else if (Array.isArray(value))
                         if (value.every((item:unknown):boolean =>
                             item !== null &&
                             typeof item === 'object' &&
-                            item!.hasOwnProperty('value')
+                            item &&
+                            Object.prototype.hasOwnProperty.call(item, 'value')
                         ))
                             data[name] =
                                 value.map((item:{value:unknown}):unknown =>
@@ -2320,7 +2352,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                                 )
                         else
                             data[name] = value
-                    } else
+                    else
                         data[name] = value
             }
 
@@ -2348,7 +2380,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         )
 
         if (invalidInputs.length)
-            this.scrollAndFocus(invalidInputs[0])
+            void this.scrollAndFocus(invalidInputs[0])
     }
     /**
      * Handle valid sent data and redirects to corresponding specified target
@@ -2359,22 +2391,22 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      *
      * @returns Redirection target.
      */
-    handleValidSentData(
-        data:Mapping<unknown>, newWindow:boolean = false
-    ):string {
+    handleValidSentData(data:Mapping<unknown>, newWindow = false):string {
         this.triggerEvent(
             'submitSuccessful',
             {reference: {request: data, response: this.response!.data}}
         )
 
-        let redirected:boolean = false
-        let fallbackTarget:string = ''
+        let redirected = false
+        let fallbackTarget = ''
 
         this.runEvaluations()
 
         for (const name in this.resolvedConfiguration.actions)
             if (
-                this.resolvedConfiguration.actions.hasOwnProperty(name) &&
+                Object.prototype.hasOwnProperty.call(
+                    this.resolvedConfiguration.actions, name
+                ) &&
                 name !== 'initialize'
             )
                 if (
@@ -2412,7 +2444,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * Handles invalid sent data by setting a message and tracking resulting
      * events.
      * @param response - Servers response.
-     * @param data - Data given by the form.
+     * @param rawData - Data given by the form.
      *
      * @returns Nothing.
      */
@@ -2433,7 +2465,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             )
         else if (response && response.status === 420) {
             if (this.updateReCaptchaFallbackToken())
-                this.scrollAndFocus(
+                void this.scrollAndFocus(
                     this.reCaptchaFallbackInput as AnnotatedDomNode
                 )
 
@@ -2479,29 +2511,30 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         // region convert headers configuration to header object
         if (
             window.Headers &&
-            target.hasOwnProperty('options') &&
+            Object.prototype.hasOwnProperty.call(target, 'options') &&
             target.options !== null &&
-            target.options.hasOwnProperty('headers') &&
+            Object.prototype.hasOwnProperty.call(target.options, 'headers') &&
             target.options.headers !== null
         ) {
             const givenHeaders:Mapping = target.options.headers as Mapping
             const headers:Headers = new Headers()
             for (const name in target.options.headers)
                 if (
-                    givenHeaders.hasOwnProperty(name) &&
+                    Object.prototype.hasOwnProperty.call(givenHeaders, name) &&
                     ['boolean', 'number', 'string'].includes(
                         typeof givenHeaders[name as keyof Mapping]
                     ) &&
                     `${givenHeaders[name as keyof Mapping]}`.trim()
                 )
                     headers.set(name, givenHeaders[name as keyof Mapping])
-            ;(target.options.headers as Headers) = headers
+
+            target.options.headers = headers
         }
         // endregion
 
         let result:null|FormResponse = null
         try {
-            this.updateReCaptchaToken()
+            void this.updateReCaptchaToken()
 
             result = await fetch(target.url, target.options || {}) as
                 unknown as
@@ -2557,7 +2590,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @returns Promise holding nothing.
      */
     async handleValidSubmittedInput(
-        event:Event, data:Mapping<unknown>, newWindow:boolean = false
+        event:Event, data:Mapping<unknown>, newWindow = false
     ):Promise<void> {
         this.triggerEvent('validSubmit', {reference: data})
         // region prepare request
@@ -2614,7 +2647,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Maps given field names to endpoint's expected ones.
-     * @param - Data to transform.
+     * @param data - To transform.
      *
      * @returns Resulting transformed data.
      */
@@ -2622,10 +2655,14 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         const result:Mapping<unknown> = {}
 
         for (const name in data)
-            if (data.hasOwnProperty(name))
+            if (Object.prototype.hasOwnProperty.call(data, name))
                 if (
-                    this.inputConfigurations.hasOwnProperty(name) &&
-                    this.inputConfigurations[name].hasOwnProperty('target')
+                    Object.prototype.hasOwnProperty.call(
+                        this.inputConfigurations, name
+                    ) &&
+                    Object.prototype.hasOwnProperty.call(
+                        this.inputConfigurations[name], 'target'
+                    )
                 ) {
                     if (
                         typeof this.inputConfigurations[name].target ===
@@ -2679,7 +2716,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
             if (invalidInputNames.length) {
                 // Trigger input components to present their validation state.
-                for (const {domNodes} of Object.values(this.inputConfigurations))
+                for (const {domNodes} of Object.values(
+                    this.inputConfigurations
+                ))
                     for (const domNode of domNodes)
                         domNode.showInitialValidationState = true
                 this.handleInvalidSubmittedInput(data, invalidInputNames)
@@ -2689,7 +2728,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             ) {
                 this.updateMessageBox('Please do the re-captcha challenge.')
 
-                this.scrollAndFocus(
+                void this.scrollAndFocus(
                     this.reCaptchaFallbackInput as AnnotatedDomNode
                 )
             } else {
@@ -2790,9 +2829,13 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             for (const domNode of configuration.domNodes)
                 this.applyBindings(domNode, scope)
 
-            if (!this.inputEventBindings.hasOwnProperty(name)) {
+            if (!Object.prototype.hasOwnProperty.call(
+                this.inputEventBindings, name
+            )) {
                 const eventName:string =
-                    configuration.hasOwnProperty('changedEventName') ?
+                    Object.prototype.hasOwnProperty.call(
+                        configuration, 'changedEventName'
+                    ) ?
                         configuration.changedEventName as string :
                         'change'
 
@@ -2829,7 +2872,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 this.inputEventBindings[name] = ():void => {
                     for (
                         const domNode of
-                            this.inputConfigurations[name].domNodes
+                        this.inputConfigurations[name].domNodes
                     )
                         domNode.removeEventListener(eventName, handler)
 
@@ -2861,15 +2904,18 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         this.runEvaluations()
 
         // We have to check for real state changes to avoid endless loops.
-        let changed:boolean = false
-        if (this.inputConfigurations[name].hasOwnProperty('dynamicExtend'))
-            for (
-                const selector in this.inputConfigurations[name].dynamicExtend
-            ) {
-                let invert:boolean = false
+        let changed = false
+        if (Object.prototype.hasOwnProperty.call(
+            this.inputConfigurations[name], 'dynamicExtend'
+        ))
+            for (const selector of Object.keys(
+                this.inputConfigurations[name].dynamicExtend as
+                    Mapping<unknown>
+            )) {
+                let invert = false
                 let mappedSelector:string = selector
-                if (this.self.specificationToPropertyMapping.hasOwnProperty(
-                    selector
+                if (Object.prototype.hasOwnProperty.call(
+                    this.self.specificationToPropertyMapping, selector
                 )) {
                     invert = Boolean(
                         this.self.specificationToPropertyMapping[selector]
@@ -2906,8 +2952,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         target[key] = newValue
 
                     console.debug(
-                        `Change "${selector}" on "${name}" from "${oldValue}` +
-                        `" to "${newValue}".`
+                        `Change "${selector}" on "${name}" from "` +
+                        `${oldValue as string}" to "${newValue as string}".`
                     )
 
                     Tools.getSubstructure<
@@ -2916,7 +2962,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                         newValue
                     for (
                         const domNode of
-                            this.inputConfigurations[name].domNodes
+                        this.inputConfigurations[name].domNodes
                     )
                         Tools.getSubstructure<
                             AnnotatedInputDomNode, Mapping<unknown>
@@ -2937,6 +2983,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     /**
      * Updates all related fields for given field name.
      * @param name - Field to check their dependent fields.
+     * @param event - Triggering event.
      *
      * @returns Promise holding nothing.
      */
@@ -2951,7 +2998,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @returns A promise resolving to nothing.
      */
     async triggerModelUpdate(name:string):Promise<void> {
-        if (this.inputConfigurations.hasOwnProperty(name))
+        if (Object.prototype.hasOwnProperty.call(
+            this.inputConfigurations, name
+        ))
             for (const domNode of this.inputConfigurations[name].domNodes) {
                 if (typeof domNode.changeTrigger === 'function') {
                     const result:unknown =
@@ -2979,7 +3028,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * Derives event name from given event.
      * @param event - Event to derive name from.
      *
-     * @return Derived name.
+     * @returns Derived name.
      */
     determineEventName(
         event:Event & {detail?:{
@@ -2998,6 +3047,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     typeof event.detail.parameter[1].type === 'string'
                 )
                     return event.detail.parameter[1].type
+
                 if (
                     event.detail.parameter[0] &&
                     typeof event.detail.parameter[0].type === 'string'
@@ -3103,7 +3153,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @returns URL.
      */
     determineStateURL = ():StateURL => {
-        let parameter:NormalizedConfiguration =
+        const parameter:NormalizedConfiguration =
             this.self.normalizeConfiguration(this.urlConfiguration || {})
 
         if (!Tools.isPlainObject(parameter.inputs))
@@ -3128,9 +3178,15 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     ).webComponentAdapterWrapped !== 'react'
                 )
             )
-                if (parameter.inputs.hasOwnProperty(name)) {
-                    if (!parameter.inputs[name as keyof Model]!.hasOwnProperty(
-                        'properties'
+                if (Object.prototype.hasOwnProperty.call(
+                    parameter.inputs, name
+                )) {
+                    if (!(
+                        parameter.inputs[name as keyof Model] &&
+                        Object.prototype.hasOwnProperty.call(
+                            parameter.inputs[name as keyof Model],
+                            'properties'
+                        )
                     ))
                         parameter.inputs[name as keyof Model]!.properties = {}
 
@@ -3232,7 +3288,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             JSON.stringify(
                 maskedParameter,
                 (key:string, value:unknown):unknown => {
-                    if (!seenKeys.hasOwnProperty(key)) {
+                    if (!Object.prototype.hasOwnProperty.call(seenKeys, key)) {
                         allKeys.push(key)
                         seenKeys[key] = null
                     }
@@ -3244,10 +3300,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             // Now do the real serializing job.
             const value:string = JSON.stringify(maskedParameter, allKeys, '')
 
-            const encodedQueryParameter:string =
+            const encodedQueryParameter =
                 `${this.resolvedConfiguration.name}=` +
                 encodeURIComponent(value)
-            const queryParameter:string =
+            const queryParameter =
                 `${this.resolvedConfiguration.name}=${value}`
             if (result.plain.includes('?')) {
                 if (!(
@@ -3278,7 +3334,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             NOTE: We should forwarded runtime data to avoid unexpected behavior
             if gtm or configured tracking tool manipulates given data.
         */
-        if (data.hasOwnProperty('reference'))
+        if (Object.prototype.hasOwnProperty.call(data, 'reference'))
             data.reference = Tools.copy(data.reference)
 
         return this.dispatchEvent(new CustomEvent(name, {detail: data}))
@@ -3308,7 +3364,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             )
         ) {
             this.reCaptchaPromise =
-                new Promise((resolve:(result:null|string) => void):void => {
+                new Promise((resolve:(_result:null|string) => void):void => {
                     this.reCaptchaPromiseResolver = resolve
                 })
 
@@ -3373,7 +3429,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             // NOTE: If called second time reset initializing promise.
             this.reCaptchaToken = null
             this.reCaptchaPromise =
-                new Promise((resolve:(result:null|string) => void):void => {
+                new Promise((resolve:(_result:null|string) => void):void => {
                     this.reCaptchaPromiseResolver = resolve
                 })
         }
