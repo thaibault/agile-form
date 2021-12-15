@@ -29,8 +29,7 @@ import {
     RecursiveEvaluateable,
     RecursivePartial,
     TemplateFunction,
-    UnknownFunction,
-    ValueOf
+    UnknownFunction
 } from 'clientnode/type'
 import {object} from 'clientnode/property-types'
 import property from 'web-component-wrapper/decorator'
@@ -52,7 +51,6 @@ import {
     InputConfiguration,
     Model,
     NormalizedConfiguration,
-    PropertyTypes,
     ResponseResult,
     StateURL,
     TargetConfiguration
@@ -62,7 +60,6 @@ import {
 /**
  * Form handler which accepts a various number of content projected dom nodes
  * to interact with them following a given specification object.
- *
  * @property static:baseScopeNames - List of generic scope names available in
  * all evaluations environments.
  * @property static:defaultConfiguration - Holds default extendable
@@ -115,9 +112,8 @@ import {
  * @property reCaptchaFallbackRendered - Indicates whether a fallback
  * re-captcha inputs was already rendered.
  * @property reCaptchaPromise - Reference to re-captcha initialisation promise.
- * @property reCaptchaPromiseResolver - Reference to re-captcha initialisation
- * @property reCaptchaToken - Last challenge result token.
- * promise resolver.
+ * @property reCaptchaPromiseResolver - Reference to re-captcha initialisation.
+ * @property reCaptchaToken - Last challenge result token promise resolver.
 
  * @property additionalConfiguration - Holds given configuration object.
  * @property baseConfiguration - Holds given configuration object.
@@ -149,7 +145,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         'Tools',
         'valid'
     ]
-    static content:string = '<form novalidate><slot></slot></form>'
+    static content = '<form novalidate><slot></slot></form>'
     static defaultConfiguration:RecursiveEvaluateable<Configuration> = {
         actions: {},
         animation: true,
@@ -181,7 +177,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             optional: true,
             path: 'data'
         },
-        securityResponsePrefix: ")]}',",
+        securityResponsePrefix: `)]}',`,
         selector: {
             clearButtons: 'button[clear]',
             groups: '.agile-form__group',
@@ -256,7 +252,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         invert?:boolean
         name:string
     }> = {
-        /* e.g.:
+        /*
+            e.g.:
+
             nullable: {
                 invert: true,
                 name: 'required'
@@ -287,7 +285,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         'default',
         'initialValue'
     ]
-    static _name:string = 'AgileForm'
+    static _name = 'AgileForm'
 
     clearButtons:Array<AnnotatedDomNode> = []
     resetButtons:Array<AnnotatedDomNode> = []
@@ -306,7 +304,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     initialData:Mapping<unknown> = {}
     initialResponse:null|FormResponse = null
     latestResponse:null|FormResponse = null
-    message:string = ''
+    message = ''
     response:null|FormResponse = null
 
     inputEventBindings:Mapping<Function> = {}
@@ -315,34 +313,34 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
     invalid:boolean|null = null
     invalidConstraint:Constraint|null = null
-    onceSubmitted:boolean = false
-    pending:boolean = true
-    submitted:boolean = false
+    onceSubmitted = false
+    pending = true
+    submitted = false
     valid:boolean|null = null
 
     reCaptchaFallbackInput:AnnotatedDomNode|null = null
-    reCaptchaFallbackRendered:boolean = false
+    reCaptchaFallbackRendered = false
     /*
         NOTE: Will be finally initialized when promise is created so do not
         change order here.
     */
-    reCaptchaPromiseResolver:(result:null|string) => void =
-        (result:null|string) => {}
+    reCaptchaPromiseResolver:(_result:null|string) => void =
+        (_result:null|string) => {}
     reCaptchaPromise:Promise<null|string> = new Promise(
-        (resolve:(result:null|string) => void):void => {
+        (resolve:(_result:null|string) => void):void => {
             this.reCaptchaPromiseResolver = resolve
         }
     )
     reCaptchaToken:null|string = null
 
     @property({type: object})
-    additionalConfiguration:RecursivePartial<Configuration>|undefined
+        additionalConfiguration:RecursivePartial<Configuration>|undefined
     @property({type: object})
-    baseConfiguration:RecursivePartial<Configuration>|undefined
+        baseConfiguration:RecursivePartial<Configuration>|undefined
     @property({type: object})
-    configuration:RecursivePartial<Configuration>|undefined
+        configuration:RecursivePartial<Configuration>|undefined
     @property({type: object})
-    dynamicConfiguration:RecursivePartial<Configuration>|undefined
+        dynamicConfiguration:RecursivePartial<Configuration>|undefined
     resolvedConfiguration:Configuration = {} as Configuration
     urlConfiguration:null|RecursivePartial<Configuration> = null
     queryParameters:QueryParameters
@@ -395,7 +393,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     connectedCallback():void {
         super.connectedCallback()
 
-        this.updateReCaptchaToken()
+        void this.updateReCaptchaToken()
     }
     /**
      * De-registers all needed event listener.
@@ -415,7 +413,9 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             domNode.removeEventListener('click', this.onTruncate, false)
 
         for (const name in this.inputEventBindings)
-            if (this.inputEventBindings.hasOwnProperty(name))
+            if (Object.prototype.hasOwnProperty.call(
+                this.inputEventBindings, name
+            ))
                 this.inputEventBindings[name]()
     }
     /**
@@ -425,7 +425,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      *
      * @returns A promise resolving to nothing.
      */
-    async render(reason:string = 'unknown'):Promise<void> {
+    async render(reason = 'unknown'):Promise<void> {
         if (!this.dispatchEvent(new CustomEvent('render', {detail: {reason}})))
             return
 
@@ -503,12 +503,10 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      * @returns Nothing.
      */
     fade(
-        domNode:AnnotatedDomNode,
-        opacity:number = 1,
-        durationInMilliseconds:number = 100
+        domNode:AnnotatedDomNode, opacity = 1, durationInMilliseconds = 100
     ):void {
         if (domNode.clearFading)
-            domNode.clearFading()
+            void domNode.clearFading()
 
         if (parseFloat(domNode.style.opacity) === opacity)
             return
@@ -540,7 +538,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 ():void => {
                     if (currentOpacity <= opacity + .1) {
                         if (domNode.clearFading)
-                            domNode.clearFading()
+                            void domNode.clearFading()
                         return
                     }
 
@@ -565,12 +563,12 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 return
             }
 
-            let currentOpacity:number = .1
+            let currentOpacity = .1
             const timer = setInterval(
                 ():void => {
                     if (currentOpacity >= (domNode.oldOpacity || 1) - .1) {
                         if (domNode.clearFading)
-                            domNode.clearFading()
+                            void domNode.clearFading()
 
                         return
                     }
@@ -617,7 +615,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             for (const domNode of this.spinner)
                 this.show(domNode)
 
-            this.scrollAndFocus(this.spinner[0])
+            void this.scrollAndFocus(this.spinner[0])
         }
     }
     /**
@@ -642,7 +640,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         const oldState:boolean|undefined = inputConfiguration.shown
 
         inputConfiguration.shown =
-            !inputConfiguration.showIf || Boolean(inputConfiguration.showIf!())
+            !inputConfiguration.showIf || Boolean(inputConfiguration.showIf())
         for (const domNode of this.inputConfigurations[name].domNodes)
             domNode.shown = inputConfiguration.shown
 
@@ -714,8 +712,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             if (domNode.shown === oldState) {
                 /*
                 console.debug(
-                    `Group "${domNode.getAttribute('name')}" stays in ` +
-                    `visibility state "${oldState ? 'show' : 'hide'}".`
+                    `Group "${name}" stays in visibility state "` +
+                    `${oldState ? 'show' : 'hide'}".`
                 )
                 */
                 if (domNode.shown)
@@ -727,15 +725,13 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
             if (this.resolvedConfiguration.debug)
                 if (Boolean(oldState) === oldState)
                     console.debug(
-                        `Update group "${domNode.getAttribute('name')}" ` +
-                        'visibility state from "' +
+                        `Update group "${name}" visibility state from "` +
                         `${oldState ? 'show' : 'hide'}" to "` +
                         `${domNode.shown ? 'show' : 'hide'}".`
                     )
                 else
                     console.debug(
-                        `Initialize group "${domNode.getAttribute('name')}" ` +
-                        `visibility state to "` +
+                        `Initialize group "${name}" visibility state to "` +
                         `${domNode.shown ? 'show' : 'hide'}".`
                     )
 
@@ -817,6 +813,8 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
     }
     /**
      * Updates current error message box state.
+     * @param message - New message string to show.
+     *
      * @returns Nothing.
      */
     updateMessageBox(message?:null|string):void {
@@ -878,10 +876,12 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 input.properties = {}
 
             for (const key of ['selection', 'value'] as const)
-                if (input.hasOwnProperty(key)) {
+                if (Object.prototype.hasOwnProperty.call(input, key)) {
+                    /* eslint-disable @typescript-eslint/no-extra-semi */
                     ;(input.properties as InputAnnotation)[
                         key as 'value'
                     ] = (input as InputAnnotation)[key as 'value']
+                    /* eslint-enable @typescript-eslint/no-extra-semi */
 
                     delete (input as {
                         selection?:unknown
@@ -889,20 +889,23 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     })[key]
                 }
 
-            if (input.hasOwnProperty('nullable')) {
+            if (Object.prototype.hasOwnProperty.call(input, 'nullable')) {
+                // eslint-disable-next-line @typescript-eslint/no-extra-semi
                 ;(input.properties as InputAnnotation).required =
-                    !Boolean((input as {nullable:boolean}).nullable)
+                    !(input as {nullable?:boolean}).nullable
 
                 delete (input as {nullable?:boolean}).nullable
             }
 
             for (const key of ['mutable', 'writable'] as const)
-                if (input.hasOwnProperty(key)) {
+                if (Object.prototype.hasOwnProperty.call(input, key)) {
+                    /* eslint-disable @typescript-eslint/no-extra-semi */
                     ;(input.properties as InputAnnotation)
-                        .disabled = !Boolean((input as {
+                        .disabled = !(input as {
                             mutable?:boolean
                             writable?:boolean
-                        })[key])
+                        })[key]
+                    /* eslint-enable @typescript-eslint/no-extra-semi */
 
                     delete (input as {
                         mutable?:boolean
@@ -911,9 +914,11 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                 }
         }
 
-        ;(currentConfiguration as unknown as {
-            inputs:Mapping<RecursivePartial<InputConfiguration<unknown>>>
-        }).inputs = inputs
+        // eslint-disable-next-line @typescript-eslint/no-extra-semi
+        ;(currentConfiguration as
+            unknown as
+            {inputs:Mapping<RecursivePartial<InputConfiguration<unknown>>>}
+        ).inputs = inputs
 
         return currentConfiguration as RecursivePartial<Configuration>
     }
@@ -947,15 +952,16 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         )
 
         // NOTE: We migrate alternate tag option formats.
-        if (currentConfiguration.hasOwnProperty('tags'))
-            if (currentConfiguration.hasOwnProperty('tags')) {
-                currentConfiguration.tag.values =
-                    currentConfiguration.tag.values.concat((
-                        currentConfiguration as unknown as {tags:Array<string>}
-                    ).tags)
+        if (Object.prototype.hasOwnProperty.call(
+            currentConfiguration, 'tags'
+        )) {
+            currentConfiguration.tag.values =
+                currentConfiguration.tag.values.concat((
+                    currentConfiguration as unknown as {tags:Array<string>}
+                ).tags)
 
-                delete currentConfiguration.tags
-            }
+            delete currentConfiguration.tags
+        }
 
         return currentConfiguration as NormalizedConfiguration
     }
@@ -2049,15 +2055,54 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
         return null
     }
+    // // region event handler
     /**
-     * Sets all given input fields to their initial value.
+     * Sets all given input fields to their corresponding default values.
      * @param event - Triggered event object.
      *
-     * @returns A promise resolving to nothing.
+     * @returns Nothing.
      */
-    onClear = (event:MouseEvent):Promise<void> => {
-        return this.onReset(event, true)
+    onClear = (event:MouseEvent):void => {
+        void this.doReset(event, true)
     }
+    /**
+     * Callback triggered when any keyboard events occur.
+     * @param event - Keyboard event object.
+     *
+     * @returns Nothing.
+     */
+    onKeyDown = (event:KeyboardEvent):void => {
+        if (Tools.keyCode.ENTER === event.keyCode)
+            this.onSubmit(event)
+    }
+    /**
+     * Sets all given input fields to their corresponding initial values.
+     * @param event - Triggered event object.
+     *
+     * @returns Nothing.
+     */
+    onReset = (event:MouseEvent):void => {
+        void this.doReset(event, false)
+    }
+    /**
+     * Triggers form submit.
+     * @param event - Triggered event object.
+     *
+     * @returns Nothing.
+     */
+    onSubmit = (event:KeyboardEvent|MouseEvent):void => {
+        void this.doSubmit(event)
+    }
+    /**
+     * Clears all given input fields.
+     * @param event - Triggered event object.
+     *
+     * @returns Nothing.
+     */
+    onTruncate = (event:MouseEvent):void => {
+        void this.doReset(event)
+    }
+    // // endregion
     /**
      * Sets all given input fields to their initial value.
      * @param event - Triggered event object.
@@ -2065,7 +2110,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      *
      * @returns A promise resolving to nothing.
      */
-    onReset = async (
+    doReset = async (
         event:MouseEvent, useDefault:boolean|null = null
     ):Promise<void> => {
         event.preventDefault()
@@ -2080,15 +2125,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
                     Tools.represent(error)
                 )
             }
-    }
-    /**
-     * Empties all given input fields.
-     * @param event - Triggered event object.
-     *
-     * @returns A promise resolving to nothing.
-     */
-    onTruncate = (event:MouseEvent):Promise<void> => {
-        return this.onReset(event, null)
     }
     /**
      * Sets given input field their initial value.
@@ -2127,16 +2163,6 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
         return false
     }
     // / endregion
-    /**
-     * Callback triggered when any keyboard events occur.
-     * @param event - Keyboard event object.
-     *
-     * @returns Nothing.
-     */
-    onKeyDown = (event:KeyboardEvent):void => {
-        if (Tools.keyCode.ENTER === event.keyCode)
-            this.onSubmit(event)
-    }
     /**
      * Calculates current document relative offset of given dom node's
      * position.
@@ -2622,7 +2648,7 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
      *
      * @returns Nothing.
      */
-    onSubmit = async (event:KeyboardEvent|MouseEvent):Promise<void> => {
+    doSubmit = async (event:KeyboardEvent|MouseEvent):Promise<void> => {
         try {
             event.preventDefault()
             event.stopPropagation()
