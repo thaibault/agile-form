@@ -93,6 +93,7 @@
     "material-icons": "*",
     "mini-css-extract-plugin": "*",
     "node-fetch": "*",
+    "postcss": "*",
     "postcss-loader": "*",
     "postcss-preset-env": "*",
     "prop-types": "*",
