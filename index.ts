@@ -2845,9 +2845,34 @@ export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
 
                         let lock:Lock
 
+                        // NOTE: We update input dom node if it has changed.
                         if (event.target)
-                            this.inputConfigurations[name].domNode =
-                                event.target as AnnotatedInputDomNode
+                            /*
+                                NOTE: We have to check that we do not grab an
+                                internal input node if there is already a
+                                wrapping one registered.
+                            */
+                            if (!this.inputConfigurations[name].domNode) {
+                                this.inputConfigurations[name].domNode =
+                                    event.target as AnnotatedInputDomNode
+                                this.inputConfigurations[name].domNodes.push(
+                                    event.target as AnnotatedInputDomNode
+                                )
+                            } else if (!Object.values(this.inputConfigurations)
+                                .map((
+                                    {domNodes}
+                                ):Array<AnnotatedInputDomNode> => domNodes)
+                                .flat()
+                                .some((
+                                    inputDomNode:AnnotatedInputDomNode
+                                ):boolean =>
+                                    inputDomNode.contains(
+                                        event.target as AnnotatedInputDomNode
+                                    )
+                                )
+                            )
+                                this.inputConfigurations[name].domNode =
+                                    event.target as AnnotatedInputDomNode
 
                         this.runEvaluations()
 
