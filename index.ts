@@ -126,7 +126,11 @@ import {
  *
  * @property _evaluationResults - Last known evaluation result cache.
  */
-export class AgileForm<TElement = HTMLElement> extends Web<TElement> {
+export class AgileForm<
+    TElement = HTMLElement,
+    ExternalProperties extends Mapping<unknown> = Mapping<unknown>,
+    InternalProperties extends Mapping<unknown> = Mapping<unknown>,
+> extends Web<TElement, ExternalProperties, InternalProperties> {
     // region properties
     static baseScopeNames:Array<string> = [
         'determineStateURL',
