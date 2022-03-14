@@ -100,7 +100,6 @@
     "react-ace": "*",
     "rimraf": "*",
     "style-loader": "*",
-    "tinymce": "^5.0.0",
     "tslib": "*",
     "web-component-wrapper": "*",
     "web-input-material": "*",
