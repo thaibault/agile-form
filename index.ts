@@ -837,7 +837,7 @@ export class AgileForm<
     }
     // endregion
     // region helper
-    // / region configuration
+    /// region configuration
     /**
      * Normalizes given url configuration to support deprecated formats.
      * 1. Alias top level configuration key "model" to "inputs".
@@ -1066,8 +1066,8 @@ export class AgileForm<
 
         return null
     }
-    // / endregion
-    // / region apply configurations to components
+    /// endregion
+    /// region apply configurations to components
     /**
      * Forwards all input specifications to their corresponding input node.
      * Observes fields for changes to apply specified inter-constraints between
@@ -1642,8 +1642,8 @@ export class AgileForm<
                         this.dependencyMapping[dependentName] = [name]
         }
     }
-    // / endregion
-    // / region expression compiler
+    /// endregion
+    /// region expression compiler
     /**
      * Pre-compiles specified given expression for given field.
      * @param name - Field name to pre-compile their expression.
@@ -1972,8 +1972,8 @@ export class AgileForm<
             this.preCompileDynamicExtendStructure(name)
         }
     }
-    // / endregion
-    // / region initialize/submit/reset actions
+    /// endregion
+    /// region initialize/submit/reset actions
     /**
      * Can be triggered vie provided action condition. Can for example retrieve
      * initial user specific state depending on remote response.
@@ -2080,7 +2080,7 @@ export class AgileForm<
 
         return null
     }
-    // // region event handler
+    //// region event handler
     /**
      * Sets all given input fields to their corresponding default values.
      * @param event - Triggered event object.
@@ -2127,7 +2127,7 @@ export class AgileForm<
     onTruncate = (event:MouseEvent):void => {
         void this.doReset(event)
     }
-    // // endregion
+    //// endregion
     /**
      * Sets all given input fields to their initial value.
      * @param event - Triggered event object.
@@ -2194,7 +2194,7 @@ export class AgileForm<
 
         return false
     }
-    // / endregion
+    /// endregion
     /**
      * Calculates current document relative offset of given dom node's
      * position.
@@ -2259,7 +2259,7 @@ export class AgileForm<
             }
         })
     }
-    // / region form submission
+    /// region form submission
     /**
      * Sets all hidden non persistent input fields to their initial value.
      * @returns A promise resolving to nothing.
@@ -2812,8 +2812,8 @@ export class AgileForm<
             console.warn(`Submitting failed: ${Tools.represent(error)}`)
         }
     }
-    // / endregion
-    // / region inter component interaction
+    /// endregion
+    /// region inter component interaction
     /**
      * Add all needed field event listener to trigger needed checks and start
      * dependent field change cascade.
@@ -3051,8 +3051,8 @@ export class AgileForm<
                 'not found.'
             )
     }
-    // / endregion
-    // / region utility
+    /// endregion
+    /// region utility
     /**
      * Derives event name from given event.
      * @param event - Event to derive name from.
@@ -3494,7 +3494,7 @@ export class AgileForm<
 
         return this.reCaptchaPromise
     }
-    // / endregion
+    /// endregion
     // endregion
 }
 // endregion
