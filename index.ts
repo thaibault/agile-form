@@ -847,12 +847,13 @@ export class AgileForm<
      *    into properties top level inverted "disabled" configuration.
      * 4. Alias top level input property configuration "nullable" into
      *    properties top level inverted "required" configuration.
+     * @param this - Nothing.
      * @param configuration - Configuration object to normalize.
      *
      * @returns Normalized configuration.
      */
     static normalizeURLConfiguration(
-        configuration:PlainObject
+        this:void, configuration:PlainObject
     ):RecursivePartial<Configuration> {
         const currentConfiguration:PlainObject = Tools.copy(configuration)
 
@@ -929,12 +930,13 @@ export class AgileForm<
     }
     /**
      * Normalizes given configuration.
+     * @param this - Nothing.
      * @param configuration - Configuration object to normalize.
      *
      * @returns Normalized configuration.
      */
     static normalizeConfiguration(
-        configuration:RecursivePartial<Configuration>
+        this:void, configuration:RecursivePartial<Configuration>
     ):NormalizedConfiguration {
         const currentConfiguration:RecursivePartial<Configuration> =
             Tools.copy(configuration)
