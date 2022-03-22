@@ -263,7 +263,7 @@ export class AgileForm<
                 name: 'required'
             }
         */
-    }
+        }
     static knownPropertyOrdering:Array<string> = [
         'model',
         'name',
