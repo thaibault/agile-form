@@ -310,7 +310,7 @@ export class AgileForm<
     message = ''
     response:null|FormResponse = null
 
-    inputEventBindings:Mapping<Function> = {}
+    inputEventBindings:Mapping<() => void> = {}
     inputConfigurations:Mapping<InputConfiguration> = {}
     inputNames:Array<string> = []
 
@@ -2553,7 +2553,7 @@ export class AgileForm<
                     this.resolvedConfiguration.securityResponsePrefix.length
                 )
 
-            result!.data = JSON.parse(responseString)
+            result!.data = JSON.parse(responseString) as PlainObject
             result!.data = Tools.getSubstructure(
                 (result as FormResponse).data,
                 this.resolvedConfiguration.responseDataWrapperSelector.path,
@@ -2895,7 +2895,7 @@ export class AgileForm<
                             await lock!.release('digest')
                     }) as UnknownFunction,
                     400
-                )
+                ) as EventListener
 
                 for (const domNode of this.inputConfigurations[name].domNodes)
                     domNode.addEventListener(eventName, handler)
@@ -3035,7 +3035,7 @@ export class AgileForm<
             for (const domNode of this.inputConfigurations[name].domNodes) {
                 if (typeof domNode.changeTrigger === 'function') {
                     const result:unknown =
-                        (domNode.changeTrigger as Function)()
+                        (domNode.changeTrigger as () => void)()
 
                     if ('then' in (result as Promise<unknown>))
                         await result
@@ -3296,7 +3296,7 @@ export class AgileForm<
         }
         if (Object.keys(maskedParameter).length) {
             for (const [key, value] of Object.entries(result))
-                result[key as keyof StateURL] = value
+                result[key as keyof StateURL] = (value as string)
                     .replace(
                         new RegExp(
                             `\\?${this.resolvedConfiguration.name}=[^&]*&`, 'g'
@@ -3471,17 +3471,20 @@ export class AgileForm<
             (this.resolvedConfiguration.target as TargetConfiguration)?.url
         )
             try {
-                window.grecaptcha!.ready(async ():Promise<void> => {
-                    try {
-                        this.reCaptchaToken = await window.grecaptcha.execute(
-                            this.resolvedConfiguration.reCaptcha.key.v3,
-                            this.resolvedConfiguration.reCaptcha.action
-                        )
-                        this.reCaptchaPromiseResolver(this.reCaptchaToken)
-                    } catch (error) {
-                        this.reCaptchaToken = null
-                        this.reCaptchaPromiseResolver(this.reCaptchaToken)
-                    }
+                window.grecaptcha!.ready(():void => {
+                    window.grecaptcha.execute(
+                        this.resolvedConfiguration.reCaptcha.key.v3,
+                        this.resolvedConfiguration.reCaptcha.action
+                    ).then(
+                        (token:string):void => {
+                            this.reCaptchaToken = token
+                            this.reCaptchaPromiseResolver(this.reCaptchaToken)
+                        },
+                        ():void => {
+                            this.reCaptchaToken = null
+                            this.reCaptchaPromiseResolver(this.reCaptchaToken)
+                        }
+                    )
                 })
             } catch (error) {
                 console.warn(
