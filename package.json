@@ -40,7 +40,7 @@
     "build:plain": "weboptimizer build",
     "build:types": "weboptimizer build:types",
     "check": "yarn check:types; yarn lint",
-    "check:types": "weboptimizer check:types",
+    "check:types": "yarn clear && weboptimizer check:types",
     "clear": "weboptimizer clear && rimraf styles.bundle.css",
     "document": "weboptimizer document",
     "lint": "weboptimizer lint",
