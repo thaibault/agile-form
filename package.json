@@ -1,13 +1,7 @@
 {
   "name": "agile-form",
   "version": "0.0.267",
-  "license": "CC-BY-3.0",
   "description": "Reusable form builder with support for (richt-)text, code, selections, numbers, dates and so on.",
-  "homepage": "https://torben.website/agile-form",
-  "documentationWebsite": {
-    "tagline": "Build flexible agnostic forms.",
-    "trackingCode": "TODO"
-  },
   "keywords": [
     "component",
     "form",
@@ -16,7 +10,18 @@
     "webcomponent",
     "web-component"
   ],
+  "homepage": "https://torben.website/agile-form",
+  "bugs": {
+    "email": "info@torben.website",
+    "url": "https://github.com/thaibault/agile-form/issues"
+  },
+  "license": "CC-BY-3.0",
   "main": "index.js",
+  "author": {
+    "name": "Torben Sickert",
+    "email": "info@torben.website",
+    "url": "https://torben.website"
+  },
   "files": [
     "index.bundle.js",
     "index.bundle.css",
@@ -119,11 +124,19 @@
       "optional": true
     }
   },
+  "engines": {
+    "node": ">=17",
+    "npm": ">=7"
+  },
   "resolutions": {
     "@types/webpack": "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.1.tgz",
     "colors": "1.4.0"
   },
   "sideEffects": false,
+  "documentationWebsite": {
+    "tagline": "Build flexible agnostic forms.",
+    "trackingCode": "TODO"
+  },
   "webOptimizer": {
     "commandLine": {
       "test": {
