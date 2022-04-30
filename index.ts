@@ -417,11 +417,8 @@ export class AgileForm<
         for (const domNode of this.truncateButtons)
             domNode.removeEventListener('click', this.onTruncate, false)
 
-        for (const name in this.inputEventBindings)
-            if (Object.prototype.hasOwnProperty.call(
-                this.inputEventBindings, name
-            ))
-                this.inputEventBindings[name]()
+        for (const callback of Object.values(this.inputEventBindings))
+            callback()
     }
     /**
      * Triggered when content projected and nested dom nodes are ready to be
@@ -1729,101 +1726,95 @@ export class AgileForm<
             return
 
         configuration.dynamicExtend = {}
-        for (const subName in configuration.dynamicExtendExpressions)
-            if (
-                configuration.dynamicExtendExpressions &&
-                Object.prototype.hasOwnProperty.call(
-                    configuration.dynamicExtendExpressions, subName
+        for (const [subName, expression] of Object.entries(
+            configuration.dynamicExtendExpressions
+        )) {
+            const code:((_event:Event, _scope:unknown) => unknown)|string =
+                expression
+
+            const originalScopeNames:Array<string> =
+                this.self.baseScopeNames.concat(
+                    'event',
+                    'eventName',
+                    'scope',
+                    'selfName',
+                    'self',
+                    this.evaluations.map(
+                        (evaluation:Evaluation):string => evaluation[0]
+                    ),
+                    configuration.dependsOn || []
                 )
-            ) {
-                const code:((_event:Event, _scope:unknown) => unknown)|string =
-                    configuration.dynamicExtendExpressions![subName]
+            let scopeNames:Array<string>
+            let templateFunction:TemplateFunction<unknown>
 
-                const originalScopeNames:Array<string> =
-                    this.self.baseScopeNames.concat(
-                        'event',
-                        'eventName',
-                        'scope',
-                        'selfName',
-                        'self',
-                        this.evaluations.map(
-                            (evaluation:Evaluation):string => evaluation[0]
-                        ),
-                        configuration.dependsOn || []
+            if (typeof code === 'string') {
+                const result:CompilationResult<unknown> =
+                    Tools.stringCompile<unknown>(code, originalScopeNames)
+
+                scopeNames = result.scopeNames
+                templateFunction = result.templateFunction
+
+                if (result.error)
+                    console.error(
+                        `Failed to compile "dynamicExtendExpression" for ` +
+                        `property "${subName}" in field "${name}":`,
+                        result.error
                     )
-                let scopeNames:Array<string>
-                let templateFunction:TemplateFunction<unknown>
+            } else
+                scopeNames = originalScopeNames.map((name:string):string =>
+                    Tools.stringConvertToValidVariableName(name)
+                )
 
-                if (typeof code === 'string') {
-                    const result:CompilationResult<unknown> =
-                        Tools.stringCompile<unknown>(code, originalScopeNames)
-
-                    scopeNames = result.scopeNames
-                    templateFunction = result.templateFunction
-
-                    if (result.error)
-                        console.error(
-                            `Failed to compile "dynamicExtendExpression" for` +
-                            ` property "${subName}" in field "${name}":`,
-                            result.error
+            configuration.dynamicExtend![subName] = (event:Event):unknown => {
+                const scope:Mapping<unknown> = {}
+                const context:Array<unknown> = [
+                    this.determineStateURL,
+                    this.determinedTargetURL,
+                    this.getData,
+                    this.initialResponse,
+                    this.invalid,
+                    this.invalidConstraint,
+                    this.latestResponse,
+                    this.pending,
+                    this.queryParameters,
+                    this.response,
+                    this.message,
+                    this.onceSubmitted,
+                    Tools,
+                    this.valid,
+                    event,
+                    this.determineEventName(event),
+                    scope,
+                    name,
+                    configuration,
+                    ...this._evaluationResults,
+                    ...(configuration.dependsOn || [])
+                        .map((name:string):InputConfiguration =>
+                            this.inputConfigurations[name]
                         )
-                } else
-                    scopeNames = originalScopeNames.map((name:string):string =>
-                        Tools.stringConvertToValidVariableName(name)
+                ]
+
+                let index = 0
+                for (const name of scopeNames) {
+                    scope[name] = context[index]
+                    index += 1
+                }
+
+                try {
+                    return Tools.isFunction(code) ?
+                        code(event, scope) :
+                        templateFunction!(...context)
+                } catch (error) {
+                    console.error(
+                        `Failed running "dynamicExtendExpression" "` +
+                        `${code as string}" for property "${subName}" in ` +
+                        `field "${name}" with bound names "` +
+                        `${scopeNames.join('", "')}": "` +
+                        `${Tools.represent(error)}".`
                     )
-
-                configuration.dynamicExtend![subName] = (
-                    event:Event
-                ):unknown => {
-                    const scope:Mapping<unknown> = {}
-                    const context:Array<unknown> = [
-                        this.determineStateURL,
-                        this.determinedTargetURL,
-                        this.getData,
-                        this.initialResponse,
-                        this.invalid,
-                        this.invalidConstraint,
-                        this.latestResponse,
-                        this.pending,
-                        this.queryParameters,
-                        this.response,
-                        this.message,
-                        this.onceSubmitted,
-                        Tools,
-                        this.valid,
-                        event,
-                        this.determineEventName(event),
-                        scope,
-                        name,
-                        configuration,
-                        ...this._evaluationResults,
-                        ...(configuration.dependsOn || [])
-                            .map((name:string):InputConfiguration =>
-                                this.inputConfigurations[name]
-                            )
-                    ]
-
-                    let index = 0
-                    for (const name of scopeNames) {
-                        scope[name] = context[index]
-                        index += 1
-                    }
-
-                    try {
-                        return Tools.isFunction(code) ?
-                            code(event, scope) :
-                            templateFunction!(...context)
-                    } catch (error) {
-                        console.error(
-                            `Failed running "dynamicExtendExpression" "` +
-                            `${code as string}" for property "${subName}" in` +
-                            ` field "${name}" with bound names "` +
-                            `${scopeNames.join('", "')}": "` +
-                            `${Tools.represent(error)}".`
-                        )
-                    }
                 }
             }
+        }
     }
     /**
      * Pre-compiles all specified action source expressions.
@@ -1838,58 +1829,53 @@ export class AgileForm<
                 this.inputNames
             )
 
-        for (const name in this.resolvedConfiguration.actions)
-            if (Object.prototype.hasOwnProperty.call(
-                this.resolvedConfiguration.actions, name
-            )) {
-                const code:string =
-                    this.resolvedConfiguration.actions[name].code
-                if (code.trim() === 'fallback')
-                    continue
+        for (const [name, action] of Object.entries(
+            this.resolvedConfiguration.actions
+        )) {
+            const code:string = action.code
+            if (code.trim() === 'fallback')
+                continue
 
-                const {error, scopeNames, templateFunction} =
-                    Tools.stringCompile(code, originalScopeNames)
-                if (error)
-                    console.error(
-                        `Failed to compile action source expression "${name}` +
-                        `": ${error}`
+            const {error, scopeNames, templateFunction} =
+                Tools.stringCompile(code, originalScopeNames)
+            if (error)
+                console.error(
+                    `Failed to compile action source expression "${name}": ` +
+                    error
+                )
+
+            action.indicator = ():unknown => {
+                try {
+                    return templateFunction(
+                        this.determineStateURL,
+                        this.determinedTargetURL,
+                        this.getData,
+                        this.initialResponse,
+                        this.invalid,
+                        this.invalidConstraint,
+                        this.latestResponse,
+                        this.pending,
+                        this.queryParameters,
+                        this.response,
+                        this.message,
+                        this.onceSubmitted,
+                        Tools,
+                        this.valid,
+                        ...this._evaluationResults,
+                        ...this.inputNames.map((
+                            name:string
+                        ):InputConfiguration => this.inputConfigurations[name])
                     )
-
-                this.resolvedConfiguration.actions[name].indicator = (
-                ):unknown => {
-                    try {
-                        return templateFunction(
-                            this.determineStateURL,
-                            this.determinedTargetURL,
-                            this.getData,
-                            this.initialResponse,
-                            this.invalid,
-                            this.invalidConstraint,
-                            this.latestResponse,
-                            this.pending,
-                            this.queryParameters,
-                            this.response,
-                            this.message,
-                            this.onceSubmitted,
-                            Tools,
-                            this.valid,
-                            ...this._evaluationResults,
-                            ...this.inputNames.map((
-                                name:string
-                            ):InputConfiguration =>
-                                this.inputConfigurations[name]
-                            )
-                        )
-                    } catch (error) {
-                        console.error(
-                            `Failed running action source "${name}" ` +
-                            `expression "${code}" with bound names "` +
-                            `${scopeNames.join('", "')}": "` +
-                            `${Tools.represent(error)}".`
-                        )
-                    }
+                } catch (error) {
+                    console.error(
+                        `Failed running action source "${name}" expression "` +
+                        `${code}" with bound names "` +
+                        `${scopeNames.join('", "')}": "` +
+                        `${Tools.represent(error)}".`
+                    )
                 }
             }
+        }
     }
     /**
      * Pre-compiles all specified generic expressions.
@@ -2325,26 +2311,17 @@ export class AgileForm<
 
                             data[name] = evaluated.result
                         } else
-                            for (const subName in (
+                            for (const [subName, expression] of Object.entries(
                                 configuration.dataMapping as Mapping
-                            ))
-                                if (Object.prototype.hasOwnProperty.call(
-                                    configuration.dataMapping as Mapping,
-                                    subName
-                                )) {
-                                    const evaluated:EvaluationResult =
-                                        Tools.stringEvaluate(
-                                            (configuration.dataMapping as
-                                                Mapping
-                                            )[subName],
-                                            scope
-                                        )
+                            )) {
+                                const evaluated:EvaluationResult =
+                                    Tools.stringEvaluate(expression, scope)
 
-                                    if (evaluated.error)
-                                        throw new Error(evaluated.error)
+                                if (evaluated.error)
+                                    throw new Error(evaluated.error)
 
-                                    data[subName] = evaluated.result
-                                }
+                                data[subName] = evaluated.result
+                            }
                     } else if (Array.isArray(value))
                         if (value.every((item:unknown):boolean =>
                             item !== null &&
@@ -2408,23 +2385,14 @@ export class AgileForm<
 
         this.runEvaluations()
 
-        for (const name in this.resolvedConfiguration.actions)
-            if (
-                Object.prototype.hasOwnProperty.call(
-                    this.resolvedConfiguration.actions, name
-                ) &&
-                name !== 'initialize'
-            )
-                if (
-                    this.resolvedConfiguration.actions[name].code ===
-                        'fallback'
-                )
-                    fallbackTarget =
-                        this.resolvedConfiguration.actions[name].target.trim()
+        for (const [name, action] of Object.entries(
+            this.resolvedConfiguration.actions
+        ))
+            if (name !== 'initialize')
+                if (action.code === 'fallback')
+                    fallbackTarget = action.target.trim()
                 else {
-                    const target:null|string = this.resolveAction(
-                        this.resolvedConfiguration.actions[name], name
-                    )
+                    const target:null|string = this.resolveAction(action, name)
 
                     if (typeof target === 'string') {
                         if (newWindow)
@@ -2522,17 +2490,18 @@ export class AgileForm<
             Object.prototype.hasOwnProperty.call(target.options, 'headers') &&
             target.options.headers !== null
         ) {
-            const givenHeaders:Mapping = target.options.headers as Mapping
             const headers:Headers = new Headers()
-            for (const name in target.options.headers)
-                if (
-                    Object.prototype.hasOwnProperty.call(givenHeaders, name) &&
-                    ['boolean', 'number', 'string'].includes(
-                        typeof givenHeaders[name as keyof Mapping]
-                    ) &&
-                    `${givenHeaders[name as keyof Mapping]}`.trim()
-                )
-                    headers.set(name, givenHeaders[name as keyof Mapping])
+            if (!(target.options.headers instanceof Headers))
+                for (const [name, header] of Object.entries(
+                    target.options.headers as Mapping
+                ))
+                    if (
+                        ['boolean', 'number', 'string'].includes(
+                            typeof headers
+                        ) &&
+                        `${header}`.trim()
+                    )
+                        headers.set(name, header)
 
             target.options.headers = headers
         }
@@ -2660,27 +2629,24 @@ export class AgileForm<
     mapTargetNames(data:Mapping<unknown>):Mapping<unknown> {
         const result:Mapping<unknown> = {}
 
-        for (const name in data)
-            if (Object.prototype.hasOwnProperty.call(data, name))
+        for (const [name, value] of Object.entries(data))
+            if (
+                Object.prototype.hasOwnProperty.call(
+                    this.inputConfigurations, name
+                ) &&
+                Object.prototype.hasOwnProperty.call(
+                    this.inputConfigurations[name], 'target'
+                )
+            ) {
                 if (
-                    Object.prototype.hasOwnProperty.call(
-                        this.inputConfigurations, name
-                    ) &&
-                    Object.prototype.hasOwnProperty.call(
-                        this.inputConfigurations[name], 'target'
-                    )
-                ) {
-                    if (
-                        typeof this.inputConfigurations[name].target ===
-                            'string' &&
-                        (this.inputConfigurations[name].target as string)
-                            .length
-                    )
-                        result[
-                            this.inputConfigurations[name].target as string
-                        ] = data[name]
-                } else
-                    result[name] = data[name]
+                    typeof this.inputConfigurations[name].target ===
+                        'string' &&
+                    (this.inputConfigurations[name].target as string).length
+                )
+                    result[this.inputConfigurations[name].target as string] =
+                        value
+            } else
+                result[name] = value
 
         return result
     }
@@ -3215,8 +3181,7 @@ export class AgileForm<
                     if (!(
                         parameter.inputs[name as keyof Model] &&
                         Object.prototype.hasOwnProperty.call(
-                            parameter.inputs[name as keyof Model],
-                            'properties'
+                            parameter.inputs[name as keyof Model], 'properties'
                         )
                     ))
                         parameter.inputs[name as keyof Model]!.properties = {}
