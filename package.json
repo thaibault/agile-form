@@ -74,7 +74,6 @@
     "@types/ejs": "*",
     "@types/grecaptcha": "*",
     "@types/html-minifier": "*",
-    "@types/jest": "*",
     "@types/jquery": "*",
     "@types/jsdom": "*",
     "@types/node": "*",
