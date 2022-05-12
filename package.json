@@ -24,10 +24,10 @@
   },
   "files": [
     "index.bundle.js",
-    "index.bundle.css",
     "index.css",
     "index.d.ts",
     "index.js",
+    "styles.bundle.css",
     "type.d.ts"
   ],
   "repository": {
