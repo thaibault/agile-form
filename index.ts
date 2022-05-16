@@ -1330,7 +1330,7 @@ export class AgileForm<
                 for (const key of sortedPropertyNames)
                     if (
                         key === 'model' ||
-                        domNode.externalProperties &&
+                        !domNode.externalProperties ||
                         !Object.prototype.hasOwnProperty.call(
                             domNode.externalProperties, key
                         )
