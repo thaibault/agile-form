@@ -917,11 +917,12 @@ export class AgileForm<
                 }
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-extra-semi
-        ;(currentConfiguration as
-            unknown as
-            {inputs:Mapping<RecursivePartial<InputConfiguration<unknown>>>}
-        ).inputs = inputs
+        if (Object.keys(inputs).length)
+            // eslint-disable-next-line @typescript-eslint/no-extra-semi
+            (currentConfiguration as
+                unknown as
+                {inputs:Mapping<RecursivePartial<InputConfiguration<unknown>>>}
+            ).inputs = inputs
 
         return currentConfiguration as RecursivePartial<Configuration>
     }
@@ -1425,6 +1426,7 @@ export class AgileForm<
                 ) {
                     configuration.value =
                         configuration.properties.model?.value ??
+                        configuration.properties.initialValue ??
                         domNode.initialValue ??
                         configuration.properties.default ??
                         configuration.properties.model?.default

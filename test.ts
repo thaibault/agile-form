@@ -76,6 +76,19 @@ describe('AgileForm', ():void => {
             .toHaveProperty([inputName, 'domNode'], input)
     })
     // region configuration
+    test('normalizeURLConfiguration', ():void => {
+        const form:AgileForm = document.createElement(name) as AgileForm
+
+        expect(form.self.normalizeURLConfiguration({})).toStrictEqual({})
+
+        expect(
+            form.self.normalizeURLConfiguration({a: 2} as
+                unknown as
+                Configuration
+        )).toStrictEqual({a: 2})
+
+        // TODO
+    })
     test('normalizeConfiguration', ():void => {
         const form:AgileForm = document.createElement(name) as AgileForm
 
@@ -124,7 +137,68 @@ describe('AgileForm', ():void => {
         form.mergeConfiguration({})
         expect(form.resolvedConfiguration).toStrictEqual(initialConfiguration)
 
-        // TODO
+        form.mergeConfiguration({a: 2})
+        expect(form.resolvedConfiguration)
+            .toStrictEqual({...initialConfiguration, a: 2})
+
+        form.mergeConfiguration({evaluations: '2'})
+        expect(form.resolvedConfiguration.evaluations).toStrictEqual(
+            initialConfiguration.evaluations.concat('2')
+        )
+    })
+    test('resolveConfiguration', ():void => {
+        const form:AgileForm = document.createElement(name) as AgileForm
+
+        const initialConfiguration:Configuration =
+            Tools.copy(form.resolvedConfiguration)
+
+        form.resolveConfiguration()
+        expect(form.resolvedConfiguration).toStrictEqual(initialConfiguration)
+
+        form.additionalConfiguration = {a: 2}
+        form.resolveConfiguration()
+        expect(form.resolvedConfiguration)
+            .toStrictEqual({...initialConfiguration, a: 2})
+    })
+    test('getConfigurationFromURL', ():void => {
+        const form:AgileForm = document.createElement(name) as AgileForm
+
+        const initialConfiguration:Configuration =
+            Tools.copy(form.resolvedConfiguration)
+
+        expect(form.getConfigurationFromURL()).toStrictEqual(null)
+
+        form.queryParameters[form.resolvedConfiguration.name] = '{}'
+        expect(Object.keys(form.getConfigurationFromURL()))
+            .toHaveProperty('length', 0)
+
+        form.queryParameters[form.resolvedConfiguration.name] = '{a: 2}'
+        expect(form.getConfigurationFromURL()).toStrictEqual({})
+
+        form.resolvedConfiguration.urlConfigurationMask =
+            {exclude: false, include: true}
+        form.queryParameters[form.resolvedConfiguration.name] = '{a: 2}'
+        expect(form.getConfigurationFromURL()).toStrictEqual({a: 2})
+
+        form.resolvedConfiguration.urlConfigurationMask =
+            {exclude: true, include: true}
+        form.queryParameters[form.resolvedConfiguration.name] = '{a: 2}'
+        expect(form.getConfigurationFromURL()).toStrictEqual({})
+
+        form.resolvedConfiguration.urlConfigurationMask =
+            {exclude: {a: true}, include: true}
+        form.queryParameters[form.resolvedConfiguration.name] = '{a: 2}'
+        expect(form.getConfigurationFromURL()).toStrictEqual({})
+
+        form.resolvedConfiguration.urlConfigurationMask =
+            {exclude: false, include: false}
+        form.queryParameters[form.resolvedConfiguration.name] = '{a: 2}'
+        expect(form.getConfigurationFromURL()).toStrictEqual({})
+
+        form.resolvedConfiguration.urlConfigurationMask =
+            {exclude: false, include: {a: true}}
+        form.queryParameters[form.resolvedConfiguration.name] = '{a: 2}'
+        expect(form.getConfigurationFromURL()).toStrictEqual({a: 2})
     })
     // endregion
 })
