@@ -15,10 +15,11 @@
 */
 // region imports
 import {describe, expect, test} from '@jest/globals'
-import {globalContext} from 'clientnode'
+import Tools, {globalContext} from 'clientnode'
 import nodeFetch from 'node-fetch'
 
 import api, {AgileForm} from './index'
+import {Configuration} from './type'
 // endregion
 globalContext.fetch = nodeFetch as unknown as typeof fetch
 
@@ -74,6 +75,58 @@ describe('AgileForm', ():void => {
         expect(form.inputConfigurations)
             .toHaveProperty([inputName, 'domNode'], input)
     })
+    // region configuration
+    test('normalizeConfiguration', ():void => {
+        const form:AgileForm = document.createElement(name) as AgileForm
+
+        expect(form.self.normalizeConfiguration({})).toStrictEqual({
+            evaluations: [], expressions: [], tag: {values: []}
+        })
+
+        expect(form.self.normalizeConfiguration({
+            evaluations: '5',
+            expressions: '4',
+            tags: 'tag-a'
+        } as unknown as Configuration)).toStrictEqual({
+            evaluations: ['5'],
+            expressions: ['4'],
+            tag: {values: ['tag-a']}
+        })
+
+        expect(form.self.normalizeConfiguration({
+            evaluations: '5',
+            expressions: ['4'],
+            tag: {values: 'tag-a'},
+            tags: ['tag-b']
+        } as unknown as Configuration)).toStrictEqual({
+            evaluations: ['5'],
+            expressions: ['4'],
+            tag: {values: ['tag-a', 'tag-b']}
+        })
+
+        expect(form.self.normalizeConfiguration({
+            evaluations: [],
+            expressions: ['4'],
+            tag: {values: ['tag-a', 'tag-c']},
+            tags: ['tag-b']
+        } as unknown as Configuration)).toStrictEqual({
+            evaluations: [],
+            expressions: ['4'],
+            tag: {values: ['tag-a', 'tag-c', 'tag-b']}
+        })
+    })
+    test('mergeConfiguration', ():void => {
+        const form:AgileForm = document.createElement(name) as AgileForm
+
+        const initialConfiguration:Configuration =
+            Tools.copy(form.resolvedConfiguration)
+
+        form.mergeConfiguration({})
+        expect(form.resolvedConfiguration).toStrictEqual(initialConfiguration)
+
+        // TODO
+    })
+    // endregion
 })
 // region vim modline
 // vim: set tabstop=4 shiftwidth=4 expandtab:

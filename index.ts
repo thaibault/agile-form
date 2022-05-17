@@ -2497,7 +2497,7 @@ export class AgileForm<
                 ))
                     if (
                         ['boolean', 'number', 'string'].includes(
-                            typeof headers
+                            typeof header
                         ) &&
                         `${header}`.trim()
                     )
