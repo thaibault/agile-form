@@ -1405,13 +1405,13 @@ export class AgileForm<
                         domNode.pristine
                     ) &&
                     // There is no initial value configured yet.
-                    !(
+                    (
                         [null, undefined].includes(
                             domNode.initialValue as null
-                        ) &&
+                        ) ||
                         [null, undefined].includes(
                             configuration.properties.default as null
-                        ) &&
+                        ) ||
                         (
                             !configuration.properties.model ||
                             [null, undefined].includes(
@@ -1466,10 +1466,14 @@ export class AgileForm<
     /**
      * Whenever a component is re-configured a digest is needed to ensure that
      * its internal state has been reflected.
+     * @param numberOfCycles - Number of digest cycles to wait until resolve
+     * resulting promise.
+     *
      * @returns A promise resolving when digest hast been finished.
     */
-    digest():ReturnType<typeof Tools.timeout> {
-        return Tools.timeout()
+    async digest(numberOfCycles = 2):Promise<void> {
+        for (let cycle = 0; cycle < numberOfCycles; cycle += 1)
+            await Tools.timeout()
     }
     /**
      * Finds all groups and connects them with their corresponding compiled
