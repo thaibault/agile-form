@@ -917,11 +917,12 @@ export class AgileForm<
                 }
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-extra-semi
-        ;(currentConfiguration as
-            unknown as
-            {inputs:Mapping<RecursivePartial<InputConfiguration<unknown>>>}
-        ).inputs = inputs
+        if (Object.keys(inputs).length)
+            // eslint-disable-next-line @typescript-eslint/no-extra-semi
+            (currentConfiguration as
+                unknown as
+                {inputs:Mapping<RecursivePartial<InputConfiguration<unknown>>>}
+            ).inputs = inputs
 
         return currentConfiguration as RecursivePartial<Configuration>
     }
@@ -1425,6 +1426,7 @@ export class AgileForm<
                 ) {
                     configuration.value =
                         configuration.properties.model?.value ??
+                        configuration.properties.initialValue ??
                         domNode.initialValue ??
                         configuration.properties.default ??
                         configuration.properties.model?.default
@@ -1471,7 +1473,7 @@ export class AgileForm<
      *
      * @returns A promise resolving when digest hast been finished.
     */
-    async digest(numberOfCycles = 2):Promise<void> {
+    async digest(numberOfCycles = 1):Promise<void> {
         for (let cycle = 0; cycle < numberOfCycles; cycle += 1)
             await Tools.timeout()
     }
