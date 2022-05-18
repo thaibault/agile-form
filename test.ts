@@ -82,10 +82,10 @@ describe('AgileForm', ():void => {
         expect(form.self.normalizeURLConfiguration({})).toStrictEqual({})
 
         expect(
-            form.self.normalizeURLConfiguration({a: 2} as
-                unknown as
-                Configuration
-        )).toStrictEqual({a: 2})
+            form.self.normalizeURLConfiguration(
+                {a: 2} as unknown as Configuration
+            )
+        ).toStrictEqual({a: 2})
 
         // TODO
     })
@@ -162,9 +162,6 @@ describe('AgileForm', ():void => {
     })
     test('getConfigurationFromURL', ():void => {
         const form:AgileForm = document.createElement(name) as AgileForm
-
-        const initialConfiguration:Configuration =
-            Tools.copy(form.resolvedConfiguration)
 
         expect(form.getConfigurationFromURL()).toStrictEqual(null)
 

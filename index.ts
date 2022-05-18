@@ -1473,7 +1473,7 @@ export class AgileForm<
      *
      * @returns A promise resolving when digest hast been finished.
     */
-    async digest(numberOfCycles = 2):Promise<void> {
+    async digest(numberOfCycles = 1):Promise<void> {
         for (let cycle = 0; cycle < numberOfCycles; cycle += 1)
             await Tools.timeout()
     }
