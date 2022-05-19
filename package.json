@@ -36,7 +36,8 @@
   },
   "scripts": {
     "build": "yarn build:types; yarn build:plain && yarn build:bundle",
-    "build:bundle": "weboptimizer build '{__reference__: \"target:bundle\"}'",
+    "build:bundle": "yarn build:types; yarn build:bundle:plain",
+    "build:bundle:plain": "weboptimizer build '{__reference__: \"target:bundle\"}'",
     "build:plain": "weboptimizer build",
     "build:types": "weboptimizer build:types",
     "check": "yarn check:types; yarn lint",
