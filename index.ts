@@ -939,14 +939,21 @@ export class AgileForm<
         const currentConfiguration:RecursivePartial<Configuration> =
             Tools.copy(configuration)
 
-        currentConfiguration.evaluations = ([] as Array<Evaluation>).concat(
-            currentConfiguration.evaluations as unknown as Array<Evaluation> ||
-            []
-        )
-        currentConfiguration.expressions = ([] as Array<Expression>).concat(
-            currentConfiguration.expressions as unknown as Array<Expression> ||
-            []
-        )
+        for (const type of ['evaluations', 'expressions'] as const)
+            if (Array.isArray(currentConfiguration[type])) {
+                if (
+                    currentConfiguration[type]!.length &&
+                    !Array.isArray(currentConfiguration[type]![0])
+                )
+                    (currentConfiguration[type] as
+                        Array<Evaluation|Expression>
+                    ) = [
+                                currentConfiguration[type] as
+                                    unknown as
+                                    Evaluation|Expression
+                            ]
+            } else
+                currentConfiguration[type] = []
 
         if (!currentConfiguration.tag)
             currentConfiguration.tag = {values: []}
