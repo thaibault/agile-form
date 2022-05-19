@@ -86,11 +86,8 @@ describe('AgileForm', ():void => {
 
         expect(form.self.normalizeURLConfiguration({})).toStrictEqual({})
 
-        expect(
-            form.self.normalizeURLConfiguration(
-                {a: 2} as unknown as Configuration
-            )
-        ).toStrictEqual({a: 2})
+        expect(form.self.normalizeURLConfiguration({a: 2}))
+            .toStrictEqual({a: 2})
 
         // TODO
     })
@@ -102,34 +99,34 @@ describe('AgileForm', ():void => {
         })
 
         expect(form.self.normalizeConfiguration({
-            evaluations: '5',
-            expressions: '4',
+            evaluations: ['a', '5'],
+            expressions: ['b', '4'],
             tags: 'tag-a'
         } as unknown as Configuration)).toStrictEqual({
-            evaluations: ['5'],
-            expressions: ['4'],
+            evaluations: [['a', '5']],
+            expressions: [['b', '4']],
             tag: {values: ['tag-a']}
         })
 
         expect(form.self.normalizeConfiguration({
-            evaluations: '5',
-            expressions: ['4'],
+            evaluations: ['a', '5'],
+            expressions: [['b', '4']],
             tag: {values: 'tag-a'},
             tags: ['tag-b']
         } as unknown as Configuration)).toStrictEqual({
-            evaluations: ['5'],
-            expressions: ['4'],
+            evaluations: [['a', '5']],
+            expressions: [['b', '4']],
             tag: {values: ['tag-a', 'tag-b']}
         })
 
         expect(form.self.normalizeConfiguration({
             evaluations: [],
-            expressions: ['4'],
+            expressions: [['a', '4']],
             tag: {values: ['tag-a', 'tag-c']},
             tags: ['tag-b']
         } as unknown as Configuration)).toStrictEqual({
             evaluations: [],
-            expressions: ['4'],
+            expressions: [['a', '4']],
             tag: {values: ['tag-a', 'tag-c', 'tag-b']}
         })
     })
@@ -142,13 +139,15 @@ describe('AgileForm', ():void => {
         form.mergeConfiguration({})
         expect(form.resolvedConfiguration).toStrictEqual(initialConfiguration)
 
-        form.mergeConfiguration({a: 2})
+        form.mergeConfiguration({a: 2} as unknown as Configuration)
         expect(form.resolvedConfiguration)
             .toStrictEqual({...initialConfiguration, a: 2})
 
-        form.mergeConfiguration({evaluations: '2'})
+        form.mergeConfiguration(
+            {evaluations: ['a', '2']} as unknown as Configuration
+        )
         expect(form.resolvedConfiguration.evaluations).toStrictEqual(
-            initialConfiguration.evaluations.concat('2')
+            [...initialConfiguration.evaluations, ['a', '2']]
         )
     })
     test('resolveConfiguration', ():void => {
@@ -160,7 +159,7 @@ describe('AgileForm', ():void => {
         form.resolveConfiguration()
         expect(form.resolvedConfiguration).toStrictEqual(initialConfiguration)
 
-        form.additionalConfiguration = {a: 2}
+        form.additionalConfiguration = {a: 2} as unknown as Configuration
         form.resolveConfiguration()
         expect(form.resolvedConfiguration)
             .toStrictEqual({...initialConfiguration, a: 2})
@@ -171,7 +170,7 @@ describe('AgileForm', ():void => {
         expect(form.getConfigurationFromURL()).toStrictEqual(null)
 
         form.queryParameters[form.resolvedConfiguration.name] = '{}'
-        expect(Object.keys(form.getConfigurationFromURL()))
+        expect(Object.keys(form.getConfigurationFromURL()!))
             .toHaveProperty('length', 0)
 
         form.queryParameters[form.resolvedConfiguration.name] = '{a: 2}'
