@@ -250,14 +250,6 @@
             }
           }
         }
-      },
-      "module": {
-        "replacements": {
-          "normal": {
-            "#": "We need native class to get web components work in test context.",
-            "web-component-wrapper/Web$": "web-component-wrapper/WebNext"
-          }
-        }
       }
     }
   },

@@ -15,13 +15,18 @@
 */
 // region imports
 import {describe, expect, test} from '@jest/globals'
+import '@webcomponents/webcomponentsjs/custom-elements-es5-adapter'
 import Tools, {globalContext} from 'clientnode'
 import nodeFetch from 'node-fetch'
+import GenericInput from 'web-input-material/components/GenericInput'
 
 import api, {AgileForm} from './index'
 import {Configuration} from './type'
 // endregion
 globalContext.fetch = nodeFetch as unknown as typeof fetch
+
+// Registers "generic-input" tag.
+GenericInput.register()
 
 const name = 'test-form'
 api.register(name)
