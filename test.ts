@@ -23,6 +23,11 @@ import GenericInput from 'web-input-material/components/GenericInput'
 import api, {AgileForm} from './index'
 import {Configuration} from './type'
 // endregion
+/*
+    NOTE: We have to preload this module to avoid introducing an additional
+    asynchronous chunk.
+*/
+require('node-fetch/src/utils/multipart-parser')
 globalContext.fetch = nodeFetch as unknown as typeof fetch
 
 // Registers "generic-input" tag.
