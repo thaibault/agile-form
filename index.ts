@@ -1988,26 +1988,31 @@ export class AgileForm<
         )
 
         if (this.resolvedConfiguration.initializeTarget?.url) {
-            const target:TargetConfiguration =
-                Tools.evaluateDynamicData(
-                    Tools.copy(
-                        this.resolvedConfiguration.initializeTarget
-                    ),
-                    {
-                        queryParameters: this.queryParameters,
-                        Tools,
-                        ...this.resolvedConfiguration
-                    }
-                )
+            /*
+                NOTE: We have to start background process (run evaluations)
+                before rendering initial target to have corresponding
+                environment available.
+            */
+            const detail:{target:null|TargetConfiguration} = {target: null}
 
-            const event:Event =
-                new CustomEvent('initialize', {detail: {target}})
+            const event:Event = new CustomEvent('initialize', {detail})
 
             await this.startBackgroundProcess(event)
 
+            detail.target = Tools.evaluateDynamicData(
+                Tools.copy(
+                    this.resolvedConfiguration.initializeTarget
+                ),
+                {
+                    queryParameters: this.queryParameters,
+                    Tools,
+                    ...this.resolvedConfiguration
+                }
+            )
+
             this.initialResponse =
                 this.latestResponse =
-                await this.doRequest(target)
+                await this.doRequest(detail.target)
 
             if (!this.initialResponse) {
                 await this.stopBackgroundProcess(event)
@@ -2034,7 +2039,7 @@ export class AgileForm<
             if (this.pending)
                 await this.stopBackgroundProcess(event)
 
-            this.triggerEvent('initialized', {target})
+            this.triggerEvent('initialized', {target: detail.target})
         }
     }
     /**
