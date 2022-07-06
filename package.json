@@ -45,6 +45,7 @@
     "clear": "weboptimizer clear && rimraf styles.bundle.css",
     "document": "weboptimizer document",
     "lint": "weboptimizer lint",
+    "patch": "for path in patches/*.patch; do target_file_path=\"$(echo \"$path\" | sed --regexp-extended 's/patches\\/([^/]+).patch$/\\1/' | sed 's:\\+:/:g')\"; source_file_path=\"$path\"; echo \"Patch file \\\"$target_file_path\\\" with \\\"$source_file_path\\\".\"; patch --forward --input \"$source_file_path\" --reject-file - \"$target_file_path\"; done; true",
     "prepare": "yarn build",
     "serve": "weboptimizer serve",
     "start": "yarn serve",
