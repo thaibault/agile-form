@@ -2495,7 +2495,7 @@ export class AgileForm<
      * @param rawData - Initial data to sent, needed for tracking additional
      * informations for triggered request.
      *
-     * @returns A promise wrapping a boolean indicating the requests result.
+     * @returns A promise wrapping the response.
      */
     async doRequest(
         target:TargetConfiguration, rawData:null|PlainObject = null
@@ -2525,14 +2525,35 @@ export class AgileForm<
         }
         // endregion
 
-        let result:null|FormResponse = null
-        try {
-            void this.updateReCaptchaToken()
+        let response:null|FormResponse = null
 
-            result = await fetch(target.url, target.options || {}) as
+        void this.updateReCaptchaToken()
+
+        try {
+            response = await fetch(target.url, target.options || {}) as
                 unknown as
                 FormResponse
-            let responseString:string = await (result as FormResponse).text()
+        } catch (error) {
+            const statusText:string = Tools.represent(error)
+
+            console.warn(`Could not request "${target.url}" "${statusText}".`)
+
+            response = {
+                ...target.options,
+                data: {},
+                headers: new Headers(),
+                ok: false,
+                redirected: false,
+                status: 0,
+                statusText,
+                url: target.url
+            } as
+                unknown as
+                FormResponse
+        }
+
+        try {
+            let responseString:string = await (response as FormResponse).text()
             if (responseString.startsWith(
                 this.resolvedConfiguration.securityResponsePrefix
             ))
@@ -2540,9 +2561,9 @@ export class AgileForm<
                     this.resolvedConfiguration.securityResponsePrefix.length
                 )
 
-            result!.data = JSON.parse(responseString) as PlainObject
-            result!.data = Tools.getSubstructure(
-                (result as FormResponse).data,
+            response!.data = JSON.parse(responseString) as PlainObject
+            response!.data = Tools.getSubstructure(
+                (response as FormResponse).data,
                 this.resolvedConfiguration.responseDataWrapperSelector.path,
                 this.resolvedConfiguration.responseDataWrapperSelector.optional
             )
@@ -2553,25 +2574,28 @@ export class AgileForm<
             )
         }
 
-        if (result) {
-            if (result.ok && result.data) {
+        if (response) {
+            if (response.ok && response.data) {
                 if (
-                    result.data.result &&
-                    [401, 403, 407].includes(result.status)
+                    response.data.result &&
+                    [401, 403, 407].includes(response.status)
                 )
                     // NOTE: We have an unauthenticated request.
                     this.triggerEvent(
                         'serverAuthenticationInvalid',
-                        {reference: {request: rawData, response: result.data}}
+                        {reference: {
+                            request: rawData,
+                            response: response.data
+                        }}
                     )
 
-                return result
+                return response
             }
 
-            this.handleUnsuccessfulSentRequest(result, rawData)
+            this.handleUnsuccessfulSentRequest(response, rawData)
         }
 
-        return result
+        return response
     }
     /**
      * Send given data to server und interpret response.
@@ -3422,8 +3446,9 @@ export class AgileForm<
             }
 
             return true
-        } else
-            this.reCaptchaPromise = Promise.resolve(null)
+        }
+
+        this.reCaptchaPromise = Promise.resolve(null)
 
         return false
     }
