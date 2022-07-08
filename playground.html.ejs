@@ -123,8 +123,10 @@
         <agile-form
             base-configuration="{
                 debug: true,
+
                 evaluations: [['testEvaluation', function() { return 'testEvaluation'}]],
                 expressions: [['testExpression', '5']],
+
                 inputs: {
                     simple: {
                         properties: {
@@ -140,13 +142,17 @@
                         }
                     }
                 },
+
                 reCaptcha: {
                     key: {
                         v2: '6LcUiyUTAAAAAPHLNbtoP6v-FHsPSyZ4ZqLnbThf',
                         v3: '6LdvN-sZAAAAAHv2Ko2_g_8EHrIRbNffZoGHseSS'
                     }
                 },
+
+                initializeTarget: {url: 'http://localhost:8080'},
                 target: {url: 'http://localhost:8080'},
+
                 urlConfigurationMask: {include: true}
             }"
             configuration="{
@@ -237,6 +243,9 @@
                 name="response-report"
                 show-if="latestResponse"
             >
+                Initial Response (Status: ${initialResponse.status}):
+                <pre>${Tools.represent(initialResponse.data)}</pre>
+                <br />
                 Response (Status: ${latestResponse.status}):
                 <pre>${Tools.represent(latestResponse.data)}</pre>
             </div>
