@@ -1976,6 +1976,32 @@ export class AgileForm<
     /// endregion
     /// region initialize/submit/reset actions
     /**
+     * Determines simple scope for partial configuration evaluations.
+     * @returns Scope.
+     */
+    determineEvaluationScope():Mapping<unknown> {
+        return {
+            determineStateURL: this.determineStateURL,
+            queryParameters: this.queryParameters,
+            Tools,
+
+            ...Object.fromEntries(
+                this.evaluations
+                    .map((evaluation:Evaluation):string => evaluation[0])
+                    .map((name:string, index:number):[string, unknown] =>
+                        [name, this._evaluationResults[index]]
+                    )
+            ),
+
+            ...Object.fromEntries(this.inputNames.map(
+                (name:string):[string, InputConfiguration] =>
+                    [name, this.inputConfigurations[name]]
+            )),
+
+            ...this.resolvedConfiguration
+        }
+    }
+    /**
      * Can be triggered vie provided action condition. Can for example retrieve
      * initial user specific state depending on remote response.
      * @returns Promise resolving to nothing when initial request has been
@@ -2000,39 +2026,40 @@ export class AgileForm<
             await this.startBackgroundProcess(event)
 
             detail.target = Tools.evaluateDynamicData(
-                Tools.copy(
-                    this.resolvedConfiguration.initializeTarget
-                ),
-                {
-                    queryParameters: this.queryParameters,
-                    Tools,
-                    ...this.resolvedConfiguration
-                }
+                Tools.copy(this.resolvedConfiguration.initializeTarget),
+                this.determineEvaluationScope()
             )
 
-            this.initialResponse =
-                this.latestResponse =
-                await this.doRequest(detail.target)
+            if (detail.target.url) {
+                this.initialResponse =
+                    this.latestResponse =
+                    await this.doRequest(detail.target)
 
-            if (!this.initialResponse) {
-                await this.stopBackgroundProcess(event)
-
-                return
-            }
-
-            if (Object.prototype.hasOwnProperty.call(
-                this.resolvedConfiguration.actions, 'initialize'
-            )) {
-                this.runEvaluations()
-
-                const target:null|string = this.resolveAction(
-                    this.resolvedConfiguration.actions.initialize, 'initialize'
-                )
-
-                if (typeof target === 'string') {
-                    location.href = target
+                if (!this.initialResponse) {
+                    await this.stopBackgroundProcess(event)
 
                     return
+                }
+
+                if (Object.prototype.hasOwnProperty.call(
+                    this.resolvedConfiguration.actions, 'initialize'
+                )) {
+                    this.runEvaluations()
+
+                    const target:null|string = this.resolveAction(
+                        this.resolvedConfiguration.actions.initialize,
+                        'initialize'
+                    )
+
+                    if (typeof target === 'string') {
+                        location.href = target
+
+                        this.triggerEvent(
+                            'initialized', {target: detail.target}
+                        )
+
+                        return
+                    }
                 }
             }
 
@@ -2615,15 +2642,10 @@ export class AgileForm<
 
         this.resolvedConfiguration.data = data
         this.resolvedConfiguration.targetData = this.mapTargetNames(data)
-        const target:TargetConfiguration = Tools.evaluateDynamicData(
+        const target:null|TargetConfiguration = Tools.evaluateDynamicData(
             Tools.copy(this.resolvedConfiguration.target),
-            {
-                determineStateURL: this.determineStateURL,
-                queryParameters: this.queryParameters,
-                Tools,
-                ...this.resolvedConfiguration
-            }
-        ) as TargetConfiguration
+            this.determineEvaluationScope()
+        )
         // endregion
         if (target?.url) {
             this.determinedTargetURL = target.url
