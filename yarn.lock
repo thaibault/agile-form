@@ -2183,9 +2183,9 @@
     "@types/json-schema" "*"
 
 "@types/estree@*":
-  version "0.0.52"
-  resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.52.tgz#7f1f57ad5b741f3d5b210d3b1f145640d89bf8fe"
-  integrity sha512-BZWrtCU0bMVAIliIV+HJO1f1PR41M7NKjfxrFJwwhKI1KwhwOxYw1SXg9ao+CIMt774nFuGiG6eU+udtbEI9oQ==
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.0.tgz#5fb2e536c1ae9bf35366eed879e827fa59ca41c2"
+  integrity sha512-WulqXMDUTYAXCjZnk6JtIHPigp55cVtDgDrO2gHRwhyJto21+1zbVCtOYB2L1F9w4qCQ0rOGWBnBe0FNTiEJIQ==
 
 "@types/estree@^0.0.51":
   version "0.0.51"
@@ -7096,9 +7096,9 @@ node-domexception@^1.0.0:
   integrity sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==
 
 node-fetch@*:
-  version "3.2.7"
-  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-3.2.7.tgz#30739f7becd068ef8a741b8a9509409f0f835cf4"
-  integrity sha512-xRYIBUEoMvzvLt0FT2mAKAGXps1Wm0GpswR63pPJC4Hp5EubeigGYJJge34f3mPApap4+2B3sTKyUygsZrkmyg==
+  version "3.2.8"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-3.2.8.tgz#0d9516dcf43a758d78d6dbe538adf0b1f6a4944e"
+  integrity sha512-KtpD1YhGszhntMpBDyp5lyagk8KIMopC1LEb7cQUAh7zcosaX5uK8HnbNb2i3NTQK3sIawCItS0uFC3QzcLHdg==
   dependencies:
     data-uri-to-buffer "^4.0.0"
     fetch-blob "^3.1.4"
@@ -7641,9 +7641,9 @@ postcss-font-variant@^5.0.0:
   integrity sha512-1fmkBaCALD72CK2a9i468mA/+tr9/1cBxRRMXOUaZqO43oWPR5imcyPjXwuv7PXbCid4ndlP5zWhidQVVa3hmA==
 
 postcss-gap-properties@^3.0.3:
-  version "3.0.4"
-  resolved "https://registry.yarnpkg.com/postcss-gap-properties/-/postcss-gap-properties-3.0.4.tgz#8527d00284ef83725e41a53a718f9bed8e2b2beb"
-  integrity sha512-PaEM4AUQY7uomyuVVXsIntdo4eT8VkBMrSinQxvXuMcJ1z3RHlFw4Kqef2X+rRVz3WHaYCa0EEtwousBT6vcIA==
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/postcss-gap-properties/-/postcss-gap-properties-3.0.5.tgz#f7e3cddcf73ee19e94ccf7cb77773f9560aa2fff"
+  integrity sha512-IuE6gKSdoUNcvkGIqdtjtcMtZIFyXZhmFd5RUlg97iVEvp1BZKV5ngsAjCjrVy+14uhGBQl9tzmi1Qwq4kqVOg==
 
 postcss-image-set-function@^4.0.6:
   version "4.0.7"
@@ -8255,9 +8255,9 @@ react-dom@*:
     scheduler "^0.23.0"
 
 react-input-material@*:
-  version "0.0.405"
-  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.405.tgz#a9202cc0f5cdbf7fdb7a0476b413952172bcc1af"
-  integrity sha512-R2VjncdDuMG4GqSehXsoE0zpqYOitX8II6yPksyRewzJ/omKhB7ifNfPVXKjwtP7QFfPlW743JRs2tTcx1eA5A==
+  version "0.0.406"
+  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.406.tgz#0c74765280785e8e12ec44cc8f982fc2247e773c"
+  integrity sha512-yXpkl6OISqTMTERQsGZve2K55U1ui+HND2vC2/0QEYL9Sd1ZwjuiC72td9UvpmfXpGpTeX9zhBnZ+MU+UU8xZg==
   dependencies:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.1.tgz"
 
@@ -9469,9 +9469,9 @@ web-component-wrapper@*:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.1.tgz"
 
 web-input-material@*:
-  version "0.0.271"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.271.tgz#7ab9f88d2b9ec381cbc0813fcf5864c81b57f214"
-  integrity sha512-ajRNk4YSUh/b2a9Hd69uHhJb9q3UxQARex/97ZSkhsFtdlAhd94vQmN6I8vHXKygvewyJLflt43Is1EKtpDjQA==
+  version "0.0.272"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.272.tgz#6e0e615af925b182845f6cafe4ea367d047c66f5"
+  integrity sha512-LZsVpyrjYHw/LVVlFEDICMcPCZjRSqy4ep0mYm5DrrgOAAix0kn3nIvD2yZLGj03REjSwtNTTKUtR1PfkdFrVQ==
   dependencies:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.1.tgz"
     prop-types "*"
