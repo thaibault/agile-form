@@ -2552,6 +2552,9 @@ export class AgileForm<
         }
         // endregion
 
+        if (target.options?.body && typeof target.options.body !== 'string')
+            target.options.body = JSON.stringify(target.options.body)
+
         let response:null|FormResponse = null
 
         void this.updateReCaptchaToken()
@@ -2649,9 +2652,6 @@ export class AgileForm<
         // endregion
         if (target?.url) {
             this.determinedTargetURL = target.url
-
-            if (target.options.body && typeof target.options.body !== 'string')
-                target.options.body = JSON.stringify(target.options.body)
 
             this.latestResponse = this.response = null
 
