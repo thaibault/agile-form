@@ -30,8 +30,10 @@ import {
     TemplateFunction,
     UnknownFunction
 } from 'clientnode/type'
+/* eslint-disable @typescript-eslint/no-unused-vars, no-unused-vars */
 import {object} from 'clientnode/property-types'
 import property from 'web-component-wrapper/decorator'
+/* eslint-enable @typescript-eslint/no-unused-vars, no-unused-vars */
 import Web from 'web-component-wrapper/Web'
 import {WebComponentAPI, StaticWebComponent} from 'web-component-wrapper/type'
 
