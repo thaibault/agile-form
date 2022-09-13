@@ -164,6 +164,10 @@ export class AgileForm<
             url: ''
         },
         inputs: {},
+        inputValueMapping: {
+            'slider-input': (value:unknown):number =>
+                typeof value === 'number' ? value : 0
+        },
         name: 'aForm',
         offsetInPixel: 85,
         reCaptcha: {
@@ -1433,12 +1437,22 @@ export class AgileForm<
                         )
                     )
                 ) {
-                    configuration.value =
+                    let value:unknown =
                         configuration.properties.model?.value ??
                         configuration.properties.initialValue ??
                         domNode.initialValue ??
                         configuration.properties.default ??
                         configuration.properties.model?.default
+
+                    if (Object.prototype.hasOwnProperty.call(
+                        this.resolvedConfiguration.inputValueMapping,
+                        domNode.nodeName
+                    ))
+                        value = this.resolvedConfiguration.inputValueMapping[
+                            domNode.nodeName
+                        ](value)
+
+                    configuration.value = value
 
                     console.debug(
                         `Derive final initial value for input "${name}" to "` +
@@ -3367,6 +3381,7 @@ export class AgileForm<
                 encodeURIComponent(value)
             const queryParameter =
                 `${this.resolvedConfiguration.name}=${value}`
+
             if (result.plain.includes('?')) {
                 if (!(
                     result.plain.endsWith('?') || result.plain.endsWith('&')
