@@ -143,6 +143,7 @@ export interface Configuration {
     expressions:Array<Expression>
     initializeTarget:TargetConfiguration
     inputs:Mapping<Partial<InputConfiguration>>
+    inputValueMapping:Mapping<(value:unknown) => unknown>
     name:string
     offsetInPixel:number
     reCaptcha:{
