@@ -164,10 +164,6 @@ export class AgileForm<
             url: ''
         },
         inputs: {},
-        inputValueMapping: {
-            'slider-input': (value:unknown):number =>
-                typeof value === 'number' ? value : 0
-        },
         name: 'aForm',
         offsetInPixel: 85,
         reCaptcha: {
@@ -256,6 +252,10 @@ export class AgileForm<
             }
         },
         version: 1
+    }
+    static inputValueMapping:Mapping<(value:unknown) => unknown> = {
+        'slider-input': (value:unknown):number =>
+            typeof value === 'number' ? value : 0
     }
     static specificationToPropertyMapping:Mapping<{
         invert?:boolean
@@ -1392,6 +1392,14 @@ export class AgileForm<
                         {
                             get: ():unknown => configuration.domNode!.value,
                             set: (value:unknown):void => {
+                                if (Object.prototype.hasOwnProperty.call(
+                                    this.self.inputValueMapping,
+                                    domNode.nodeName
+                                ))
+                                    value = this.self.inputValueMapping[
+                                        domNode.nodeName
+                                    ](value)
+
                                 configuration.properties.value = value
 
                                 for (const domNode of configuration.domNodes)
@@ -1437,22 +1445,13 @@ export class AgileForm<
                         )
                     )
                 ) {
-                    let value:unknown =
+                    configuration.value =
                         configuration.properties.model?.value ??
                         configuration.properties.initialValue ??
                         domNode.initialValue ??
                         configuration.properties.default ??
                         configuration.properties.model?.default
 
-                    if (Object.prototype.hasOwnProperty.call(
-                        this.resolvedConfiguration.inputValueMapping,
-                        domNode.nodeName
-                    ))
-                        value = this.resolvedConfiguration.inputValueMapping[
-                            domNode.nodeName
-                        ](value)
-
-                    configuration.value = value
 
                     console.debug(
                         `Derive final initial value for input "${name}" to "` +
