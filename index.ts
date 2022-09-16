@@ -1392,12 +1392,14 @@ export class AgileForm<
                         {
                             get: ():unknown => configuration.domNode!.value,
                             set: (value:unknown):void => {
+                                const tagName:string =
+                                    domNode.nodeName.toLowerCase()
+
                                 if (Object.prototype.hasOwnProperty.call(
-                                    this.self.inputValueMapping,
-                                    domNode.nodeName
+                                    this.self.inputValueMapping, tagName
                                 ))
                                     value = this.self.inputValueMapping[
-                                        domNode.nodeName
+                                        tagName
                                     ](value)
 
                                 configuration.properties.value = value
