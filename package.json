@@ -16,7 +16,6 @@
     "url": "https://github.com/thaibault/agile-form/issues"
   },
   "license": "CC-BY-3.0",
-  "main": "index.js",
   "author": {
     "name": "Torben Sickert",
     "email": "info@torben.website",
