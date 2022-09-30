@@ -8362,9 +8362,9 @@ react-dom@*:
     scheduler "^0.23.0"
 
 react-input-material@*:
-  version "0.0.448"
-  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.448.tgz#2b8490599fb828f9216d07a074b87ac0ac4b8190"
-  integrity sha512-JWrojjMB6QIdklM+BO7MWjza5nysO7Z9wU9ULhncRI22t6HJBpYZ0WZ3qs7kproPXmH1oq0XuTJ6IBWibBbOdw==
+  version "0.0.449"
+  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.449.tgz#f5ebc9a3b1f5f0a678d292bac37cbad69b7c3591"
+  integrity sha512-z0k6NO+ejld7t6U1VetmHvYLclnB8+nyrS6two94H5+B8PmH0rxbjP8fVB4yU0slJEdJjpQQqj9b49lS0TVNDw==
   dependencies:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.1.tgz"
 
@@ -9579,9 +9579,9 @@ web-component-wrapper@*:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.1.tgz"
 
 web-input-material@*:
-  version "0.0.298"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.298.tgz#eb8933bf20b4dd02273198d6a15aab72347988c1"
-  integrity sha512-zxH8O++Y9fHaEBmAByevfJxh+Qs9qBs2nRVsRmg0lWLakzZ/XD8PiebGsVxgPdW6Xd57jx7xaQSoF8aRXqWqrw==
+  version "0.0.299"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.299.tgz#57c24cece9e577688ae7bd13a969e70797591f3d"
+  integrity sha512-e4P6FsvN+u4eiIgcg/qytZnq0TnRGxTNJxBQ89hFg2pbOH9wwElAtTRAUWDCTtA4T1Jex1LT/mgFflUNxfiYOw==
   dependencies:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.1.tgz"
     prop-types "*"
