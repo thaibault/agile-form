@@ -9561,9 +9561,9 @@ web-component-wrapper@*:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.1.tgz"
 
 web-input-material@*:
-  version "0.0.303"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.303.tgz#30deda8593f226fb996a3f007b33cca004c1d6cc"
-  integrity sha512-Obyd/XGOR0rKNVmO7osmV9Xo+71OBV03bnwxhBf4hehyj5moGE7SRU74s2/ksKjQ6TLAhV0yQ7hFxOw/v3PaMA==
+  version "0.0.304"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.304.tgz#5ebffbc437a1f215d73acc612250f069d698a130"
+  integrity sha512-j3ky936ZUfhv4hpUw0KC2MxNOYQ3qceBp9msYGnqXnoBcMWp8gF8JneNhphYfZ7qJe4UAX7PUlrfrYkNt4LGog==
   dependencies:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.1.tgz"
     prop-types "*"
