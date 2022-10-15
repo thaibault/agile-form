@@ -604,6 +604,8 @@ export class AgileForm<
      */
     show(domNode:AnnotatedDomNode):void {
         this.fade(domNode)
+
+        domNode.removeAttribute('aria-hidden')
     }
     /**
      * Removes given dom nodes visual representation.
@@ -613,6 +615,8 @@ export class AgileForm<
      */
     hide(domNode:AnnotatedDomNode):void {
         this.fade(domNode, 0)
+
+        domNode.setAttribute('aria-hidden', 'true')
     }
     /**
      * Shows the spinner.
