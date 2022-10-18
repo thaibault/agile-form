@@ -413,15 +413,17 @@ export class AgileForm<
     disconnectedCallback():void {
         super.disconnectedCallback()
 
-        this.root.removeEventListener('keydown', this.onKeyDown)
+        this.root.removeEventListener(
+            'keydown', this.onKeyDown as EventListenerOrEventListenerObject
+        )
         for (const domNode of this.clearButtons)
-            domNode.removeEventListener('click', this.onClear, false)
+            domNode.removeEventListener('click', this.onClear)
         for (const domNode of this.resetButtons)
-            domNode.removeEventListener('click', this.onReset, false)
+            domNode.removeEventListener('click', this.onReset)
         for (const domNode of this.submitButtons)
-            domNode.removeEventListener('click', this.onSubmit, false)
+            domNode.removeEventListener('click', this.onSubmit)
         for (const domNode of this.truncateButtons)
-            domNode.removeEventListener('click', this.onTruncate, false)
+            domNode.removeEventListener('click', this.onTruncate)
 
         for (const callback of Object.values(this.inputEventBindings))
             callback()
@@ -478,15 +480,17 @@ export class AgileForm<
             this.resolvedConfiguration.selector.truncateButtons
         ))
 
-        this.root.addEventListener('keydown', this.onKeyDown)
+        this.root.addEventListener(
+            'keydown', this.onKeyDown as EventListenerOrEventListenerObject
+        )
         for (const domNode of this.clearButtons)
-            domNode.addEventListener('click', this.onClear, false)
+            domNode.addEventListener('click', this.onClear)
         for (const domNode of this.resetButtons)
-            domNode.addEventListener('click', this.onReset, false)
+            domNode.addEventListener('click', this.onReset)
         for (const domNode of this.submitButtons)
-            domNode.addEventListener('click', this.onSubmit, false)
+            domNode.addEventListener('click', this.onSubmit)
         for (const domNode of this.truncateButtons)
-            domNode.addEventListener('click', this.onTruncate, false)
+            domNode.addEventListener('click', this.onTruncate)
 
         /*
             Show potentially grabbed messages coming from the initialisation
@@ -854,13 +858,12 @@ export class AgileForm<
      *    into properties top level inverted "disabled" configuration.
      * 4. Alias top level input property configuration "nullable" into
      *    properties top level inverted "required" configuration.
-     * @param this - Nothing.
      * @param configuration - Configuration object to normalize.
      *
      * @returns Normalized configuration.
      */
     static normalizeURLConfiguration(
-        this:void, configuration:PlainObject
+        configuration:PlainObject
     ):RecursivePartial<Configuration> {
         const currentConfiguration:PlainObject = Tools.copy(configuration)
 
@@ -938,13 +941,12 @@ export class AgileForm<
     }
     /**
      * Normalizes given configuration.
-     * @param this - Nothing.
      * @param configuration - Configuration object to normalize.
      *
      * @returns Normalized configuration.
      */
     static normalizeConfiguration(
-        this:void, configuration:RecursivePartial<Configuration>
+        configuration:RecursivePartial<Configuration>
     ):NormalizedConfiguration {
         const currentConfiguration:RecursivePartial<Configuration> =
             Tools.copy(configuration)
@@ -2154,7 +2156,10 @@ export class AgileForm<
     onKeyDown = (event:KeyboardEvent):void => {
         if (
             Tools.keyCode.ENTER === event.keyCode &&
-            event.target.matches(this.resolvedConfiguration.selector.inputs)
+            (event.target as HTMLElement)?.matches &&
+            (event.target as HTMLElement).matches(
+                this.resolvedConfiguration.selector.inputs
+            )
         )
             this.onSubmit(event)
     }
