@@ -413,7 +413,7 @@ export class AgileForm<
     disconnectedCallback():void {
         super.disconnectedCallback()
 
-        window.removeEventListener('keydown', this.onKeyDown)
+        this.root.removeEventListener('keydown', this.onKeyDown)
         for (const domNode of this.clearButtons)
             domNode.removeEventListener('click', this.onClear, false)
         for (const domNode of this.resetButtons)
@@ -478,7 +478,7 @@ export class AgileForm<
             this.resolvedConfiguration.selector.truncateButtons
         ))
 
-        window.addEventListener('keydown', this.onKeyDown)
+        this.root.addEventListener('keydown', this.onKeyDown)
         for (const domNode of this.clearButtons)
             domNode.addEventListener('click', this.onClear, false)
         for (const domNode of this.resetButtons)
@@ -2146,12 +2146,16 @@ export class AgileForm<
     }
     /**
      * Callback triggered when any keyboard events occur.
+     * Enter key down events in input fields trigger a form submit.
      * @param event - Keyboard event object.
      *
      * @returns Nothing.
      */
     onKeyDown = (event:KeyboardEvent):void => {
-        if (Tools.keyCode.ENTER === event.keyCode)
+        if (
+            Tools.keyCode.ENTER === event.keyCode &&
+            event.target.matches(this.resolvedConfiguration.selector.inputs)
+        )
             this.onSubmit(event)
     }
     /**
