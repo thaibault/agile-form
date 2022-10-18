@@ -157,7 +157,7 @@
     },
     "injection": {
       "entry": {
-        "__evaluate__": "2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2].startsWith('test') ? {testBundle: './test.ts'} : 2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2] === 'serve' ? {index: './index', styles: './index.css', webInputMaterial: 'web-input-material'} : './index'"
+        "__evaluate__": "2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2].startsWith('test') ? {testBundle: './test.ts'} : 2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2] === 'serve' ? {index: './index', styles: './index.css'} : './index'"
       }
     },
     "module": {

@@ -72,6 +72,9 @@
         <!--endregion-->
         <!--region script-->
         <script src="https://www.google.com/recaptcha/api.js?render=6LdvN-sZAAAAAHv2Ko2_g_8EHrIRbNffZoGHseSS"></script>
+        <script
+            src="https://torben.website/web-input-material/data/distributionBundle/index.bundle.js"
+        ></script>
         <script>
             window.onload = function() {
                 /* region fetch mock */
@@ -107,13 +110,7 @@
                     })
                 }
                 /* endregion */
-
-                Object.values(agileForm.webInputMaterial.components).map(
-                    function(component) {
-                        component.register()
-                    }
-                )
-
+                webInputMaterial.index.register()
                 agileForm.index.api.register()
             }
         </script>
