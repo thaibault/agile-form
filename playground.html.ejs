@@ -126,6 +126,14 @@
                 expressions: [['testExpression', '5']],
 
                 inputs: {
+                    test: {
+                        properties: {
+                            placeholder: 'Simple placeholder',
+                            disabled: true,
+                            required: true
+                        }
+                    },
+
                     simple: {
                         properties: {
                             placeholder: 'Simple placeholder',
@@ -218,6 +226,13 @@
                 }
             }"
         >
+            <generic-input
+                declaration="TEST."
+                description="Test"
+                labels="{A: 'Label A', B: 'Label B', C: 'Label C'}"
+                selection="['A', 'B', 'C', 'D', 'E']"
+                name="test"
+            ></generic-input>
 
             <circular-spinner size="'xlarge'"></circular-spinner>
 
