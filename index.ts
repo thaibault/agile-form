@@ -1460,15 +1460,13 @@ export class AgileForm<
                         configuration.properties.default ??
                         configuration.properties.model?.default
 
+                    await this.digest()
 
                     console.debug(
                         `Derive final initial value for input "${name}" to "` +
                         `${configuration.value as string}".`
                     )
                 }
-
-
-                await this.digest()
 
                 this.initialData[name] = domNode.value
             } else

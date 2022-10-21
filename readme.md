@@ -18,17 +18,12 @@ Project status
 
 [![<LABEL>](https://github.com/thaibault/agile-form/actions/workflows/build.yaml/badge.svg)](https://github.com/thaibault/agile-form/actions/workflows/build.yaml)
 [![<LABEL>](https://github.com/thaibault/agile-form/actions/workflows/test.yaml/badge.svg)](https://github.com/thaibault/agile-form/actions/workflows/test.yaml)
-[![<LABEL>](https://github.com/thaibault/agile-form/actions/workflows/test:coverage:report.yaml/badge.svg)](https://github.com/thaibault/agile-form/actions/workflows/test:coverage:report.yaml)
-[![<LABEL>](https://github.com/thaibault/agile-form/actions/workflows/check:types.yaml/badge.svg)](https://github.com/thaibault/agile-form/actions/workflows/check:types.yaml)
+[![<LABEL>](https://github.com/thaibault/agile-form/actions/workflows/test-coverage-report.yaml/badge.svg)](https://github.com/thaibault/agile-form/actions/workflows/test-coverage-report.yaml)
+[![<LABEL>](https://github.com/thaibault/agile-form/actions/workflows/check-types.yaml/badge.svg)](https://github.com/thaibault/agile-form/actions/workflows/check-types.yaml)
 [![<LABEL>](https://github.com/thaibault/agile-form/actions/workflows/lint.yaml/badge.svg)](https://github.com/thaibault/agile-form/actions/workflows/lint.yaml)
 
 [![code coverage](https://coveralls.io/repos/github/thaibault/agile-form/badge.svg)](https://coveralls.io/github/thaibault/agile-form)
 
-<!-- Too unstable yet
-[![dependencies](https://img.shields.io/david/thaibault/agile-form.svg)](https://david-dm.org/thaibault/agile-form)
-[![development dependencies](https://img.shields.io/david/dev/thaibault/agile-form.svg)](https://david-dm.org/thaibault/agile-form?type=dev)
-[![peer dependencies](https://img.shields.io/david/peer/thaibault/agile-form.svg)](https://david-dm.org/thaibault/agile-form?type=peer)
--->
 [![documentation website](https://img.shields.io/website-up-down-green-red/https/torben.website/agile-form.svg?label=documentation-website)](https://torben.website/agile-form)
 
 Use case
