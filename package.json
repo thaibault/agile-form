@@ -106,6 +106,7 @@
     "postcss-preset-env": "*",
     "prop-types": "*",
     "react-ace": "*",
+    "react-generic-dummy": "*",
     "rimraf": "*",
     "style-loader": "*",
     "tslib": "*",
@@ -162,8 +163,8 @@
     },
     "module": {
       "aliases": {
-        "@tinymce/tinymce-react$": "../Dummy",
         "#": "Remove unneeded optional dependencies.",
+        "@tinymce/tinymce-react$": "react-generic-dummy",
         "jquery$": false,
         "#1": "Triggers error in debug mode:",
         "#2": "ace-builds$: false",
@@ -172,12 +173,12 @@
         "#5": "react-useanimations$: false",
         "#6": "react-useanimations/lib/lock$: false",
         "#7": "react-useanimations/lib/plusToX$: false",
-        "ace-builds$": "../Dummy",
+        "ace-builds$": "react-generic-dummy",
         "formdata-polyfill/esm.min.js$": "formdata-polyfill",
-        "react-ace$": "../Dummy",
-        "react-useanimations$": "../Dummy",
-        "react-useanimations/lib/lock$": "../Dummy",
-        "react-useanimations/lib/plusToX$": "../Dummy"
+        "react-ace$": "react-generic-dummy",
+        "react-useanimations$": "react-generic-dummy",
+        "react-useanimations/lib/lock$": "react-generic-dummy",
+        "react-useanimations/lib/plusToX$": "react-generic-dummy"
       },
       "enforceDeduplication": true,
       "html": {
