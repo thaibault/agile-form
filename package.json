@@ -162,7 +162,7 @@
     },
     "module": {
       "aliases": {
-        "@tinymce/tinymce-react$": "react-input-material/dist/components/Dummy",
+        "@tinymce/tinymce-react$": "../Dummy",
         "#": "Remove unneeded optional dependencies.",
         "jquery$": false,
         "#1": "Triggers error in debug mode:",
@@ -172,12 +172,12 @@
         "#5": "react-useanimations$: false",
         "#6": "react-useanimations/lib/lock$: false",
         "#7": "react-useanimations/lib/plusToX$: false",
-        "ace-builds$": "react-input-material/dist/components/Dummy",
+        "ace-builds$": "../Dummy",
         "formdata-polyfill/esm.min.js$": "formdata-polyfill",
-        "react-ace$": "react-input-material/dist/components/Dummy",
-        "react-useanimations$": "react-input-material/dist/components/Dummy",
-        "react-useanimations/lib/lock$": "react-input-material/dist/components/Dummy",
-        "react-useanimations/lib/plusToX$": "react-input-material/dist/components/Dummy"
+        "react-ace$": "../Dummy",
+        "react-useanimations$": "../Dummy",
+        "react-useanimations/lib/lock$": "../Dummy",
+        "react-useanimations/lib/plusToX$": "../Dummy"
       },
       "enforceDeduplication": true,
       "html": {
