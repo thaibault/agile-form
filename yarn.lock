@@ -2086,9 +2086,9 @@
     "@rmwc/types" "^8.0.3"
 
 "@sinclair/typebox@^0.24.1":
-  version "0.24.47"
-  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.24.47.tgz#530b67163714356f93e82bdb871e7db4b7bc564e"
-  integrity sha512-J4Xw0xYK4h7eC34MNOPQi6IkNxGRck6n4VJpWDzXIFVTW8I/D43Gf+NfWz/v/7NHlzWOPd3+T4PJ4OqklQ2u7A==
+  version "0.24.50"
+  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.24.50.tgz#35ee4db4ab8f3a8ff56490c51f92445d2776451e"
+  integrity sha512-k8ETQOOQDg5FtK7y9KJWpsGLik+QlPmIi8zzl/dGUgshV2QitprkFlCR/AemjWOTyKn9UwSSGRTzLVotvgCjYQ==
 
 "@sinonjs/commons@^1.7.0":
   version "1.8.3"
@@ -4970,9 +4970,9 @@ eslint-config-google@*:
   integrity sha512-WsbX4WbjuMvTdeVL6+J3rK1RGhCTqjsFjX7UMSMgZiyxxaNLkoJENbrGExzERFeoTpGw3F3FypTiWAP9ZXzkEw==
 
 eslint-plugin-jsdoc@*:
-  version "39.3.14"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-39.3.14.tgz#2591bf48907a7527a6e689fd721634364d08fe4e"
-  integrity sha512-kle7ot5xvzXwWzg7ElzTPM/y1IWUo0kfa5X+ZwOC/7Jw81OJaqIaNEk+2ZH+HcKkbwRUQ3RTdK9qsm4p5vbXAQ==
+  version "39.3.20"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jsdoc/-/eslint-plugin-jsdoc-39.3.20.tgz#26330921e8b5075307be4794a9e1a607c13a438d"
+  integrity sha512-A9pAm4lQeDKyzu6wuMUZS+FQceu6S2G18o9Mld0a48NAeLaLPg9TpoXM2Xv85LZ3AnKUtx+jR9SxXJLgCQiifQ==
   dependencies:
     "@es-joy/jsdoccomment" "~0.33.0"
     comment-parser "1.3.1"
@@ -8345,9 +8345,9 @@ react-dom@*:
     scheduler "^0.23.0"
 
 react-input-material@*:
-  version "0.0.475"
-  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.475.tgz#417710b073ce3f827177994a4c8d08a7e9ae9e08"
-  integrity sha512-GYMl8OL1tHiN+KglxPO6CZHBr88MH7y54AMtkiJ8cUWsPfZykf6lT+vTPGWMb0rzcp6H1+AWBGxM/kdl5EVMTA==
+  version "0.0.476"
+  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.476.tgz#f9cbfc05f06b7f570c4a7864391b8776231f8900"
+  integrity sha512-PGEl16EvPsNx7YtDoxA+G5Ix1OQGYmaIAz+KwEAimC5JYmqLwAFvndLm5yF+b3HIxMayU2GGweBXYB8gwetqjA==
   dependencies:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.1.tgz"
 
@@ -9539,9 +9539,9 @@ web-component-wrapper@*:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.1.tgz"
 
 web-input-material@*:
-  version "0.0.321"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.321.tgz#106046ce1dd2185196b09f2deda21b382591a250"
-  integrity sha512-i/PS/8WGfZkrw0Jdm+urCGYV44bA532ENcExMzaz/9RUl5iDyHapkYcjNgO2khS0lpdTSnnKpJCdmzcMYnILdg==
+  version "0.0.323"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.323.tgz#85b54be109b6b86f0135274692e96aa807aac45b"
+  integrity sha512-7PVHd5RHL63Ge1Rj5nX5lKPqjydR8rTHOC4zvA9iVHOEDkhFuNAHW4wcgbdu1V3YB//emI5a40ssiohUeUuhyQ==
   dependencies:
     "@types/webpack" "https://registry.yarnpkg.com/@favware/skip-dependency/-/skip-dependency-1.1.1.tgz"
     prop-types "*"
