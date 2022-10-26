@@ -97,6 +97,7 @@
     "eslint-plugin-jsdoc": "*",
     "identity-obj-proxy": "*",
     "jest": "*",
+    "jest-canvas-mock": "*",
     "jsdoc": "*",
     "material-icons": "*",
     "mini-css-extract-plugin": "*",
