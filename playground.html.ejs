@@ -126,14 +126,13 @@
                 expressions: [['testExpression', '5']],
 
                 inputs: {
-                    test: {
+                    disabledSelection: {
                         properties: {
-                            placeholder: 'Simple placeholder',
+                            placeholder: 'Disabled',
                             disabled: true,
                             required: true
                         }
                     },
-
                     simple: {
                         properties: {
                             placeholder: 'Simple placeholder',
@@ -226,14 +225,6 @@
                 }
             }"
         >
-            <generic-input
-                declaration="TEST."
-                description="Test"
-                labels="{A: 'Label A', B: 'Label B', C: 'Label C'}"
-                selection="['A', 'B', 'C', 'D', 'E']"
-                name="test"
-            ></generic-input>
-
             <circular-spinner size="'xlarge'"></circular-spinner>
 
             <div class="agile-form__status-message"></div>
@@ -314,6 +305,13 @@
                 search-selection
             ></generic-input>
 
+            <generic-input
+                description="Disabled selection"
+                labels="{A: 'Label A', B: 'Label B', C: 'Label C'}"
+                selection="['A', 'B', 'C', 'D', 'E']"
+                name="disabledSelection"
+            ></generic-input>
+
             <generic-inputs
                 default="['coding is much fun']"
                 description="Provide some thoughts..."
@@ -359,10 +357,33 @@
                 <br />
                 TestExpressionValue: "${testExpression}"
                 <br />
+
                 State-URL:
-                <a href="${determineStateURL().encoded}">
+                <a
+                    href="${determineStateURL().encoded}"
+                    id="state-url-output"
+                >
                     ${determineStateURL().plain}
                 </a>
+
+                <br />
+
+                <textarea
+                    id="state-url-input"
+                    name="determineStateURL().plain"
+                    style="width: 100%"
+                ></textarea>
+                <script>
+                    document.querySelector('#state-url-input')
+                        .addEventListener('change', function(event) {
+                            const output =
+                                document.querySelector('#state-url-output')
+                            output.innerText = event.target.value
+                            output.setAttribute(
+                                'href', encodeURI(event.target.value)
+                            )
+                        })
+                </script>
             </div>
 
         </agile-form>

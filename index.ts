@@ -3252,6 +3252,7 @@ export class AgileForm<
             this.inputConfigurations
         ))
             if (
+                !name.includes('.') &&
                 configuration.domNode &&
                 (
                     configuration.domNode.dirty ||
