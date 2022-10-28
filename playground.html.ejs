@@ -145,6 +145,14 @@
                             required: true,
                             selection: ['A', 'C', 'D']
                         }
+                    },
+                    password: {
+                        dependsOn: 'simple',
+                        dynamicExtendExpressions: {
+                            required: 'simple.value === \'password required\''
+                        },
+                        showIfExpression: 'simple.value !== \'no password\'',
+                        valuePersistence: 'persistent'
                     }
                 },
 
@@ -274,6 +282,13 @@
                 declaration="Additional type."
                 description="Second type"
                 name="type"
+            ></generic-input>
+
+            <generic-input
+                declaration="Password declaration."
+                description="Password"
+                name="password"
+                trailing-icon="'password_preset'"
             ></generic-input>
 
             <generic-input
