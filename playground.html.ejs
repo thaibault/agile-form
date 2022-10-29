@@ -73,7 +73,7 @@
         <!--region script-->
         <script src="https://www.google.com/recaptcha/api.js?render=6LdvN-sZAAAAAHv2Ko2_g_8EHrIRbNffZoGHseSS"></script>
         <script
-            src="https://torben.website/web-input-material/data/distributionBundle/index.bundle.js"
+            src="/web-input-material/index.bundle.js"
         ></script>
         <script>
             window.onload = function() {
@@ -128,7 +128,9 @@
                 inputs: {
                     disabledSelection: {
                         properties: {
+                            disabled: true,
                             required: true,
+                            value: 'A',
                             selection: ['A', 'B', 'C', 'D']
                         }
                     },
