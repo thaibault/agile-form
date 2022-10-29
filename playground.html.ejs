@@ -128,9 +128,8 @@
                 inputs: {
                     disabledSelection: {
                         properties: {
-                            placeholder: 'Disabled',
-                            disabled: true,
-                            required: true
+                            required: true,
+                            selection: ['A', 'B', 'C', 'D']
                         }
                     },
                     simple: {
@@ -322,8 +321,7 @@
 
             <generic-input
                 description="Disabled selection"
-                labels="{A: 'Label A', B: 'Label B', C: 'Label C'}"
-                selection="['A', 'B', 'C', 'D', 'E']"
+                labels="{A: 'Label A', B: 'Label B', C: 'Label C', D: 'Label D'}"
                 name="disabledSelection"
             ></generic-input>
 
@@ -373,11 +371,8 @@
                 TestExpressionValue: "${testExpression}"
                 <br />
 
-                State-URL:
-                <a
-                    href="${determineStateURL().encoded}"
-                    id="state-url-output"
-                >
+                Current-State-URL:
+                <a href="${determineStateURL().encoded}">
                     ${determineStateURL().plain}
                 </a>
 
@@ -388,15 +383,26 @@
                     name="determineStateURL().plain"
                     style="width: 100%"
                 ></textarea>
+                <div
+                    class="agile-form__group"
+                    data-name="new-url"
+                    show-if="true"
+                >
+                    New-State-URL:
+                    <a id="state-url-output"></a>
+                </div>
+
                 <script>
+                    const generateNewStateURL = function(value) {
+                        const output =
+                            document.querySelector('#state-url-output')
+                        output.innerText = value
+                        output.setAttribute('href', encodeURI(value))
+                    }
+
                     document.querySelector('#state-url-input')
-                        .addEventListener('change', function(event) {
-                            const output =
-                                document.querySelector('#state-url-output')
-                            output.innerText = event.target.value
-                            output.setAttribute(
-                                'href', encodeURI(event.target.value)
-                            )
+                        .addEventListener('keyup', function(event) {
+                            generateNewStateURL(event.target.value)
                         })
                 </script>
             </div>
