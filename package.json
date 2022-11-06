@@ -179,7 +179,9 @@
         "react-ace$": "react-generic-dummy",
         "react-useanimations$": "react-generic-dummy",
         "react-useanimations/lib/lock$": "react-generic-dummy",
-        "react-useanimations/lib/plusToX$": "react-generic-dummy"
+        "react-useanimations/lib/plusToX$": "react-generic-dummy",
+        "#7": "Improve build performance.",
+        "web-input-material/components/GenericInput$": "web-input-material/components/GenericInput.bundle"
       },
       "enforceDeduplication": true,
       "html": {
