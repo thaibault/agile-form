@@ -1,6 +1,6 @@
 {
   "name": "agile-form",
-  "version": "0.0.336",
+  "version": "0.0.337",
   "description": "Reusable form builder with support for (richt-)text, code, selections, numbers, dates and so on.",
   "keywords": [
     "component",
@@ -173,14 +173,13 @@
         "#4": "react-ace$: false",
         "#5": "react-useanimations$: false",
         "#6": "react-useanimations/lib/lock$: false",
-        "#7": "react-useanimations/lib/plusToX$: false",
+        "#7": "Improve build performance.",
         "ace-builds$": "react-generic-dummy",
         "formdata-polyfill/esm.min.js$": "formdata-polyfill",
         "react-ace$": "react-generic-dummy",
         "react-useanimations$": "react-generic-dummy",
         "react-useanimations/lib/lock$": "react-generic-dummy",
         "react-useanimations/lib/plusToX$": "react-generic-dummy",
-        "#7": "Improve build performance.",
         "web-input-material/components/GenericInput$": "web-input-material/components/GenericInput.bundle"
       },
       "enforceDeduplication": true,
