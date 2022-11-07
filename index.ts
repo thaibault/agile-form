@@ -2154,12 +2154,15 @@ export class AgileForm<
     onKeyDown = (event:KeyboardEvent):void => {
         if (
             Tools.keyCode.ENTER === event.keyCode &&
-            (event.target as HTMLElement)?.matches &&
-            (event.target as HTMLElement).matches(
-                this.resolvedConfiguration.selector.inputs
-            )
-        )
-            this.onSubmit(event)
+            (event.target as HTMLElement)?.closest
+        ) {
+            const inputTarget:HTMLElement|null =
+                (event.target as HTMLElement).closest(
+                    this.resolvedConfiguration.selector.inputs
+                )
+            if (inputTarget && this.root.contains(inputTarget))
+                this.onSubmit(event)
+        }
     }
     /**
      * Sets all given input fields to their corresponding initial values.
