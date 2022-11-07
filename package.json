@@ -1,6 +1,6 @@
 {
   "name": "agile-form",
-  "version": "0.0.337",
+  "version": "0.0.338",
   "description": "Reusable form builder with support for (richt-)text, code, selections, numbers, dates and so on.",
   "keywords": [
     "component",
