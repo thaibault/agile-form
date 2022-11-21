@@ -2995,14 +2995,15 @@ export class AgileForm<
     async updateInput(name:string, event:Event):Promise<boolean> {
         this.runEvaluations()
 
+        const configuration:InputConfiguration = this.inputConfigurations[name]
         // We have to check for real state changes to avoid endless loops.
         let changed = false
         if (Object.prototype.hasOwnProperty.call(
-            this.inputConfigurations[name], 'dynamicExtend'
+            configurations, 'dynamicExtend'
         ))
-            for (const selector of Object.keys(
-                this.inputConfigurations[name].dynamicExtend as
-                    Mapping<unknown>
+            for (const [selector, evaluator] of Object.entries(
+                configurations.dynamicExtend as
+                    Mapping<(event:Event) => unknown>
             )) {
                 let invert = false
                 let mappedSelector:string = selector
@@ -3025,15 +3026,13 @@ export class AgileForm<
                     mappedSelector.substring(index + 1) :
                     mappedSelector
 
-                const target:Mapping<unknown> = Tools.getSubstructure(
-                    this.inputConfigurations[name].properties, path
-                )
+                const target:Mapping<unknown> =
+                    Tools.getSubstructure(configurations.properties, path)
 
                 const oldValue:unknown = target[key]
-                let newValue:unknown =
-                    this.inputConfigurations[name].dynamicExtend![selector](
-                        event
-                    )
+
+                let newValue:unknown = evaluator(event)
+
                 if (invert)
                     newValue = !newValue
 
@@ -3050,12 +3049,8 @@ export class AgileForm<
 
                     Tools.getSubstructure<
                         Partial<InputAnnotation>, Mapping<unknown>
-                    >(this.inputConfigurations[name].properties, path)[key] =
-                        newValue
-                    for (
-                        const domNode of
-                        this.inputConfigurations[name].domNodes
-                    )
+                    >(configurations.properties, path)[key] = newValue
+                    for (const domNode of configurations.domNodes)
                         Tools.getSubstructure<
                             AnnotatedInputDomNode, Mapping<unknown>
                         >(domNode, path)[key] = newValue
