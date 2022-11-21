@@ -2999,10 +2999,10 @@ export class AgileForm<
         // We have to check for real state changes to avoid endless loops.
         let changed = false
         if (Object.prototype.hasOwnProperty.call(
-            configurations, 'dynamicExtend'
+            configuration, 'dynamicExtend'
         ))
             for (const [selector, evaluator] of Object.entries(
-                configurations.dynamicExtend as
+                configuration.dynamicExtend as
                     Mapping<(event:Event) => unknown>
             )) {
                 let invert = false
@@ -3027,7 +3027,7 @@ export class AgileForm<
                     mappedSelector
 
                 const target:Mapping<unknown> =
-                    Tools.getSubstructure(configurations.properties, path)
+                    Tools.getSubstructure(configuration.properties, path)
 
                 const oldValue:unknown = target[key]
 
@@ -3049,8 +3049,8 @@ export class AgileForm<
 
                     Tools.getSubstructure<
                         Partial<InputAnnotation>, Mapping<unknown>
-                    >(configurations.properties, path)[key] = newValue
-                    for (const domNode of configurations.domNodes)
+                    >(configuration.properties, path)[key] = newValue
+                    for (const domNode of configuration.domNodes)
                         Tools.getSubstructure<
                             AnnotatedInputDomNode, Mapping<unknown>
                         >(domNode, path)[key] = newValue
