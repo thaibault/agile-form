@@ -130,8 +130,7 @@ export interface TargetConfiguration {
     url:string
 }
 
-export type Evaluation = [string, () => unknown]
-export type Expression = [string, unknown]
+export type Evaluation = [string, unknown]
 
 export interface Configuration {
     actions:Mapping<Action>
@@ -140,7 +139,6 @@ export interface Configuration {
     data:null|Mapping<unknown>
     debug:boolean
     evaluations:Array<Evaluation>
-    expressions:Array<Expression>
     initializeTarget:TargetConfiguration
     inputs:Mapping<Partial<InputConfiguration>>
     name:string
@@ -189,7 +187,6 @@ export type NormalizedConfiguration =
     > &
     {
         evaluations:Array<Evaluation>
-        expressions:Array<Expression>
         tag:{
             secret:string
             values:Array<string>

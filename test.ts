@@ -100,38 +100,30 @@ describe('AgileForm', ():void => {
         const form:AgileForm = document.createElement(name) as AgileForm
 
         expect(form.self.normalizeConfiguration({})).toStrictEqual({
-            evaluations: [], expressions: [], tag: {values: []}
+            evaluations: [], tag: {values: []}
         })
 
         expect(form.self.normalizeConfiguration({
-            evaluations: ['a', '5'],
-            expressions: ['b', '4'],
-            tags: 'tag-a'
+            evaluations: ['a', '5'], tags: 'tag-a'
         } as unknown as Configuration)).toStrictEqual({
-            evaluations: [['a', '5']],
-            expressions: [['b', '4']],
-            tag: {values: ['tag-a']}
+            evaluations: [['a', '5']], tag: {values: ['tag-a']}
         })
 
         expect(form.self.normalizeConfiguration({
-            evaluations: ['a', '5'],
-            expressions: [['b', '4']],
+            evaluations: [['a', '5'], ['b', '4']],
             tag: {values: 'tag-a'},
             tags: ['tag-b']
         } as unknown as Configuration)).toStrictEqual({
-            evaluations: [['a', '5']],
-            expressions: [['b', '4']],
+            evaluations: [['a', '5'], ['b', '4']],
             tag: {values: ['tag-a', 'tag-b']}
         })
 
         expect(form.self.normalizeConfiguration({
-            evaluations: [],
-            expressions: [['a', '4']],
+            evaluations: [['a', '4']],
             tag: {values: ['tag-a', 'tag-c']},
             tags: ['tag-b']
         } as unknown as Configuration)).toStrictEqual({
-            evaluations: [],
-            expressions: [['a', '4']],
+            evaluations: [['a', '4']],
             tag: {values: ['tag-a', 'tag-c', 'tag-b']}
         })
     })
