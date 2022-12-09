@@ -131,7 +131,7 @@ export interface TargetConfiguration {
 }
 
 export type Evaluation = [string, () => unknown]
-export type Expression = [string, string]
+export type Expression = [string, unknown]
 
 export interface Configuration {
     actions:Mapping<Action>

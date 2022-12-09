@@ -1925,6 +1925,12 @@ export class AgileForm<
         for (const expression of this.resolvedConfiguration.expressions) {
             const [name, code] = expression
 
+            if (typeof code !== 'string') {
+                this.evaluations.push([name, ():unknown => code])
+
+                continue
+            }
+
             const {error, scopeNames, templateFunction} = Tools.stringCompile(
                 code, this.self.baseScopeNames.concat(names, this.inputNames)
             )
