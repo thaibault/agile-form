@@ -122,8 +122,10 @@
             base-configuration="{
                 debug: true,
 
-                evaluations: [['testEvaluation', function() { return 'testEvaluation'}]],
-                expressions: [['testExpression', '5']],
+                evaluations: [
+                    ['testEvaluation', function() { return 'testEvaluation'}],
+                    ['testExpression', '5']
+                ],
 
                 inputs: {
                     disabledSelection: {

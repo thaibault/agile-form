@@ -90,7 +90,7 @@
     "blob-util": "*",
     "clientnode": "*",
     "css-loader": "*",
-    "cssnano": "<=4",
+    "cssnano": "*",
     "documentation-website": "*",
     "eslint": "*",
     "eslint-config-google": "*",

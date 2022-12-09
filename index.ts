@@ -44,7 +44,6 @@ import {
     Configuration,
     Constraint,
     Evaluation,
-    Expression,
     FormResponse,
     GroupSpecification,
     IndicatorFunction,
@@ -158,7 +157,6 @@ export class AgileForm<
         data: null,
         debug: false,
         evaluations: [],
-        expressions: [],
         initializeTarget: {
             options: {method: 'GET'},
             url: ''
@@ -951,21 +949,16 @@ export class AgileForm<
         const currentConfiguration:RecursivePartial<Configuration> =
             Tools.copy(configuration)
 
-        for (const type of ['evaluations', 'expressions'] as const)
-            if (Array.isArray(currentConfiguration[type])) {
-                if (
-                    currentConfiguration[type]!.length &&
-                    !Array.isArray(currentConfiguration[type]![0])
-                )
-                    (currentConfiguration[type] as
-                        Array<Evaluation|Expression>
-                    ) = [
-                                currentConfiguration[type] as
-                                    unknown as
-                                    Evaluation|Expression
-                            ]
-            } else
-                currentConfiguration[type] = []
+        if (Array.isArray(currentConfiguration.evaluations)) {
+            if (
+                currentConfiguration.evaluations.length &&
+                !Array.isArray(currentConfiguration.evaluations[0])
+            )
+                (currentConfiguration.evaluations as Array<Evaluation>) = [
+                    currentConfiguration.evaluations as unknown as Evaluation
+                ]
+        } else
+            currentConfiguration.evaluations = []
 
         if (!currentConfiguration.tag)
             currentConfiguration.tag = {values: []}
@@ -999,13 +992,10 @@ export class AgileForm<
         const normalizedConfiguration:NormalizedConfiguration =
             this.self.normalizeConfiguration(configuration)
 
-        // Merge evaluations and expressions.
+        // Merge evaluations.
         normalizedConfiguration.evaluations =
             this.resolvedConfiguration.evaluations
                 .concat(normalizedConfiguration.evaluations)
-        normalizedConfiguration.expressions =
-            this.resolvedConfiguration.expressions
-                .concat(normalizedConfiguration.expressions)
 
         Tools.extend(
             true,
@@ -1125,7 +1115,7 @@ export class AgileForm<
         await this.lock.release(lockName)
     }
     /**
-     * Determine all environment variables to ran expressions again. We have to
+     * Determine all environment variables to run expressions again. We have to
      * do this a second time to include dynamically added inputs in prototyping
      * mode.
      * @returns Nothing.
@@ -1912,21 +1902,21 @@ export class AgileForm<
         }
     }
     /**
-     * Pre-compiles all specified generic expressions.
+     * Pre-compiles all specified generic evaluations.
      * @returns Nothing.
      */
-    preCompileGenericExpressions():void {
-        this.evaluations = [...this.resolvedConfiguration.evaluations]
+    preCompileGenericEvaluations():void {
+        this.evaluations = []
 
         const names:Array<string> =
             this.evaluations.map((evaluation:Evaluation):string =>
                 evaluation[0]
             )
-        for (const expression of this.resolvedConfiguration.expressions) {
-            const [name, code] = expression
+        for (const evaluation of this.resolvedConfiguration.evaluations) {
+            const [name, code] = evaluation
 
             if (typeof code !== 'string') {
-                this.evaluations.push([name, ():unknown => code])
+                this.evaluations.push([name, code])
 
                 continue
             }
@@ -1985,7 +1975,7 @@ export class AgileForm<
      * @returns Nothing.
      */
     preCompileConfigurationExpressions():void {
-        this.preCompileGenericExpressions()
+        this.preCompileGenericEvaluations()
         this.preCompileActionSources()
 
         for (const [name, configuration] of Object.entries(
@@ -3162,7 +3152,11 @@ export class AgileForm<
         this._evaluationResults = []
 
         for (const evaluation of this.evaluations)
-            this._evaluationResults.push(evaluation[1]())
+            this._evaluationResults.push(
+                Tools.isFunction(evaluation[1]) ?
+                    evaluation[1]() :
+                    evaluation[1]
+            )
     }
     /**
      * Indicates a background running process. Sets "pending" property and
@@ -3332,8 +3326,6 @@ export class AgileForm<
 
         if (parameter.evaluations.length === 0)
             delete (parameter as Partial<NormalizedConfiguration>).evaluations
-        if (parameter.expressions.length === 0)
-            delete (parameter as Partial<NormalizedConfiguration>).expressions
 
         if (parameter.tag.values.length === 0)
             delete (parameter.tag as Partial<NormalizedConfiguration['tag']>)
