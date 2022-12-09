@@ -1912,11 +1912,13 @@ export class AgileForm<
             this.evaluations.map((evaluation:Evaluation):string =>
                 evaluation[0]
             )
+
         for (const evaluation of this.resolvedConfiguration.evaluations) {
             const [name, code] = evaluation
 
             if (typeof code !== 'string') {
                 this.evaluations.push([name, code])
+                names.push(name)
 
                 continue
             }
