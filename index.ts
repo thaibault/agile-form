@@ -1753,7 +1753,7 @@ export class AgileForm<
         for (const [subName, expression] of Object.entries(
             configuration.dynamicExtendExpressions
         )) {
-            const code:((_event:Event, _scope:unknown) => unknown)|string =
+            const code:((event:Event, scope:unknown) => unknown)|string =
                 expression
 
             const originalScopeNames:Array<string> =
