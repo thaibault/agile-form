@@ -21,7 +21,7 @@ import nodeFetch from 'node-fetch'
 import GenericInput from 'web-input-material/components/GenericInput'
 
 import api, {AgileForm} from './index'
-import {Configuration} from './type'
+import {Configuration, Evaluation} from './type'
 // endregion
 /*
     NOTE: We have to preload this module to avoid introducing an additional
@@ -144,7 +144,10 @@ describe('AgileForm', ():void => {
             {evaluations: ['a', '2']} as unknown as Configuration
         )
         expect(form.resolvedConfiguration.evaluations).toStrictEqual(
-            [...initialConfiguration.evaluations, ['a', '2']]
+            [
+                ...initialConfiguration.evaluations as Array<Evaluation>,
+                ['a', '2']
+            ]
         )
     })
     test('resolveConfiguration', ():void => {
