@@ -949,16 +949,31 @@ export class AgileForm<
         const currentConfiguration:RecursivePartial<Configuration> =
             Tools.copy(configuration)
 
+        let evaluations:Array<Evaluation> = []
         if (Array.isArray(currentConfiguration.evaluations)) {
-            if (
-                currentConfiguration.evaluations.length &&
-                !Array.isArray(currentConfiguration.evaluations[0])
-            )
-                (currentConfiguration.evaluations as Array<Evaluation>) = [
-                    currentConfiguration.evaluations as unknown as Evaluation
-                ]
-        } else
-            currentConfiguration.evaluations = []
+            for (const evaluation of currentConfiguration.evaluations)
+                if (Array.isArray(evaluation) && evaluation.length > 1)
+                    evaluations.push([
+                        evaluation[0] as string, evaluation[1] as unknown
+                    ])
+                else if (evaluation !== null && typeof evaluation === 'object')
+                    evaluations = evaluations.concat(
+                        Object.entries(evaluation as Mapping<unknown>)
+                    )
+                else if (currentConfiguration.evaluations.length > 1) {
+                    evaluations = [
+                        currentConfiguration.evaluations.splice(0, 2) as
+                            [string, unknown]
+                    ]
+
+                    break
+                }
+        } else if (
+            currentConfiguration.evaluations !== null &&
+            typeof currentConfiguration.evaluations === 'object'
+        )
+            evaluations = Object.entries(currentConfiguration.evaluations)
+        currentConfiguration.evaluations = evaluations
 
         if (!currentConfiguration.tag)
             currentConfiguration.tag = {values: []}
@@ -994,7 +1009,7 @@ export class AgileForm<
 
         // Merge evaluations.
         normalizedConfiguration.evaluations =
-            this.resolvedConfiguration.evaluations
+            (this.resolvedConfiguration.evaluations as Array<Evaluation>)
                 .concat(normalizedConfiguration.evaluations)
 
         Tools.extend(
@@ -1913,7 +1928,10 @@ export class AgileForm<
                 evaluation[0]
             )
 
-        for (const evaluation of this.resolvedConfiguration.evaluations) {
+        for (
+            const evaluation of this.resolvedConfiguration.evaluations as
+                Array<Evaluation>
+        ) {
             const [name, code] = evaluation
 
             if (typeof code !== 'string') {
