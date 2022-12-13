@@ -131,7 +131,11 @@ export interface TargetConfiguration {
 }
 
 export type Evaluation = [string, unknown]
-export type GivenEvaluation = Evaluation|Mapping<unknown>
+export interface NamedGivenEvaluation {
+    order:number
+    evaluations:GivenEvaluation
+}
+export type GivenEvaluation = Evaluation|Mapping<NamedGivenEvaluation|unknown>
 
 export interface Configuration {
     actions:Mapping<Action>

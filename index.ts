@@ -938,6 +938,43 @@ export class AgileForm<
         return currentConfiguration as RecursivePartial<Configuration>
     }
     /**
+     * Normalizes given evaluations.
+     * @param evaluations - Given evaluations to normalize.
+     *
+     * @returns Normalized evaluations.
+     */
+    static normalizeEvaluations(
+        evaluations:Array<GivenEvaluation>|GivenEvaluation
+    ):Array<Evaluation> {
+        let normalizedEvaluations:Array<Evaluation> = []
+        if (Array.isArray(evaluations)) {
+            for (const evaluation of evaluations)
+                if (Array.isArray(evaluation) && evaluation.length > 1)
+                    normalizedEvaluations.push([
+                        evaluation[0] as string, evaluation[1] as unknown
+                    ])
+                else if (evaluation !== null && typeof evaluation === 'object')
+                    normalizedEvaluations = normalizedEvaluations.concat(
+                        Object.entries(evaluation as Mapping<unknown>)
+                    )
+                else if (evaluations.length > 1) {
+                    normalizedEvaluations = [
+                        evaluations.splice(0, 2) as [string, unknown]
+                    ]
+
+                    break
+                }
+        } else if (
+            evaluations !== null &&
+            typeof evaluations === 'object' &&
+            Object.keys(evaluations).length > 0
+        )
+            if (typeof evaluations[0].order === 'number')
+            normalizedEvaluations = Object.entries(evaluations)
+
+        return normalizedEvaluations
+    }
+    /**
      * Normalizes given configuration.
      * @param configuration - Configuration object to normalize.
      *
@@ -949,31 +986,8 @@ export class AgileForm<
         const currentConfiguration:RecursivePartial<Configuration> =
             Tools.copy(configuration)
 
-        let evaluations:Array<Evaluation> = []
-        if (Array.isArray(currentConfiguration.evaluations)) {
-            for (const evaluation of currentConfiguration.evaluations)
-                if (Array.isArray(evaluation) && evaluation.length > 1)
-                    evaluations.push([
-                        evaluation[0] as string, evaluation[1] as unknown
-                    ])
-                else if (evaluation !== null && typeof evaluation === 'object')
-                    evaluations = evaluations.concat(
-                        Object.entries(evaluation as Mapping<unknown>)
-                    )
-                else if (currentConfiguration.evaluations.length > 1) {
-                    evaluations = [
-                        currentConfiguration.evaluations.splice(0, 2) as
-                            [string, unknown]
-                    ]
-
-                    break
-                }
-        } else if (
-            currentConfiguration.evaluations !== null &&
-            typeof currentConfiguration.evaluations === 'object'
-        )
-            evaluations = Object.entries(currentConfiguration.evaluations)
-        currentConfiguration.evaluations = evaluations
+        currentConfiguration.evaluations =
+            AgileForm.normalizeEvaluations(currentConfiguration.evaluations)
 
         if (!currentConfiguration.tag)
             currentConfiguration.tag = {values: []}
