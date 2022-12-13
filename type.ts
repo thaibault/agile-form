@@ -131,7 +131,15 @@ export interface TargetConfiguration {
 }
 
 export type Evaluation = [string, unknown]
-export type GivenEvaluation = Mapping<unknown>|Evaluation
+export type GivenEvaluation = Evaluation|Mapping<unknown>
+export interface GivenNamedEvaluations {
+    evaluations:Array<GivenEvaluation>|GivenEvaluation
+    order:number
+}
+export type GivenEvaluations =
+    Array<GivenEvaluation> |
+    GivenEvaluation |
+    GivenNamedEvaluations
 
 export interface Configuration {
     actions:Mapping<Action>
@@ -139,7 +147,7 @@ export interface Configuration {
     constraints:Array<Constraint>
     data:null|Mapping<unknown>
     debug:boolean
-    evaluations:Array<GivenEvaluation>|GivenEvaluation
+    evaluations:GivenEvaluations
     initializeTarget:TargetConfiguration
     inputs:Mapping<Partial<InputConfiguration>>
     name:string

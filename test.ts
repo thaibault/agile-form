@@ -127,6 +127,34 @@ describe('AgileForm', ():void => {
             tag: {values: ['tag-a', 'tag-c', 'tag-b']}
         })
     })
+    test('normalizeEvaluations', ():void => {
+        const form:AgileForm = document.createElement(name) as AgileForm
+
+        expect(form.self.normalizeEvaluations([])).toStrictEqual([])
+        expect(form.self.normalizeEvaluations([{}])).toStrictEqual([])
+        expect(form.self.normalizeEvaluations({})).toStrictEqual([])
+        expect(form.self.normalizeEvaluations(
+            {base: {evaluations: [], order: 0}}
+        )).toStrictEqual([])
+
+        expect(form.self.normalizeEvaluations([['a', 1]]))
+            .toStrictEqual([['a', 1]])
+        expect(form.self.normalizeEvaluations({
+            a: {
+                order: -1,
+                evaluations: {a: 1}
+            },
+            b: {
+                order: 0,
+                evaluations: ['b', '1 + 1']
+            },
+            c: {
+                order: 100,
+                evaluations: ['c', '2 + 1']
+            }
+        }))
+            .toStrictEqual([['a', 1], ['b', '1 + 1'], ['c', '2 + 1']])
+    })
     test('mergeConfiguration', ():void => {
         const form:AgileForm = document.createElement(name) as AgileForm
 
