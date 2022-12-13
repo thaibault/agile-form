@@ -45,6 +45,8 @@ import {
     Constraint,
     Evaluation,
     FormResponse,
+    GivenEvaluations,
+    GivenNamedEvaluations,
     GroupSpecification,
     IndicatorFunction,
     InputAnnotation,
@@ -944,8 +946,11 @@ export class AgileForm<
      * @returns Normalized evaluations.
      */
     static normalizeEvaluations(
-        evaluations:Array<GivenEvaluation>|GivenEvaluation
+        evaluations?:GivenEvaluations
     ):Array<Evaluation> {
+        const preEvaluations:Array<GivenNamedEvaluations> = []
+        const postEvaluations:Array<GivenNamedEvaluations> = []
+
         let normalizedEvaluations:Array<Evaluation> = []
         if (Array.isArray(evaluations)) {
             for (const evaluation of evaluations)
@@ -968,9 +973,59 @@ export class AgileForm<
             evaluations !== null &&
             typeof evaluations === 'object' &&
             Object.keys(evaluations).length > 0
-        )
-            if (typeof evaluations[0].order === 'number')
-            normalizedEvaluations = Object.entries(evaluations)
+        ) {
+            const namedEvaluationsList:Array<GivenNamedEvaluations> =
+                Object.values(evaluations) as Array<GivenNamedEvaluations>
+
+            if (
+                namedEvaluationsList[0] !== null &&
+                typeof namedEvaluationsList[0] === 'object' &&
+                typeof namedEvaluationsList[0].order === 'number' &&
+                Object.prototype.hasOwnProperty.call(
+                    namedEvaluationsList[0], 'evaluations'
+                )
+            )
+                for (const namedEvaluations of namedEvaluationsList)
+                    if (namedEvaluations.order < 0)
+                        preEvaluations.push(namedEvaluations)
+                    else if (namedEvaluations.order > 0)
+                        postEvaluations.push(namedEvaluations)
+                    else
+                        normalizedEvaluations =
+                            AgileForm.normalizeEvaluations(
+                                namedEvaluations.evaluations
+                            )
+            else
+                normalizedEvaluations = Object.entries(evaluations)
+        }
+
+        normalizedEvaluations = preEvaluations
+            .sort((
+                first:GivenNamedEvaluations, second:GivenNamedEvaluations
+            ):number => first.order - second.order)
+            .map((namedEvaluations:GivenNamedEvaluations):Array<Evaluation> =>
+                AgileForm.normalizeEvaluations(namedEvaluations.evaluations)
+            )
+            .flat()
+            .concat(normalizedEvaluations)
+            .concat(
+                postEvaluations
+                    .sort(
+                        (
+                            first:GivenNamedEvaluations,
+                            second:GivenNamedEvaluations
+                        ):number =>
+                            first.order - second.order
+                    )
+                    .map((namedEvaluations:GivenNamedEvaluations):Array<
+                        Evaluation
+                    > =>
+                        AgileForm.normalizeEvaluations(
+                            namedEvaluations.evaluations
+                        )
+                    )
+                    .flat()
+            )
 
         return normalizedEvaluations
     }
@@ -986,8 +1041,9 @@ export class AgileForm<
         const currentConfiguration:RecursivePartial<Configuration> =
             Tools.copy(configuration)
 
-        currentConfiguration.evaluations =
-            AgileForm.normalizeEvaluations(currentConfiguration.evaluations)
+        currentConfiguration.evaluations = AgileForm.normalizeEvaluations(
+            currentConfiguration.evaluations as GivenEvaluations|undefined
+        )
 
         if (!currentConfiguration.tag)
             currentConfiguration.tag = {values: []}
