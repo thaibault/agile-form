@@ -2364,9 +2364,9 @@
   integrity sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==
 
 "@types/prettier@^2.1.5":
-  version "2.7.1"
-  resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.7.1.tgz#dfd20e2dc35f027cdd6c1908e80a5ddc7499670e"
-  integrity sha512-ri0UmynRRvZiiUJdiz38MmIblKK+oH30MztdBVR95dv/Ubw6neWSb8u1XpRb72L4qsZOhz+L+z9JD40SJmfWow==
+  version "2.7.2"
+  resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.7.2.tgz#6c2324641cc4ba050a8c710b2b251b377581fbf0"
+  integrity sha512-KufADq8uQqo1pYKVIYzfKbJfBAc0sOeXqGbFaSpv8MRmC/zXgowNZmFcbngndGk922QDmOASEXUZCaY48gs4cg==
 
 "@types/prop-types@*":
   version "15.7.5"
@@ -6690,9 +6690,9 @@ minimatch@^3.0.4, minimatch@^3.0.5, minimatch@^3.1.1, minimatch@^3.1.2:
     brace-expansion "^1.1.7"
 
 minimatch@^5.0.1:
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-5.1.1.tgz#6c9dffcf9927ff2a31e74b5af11adf8b9604b022"
-  integrity sha512-362NP+zlprccbEt/SkxKfRMHnNY85V74mVnpUpNyr3F35covl09Kec7/sEFLt3RA4oXmewtoaanoIf67SE5Y5g==
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-5.1.2.tgz#0939d7d6f0898acbd1508abe534d1929368a8fff"
+  integrity sha512-bNH9mmM9qsJ2X4r2Nat1B//1dJVcn3+iBLa3IgqJ7EbGaDNepL9QSHOxN4ng33s52VMMhhIfgCYDk3C4ZmlDAg==
   dependencies:
     brace-expansion "^2.0.1"
 
@@ -7838,14 +7838,14 @@ react-dom@*:
     scheduler "^0.23.0"
 
 react-generic-dummy@*:
-  version "0.0.12"
-  resolved "https://registry.yarnpkg.com/react-generic-dummy/-/react-generic-dummy-0.0.12.tgz#121384b3b2ae6fac7ebf928b687ebdfe5e97f884"
-  integrity sha512-JiK8GqrgX1DLWE9yTTGdStnRl6bKRlus/x7wccccWUEvHs5ny7Fi2bgPZJf1dTvQY5osbiW5mDjVhk1DFL+Isg==
+  version "0.0.13"
+  resolved "https://registry.yarnpkg.com/react-generic-dummy/-/react-generic-dummy-0.0.13.tgz#72a4c3e78a5c90bc6426749d1653f60abcd1a61c"
+  integrity sha512-RABjGh1ulg24qhGJZ/4jdmx6hmBnXPhptq8XG3ojAYT5OeDsmZibfDDYRbtwuFDYpvNiIW7swnCg5auGJ48yRg==
 
 react-input-material@*:
-  version "0.0.499"
-  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.499.tgz#74204b70df3e4827162b085606e7efb28728c496"
-  integrity sha512-Io7mN0ciUtDnsam4z3DLF4ROki5V69U7IsMeNtwxHlA2YyaOMaaGgwBAn1H8OoZX5lsiO8lGCWk9VmT9QRB0nw==
+  version "0.0.500"
+  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.500.tgz#fb103a91027afba4f5b654e1b2b661304331385c"
+  integrity sha512-s0Xvmo1pvgmo7ooxCYgIK+tJ85OatQK0VJiz0d4BUfDGS+AllxDIRnU8ZZmz3rbZFd302X40p5O0f3iepXV3pQ==
 
 react-is@^16.12.0, react-is@^16.13.1:
   version "16.13.1"
@@ -8904,9 +8904,9 @@ web-component-wrapper@*:
   integrity sha512-epKPBkH9jAFzf65U2Y48hhfpiyjph0w/b3gV3v0jCG874Nx+VDDeOc4lfg2R3c0QDK4F43nDbzWOTBFbBtqUNA==
 
 web-input-material@*:
-  version "0.0.346"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.346.tgz#9ff8cf751e97c4196750d2ea3f818c4644f3c15b"
-  integrity sha512-K7JMiEMYHHBRLSzmrly8XbQBx3jlhyzqXZI+Tfdg7GT92vPNS+P/vkzIgkV5Q7aR5rcq8ncgETn6givqFl96vg==
+  version "0.0.347"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.347.tgz#6c070c05348c88bb419137bae479e842c0326b8c"
+  integrity sha512-hDlrbsWUZkjmMVVo0MlTiBvquwmnEfyJJImwUxQgNYOBmJZ+eAsxx/OLysg4LkI5jl6HkzxSdJhGZL5KpSGnvg==
   dependencies:
     prop-types "*"
     react "*"
