@@ -1221,7 +1221,11 @@ export class AgileForm<
                     ))
 
             action.handler = (event:Event):void => {
-                action.run(event, action)
+                void (async ():Promise<void> => {
+                    await this.startBackgroundProcess(event)
+                    await action.run(event, action)
+                    await this.stopBackgroundProcess(event)
+                })()
             }
 
             for (const domNode of action.determinedDomNodes)
@@ -2054,9 +2058,9 @@ export class AgileForm<
                     `Failed to compile action expression "${name}": ${error}`
                 )
 
-            action.run = (event:Event, action:Action):void => {
+            action.run = async (event:Event, action:Action):Promise<void> => {
                 try {
-                    this.actionResults[name] = templateFunction(
+                    const result:unknown = templateFunction(
                         this.actionResults,
 
                         this.determineStateURL,
@@ -2088,6 +2092,11 @@ export class AgileForm<
                             name:string
                         ):InputConfiguration => this.inputConfigurations[name])
                     )
+
+                    this.actionResults[name] =
+                        'then' in (result as Promise<unknown>) ?
+                            await result :
+                            result
                 } catch (error) {
                     console.error(
                         `Failed running action "${name}" expression "${code}` +
