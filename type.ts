@@ -142,7 +142,6 @@ export type GivenEvaluations =
     GivenNamedEvaluations
 
 export interface Configuration {
-    actions:Mapping<Action>
     animation:boolean
     constraints:Array<Constraint>
     data:null|Mapping<unknown>
@@ -185,6 +184,7 @@ export interface Configuration {
     }
     tags?:Array<string>|string
     target:RecursiveEvaluateable<TargetConfiguration>
+    targetActions:Mapping<Action>
     targetData:null|Mapping<unknown>
     urlConfigurationMask:ObjectMaskConfiguration
     version:number
