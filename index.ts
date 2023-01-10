@@ -2094,8 +2094,10 @@ export class AgileForm<
                     )
 
                     this.actionResults[name] =
+                        result !== null &&
+                        typeof result === 'object' &&
                         'then' in (result as Promise<unknown>) ?
-                            await result :
+                            await (result as Promise<unknown>) :
                             result
                 } catch (error) {
                     console.error(
