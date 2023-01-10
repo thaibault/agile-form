@@ -153,7 +153,7 @@ export class AgileForm<
     ]
     static content = '<form novalidate><slot></slot></form>'
     static defaultConfiguration:RecursiveEvaluateable<Configuration> = {
-        actions: {},
+        targetActions: {},
         animation: true,
         constraints: [],
         data: null,
@@ -314,7 +314,7 @@ export class AgileForm<
     initialResponse:null|FormResponse = null
     latestResponse:null|FormResponse = null
     message = ''
-    response:null|FormResponse = null
+    response:FormResponse|null = null
 
     inputEventBindings:Mapping<() => void> = {}
     inputConfigurations:Mapping<InputConfiguration> = {}
@@ -1926,7 +1926,7 @@ export class AgileForm<
         }
     }
     /**
-     * Pre-compiles all specified action source expressions.
+     * Pre-compiles all specified target action source expressions.
      * @returns Nothing.
      */
     preCompileActionSources():void {
@@ -1939,7 +1939,7 @@ export class AgileForm<
             )
 
         for (const [name, action] of Object.entries(
-            this.resolvedConfiguration.actions
+            this.resolvedConfiguration.targetActions
         )) {
             const code:string = action.code
             if (code.trim() === 'fallback')
@@ -1949,7 +1949,7 @@ export class AgileForm<
                 Tools.stringCompile(code, originalScopeNames)
             if (error)
                 console.error(
-                    `Failed to compile action source expression "${name}": ` +
+                    `Failed to compile action source expression "${name}":`,
                     error
                 )
 
@@ -2149,12 +2149,12 @@ export class AgileForm<
                 }
 
                 if (Object.prototype.hasOwnProperty.call(
-                    this.resolvedConfiguration.actions, 'initialize'
+                    this.resolvedConfiguration.targetActions, 'initialize'
                 )) {
                     this.runEvaluations()
 
-                    const target:null|string = this.resolveAction(
-                        this.resolvedConfiguration.actions.initialize,
+                    const target:null|string = this.resolveTargetAction(
+                        this.resolvedConfiguration.targetActions.initialize,
                         'initialize'
                     )
 
@@ -2177,13 +2177,13 @@ export class AgileForm<
         }
     }
     /**
-     * Resolve action.
+     * Resolve target action.
      * @param action - Action to resolve.
      * @param name - Action description.
      *
-     * @returns An action url result or undefined.
+     * @returns A target action url result or undefined.
      */
-    resolveAction(action:Action, name:string):null|string {
+    resolveTargetAction(action:Action, name:string):null|string {
         const actionResult:unknown = action.indicator()
         if (actionResult) {
             console.debug(
@@ -2212,8 +2212,7 @@ export class AgileForm<
                     target += actionResult
                 else
                     target +=
-                        `${target.includes('?') ? '&' : '?'}` +
-                        actionResult
+                        `${target.includes('?') ? '&' : '?'}${actionResult}`
 
             return target
         }
@@ -2548,13 +2547,14 @@ export class AgileForm<
         this.runEvaluations()
 
         for (const [name, action] of Object.entries(
-            this.resolvedConfiguration.actions
+            this.resolvedConfiguration.targetActions
         ))
             if (name !== 'initialize')
                 if (action.code === 'fallback')
                     fallbackTarget = action.target.trim()
                 else {
-                    const target:null|string = this.resolveAction(action, name)
+                    const target:null|string =
+                        this.resolveTargetAction(action, name)
 
                     if (typeof target === 'string') {
                         if (newWindow)
