@@ -104,10 +104,25 @@ export interface GroupSpecification {
 }
 
 export interface Action {
+    name:string
+
+    event?:string
+    handler:(event:Event) => void
+
+    domNodes?:Array<HTMLElement>
+    determinedDomNodes:Array<HTMLElement>
+    globalSelectors?:Array<string>
+    localSelectors?:Array<string>
+
     code:string
-    indicator:() => unknown
+    run:(event:Event, action:Action) => unknown
+}
+export interface TargetAction {
     name:string
     target:string
+
+    code:string
+    indicator:() => unknown
 }
 
 export interface Constraint {
@@ -142,15 +157,25 @@ export type GivenEvaluations =
     GivenNamedEvaluations
 
 export interface Configuration {
-    animation:boolean
+    name:string
+
+    actions:Mapping<Action>
+    targetActions:Mapping<TargetAction>
+
     constraints:Array<Constraint>
-    data:null|Mapping<unknown>
-    debug:boolean
     evaluations:GivenEvaluations
+
+    animation:boolean
+
+    data:null|Mapping<unknown>
+
+    debug:boolean
+
     initializeTarget:TargetConfiguration
     inputs:Mapping<Partial<InputConfiguration>>
-    name:string
+
     offsetInPixel:number
+
     reCaptcha:{
         action:ReCaptchaV2.Action
         key:{
@@ -161,11 +186,13 @@ export interface Configuration {
         skip:boolean
         token:string
     }
+
     responseDataWrapperSelector:{
         optional:boolean
         path:string
     }
     securityResponsePrefix:string
+
     selector:{
         clearButtons:string
         groups:string
@@ -177,16 +204,20 @@ export interface Configuration {
         submitButtons:string
         truncateButtons:string
     }
+
     showAll:boolean
+
     tag:{
         secret:string
         values:Array<string>|string
     }
     tags?:Array<string>|string
+
     target:RecursiveEvaluateable<TargetConfiguration>
-    targetActions:Mapping<Action>
     targetData:null|Mapping<unknown>
+
     urlConfigurationMask:ObjectMaskConfiguration
+
     version:number
 }
 export type NormalizedConfiguration =
