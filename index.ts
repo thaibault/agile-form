@@ -55,6 +55,7 @@ import {
     NormalizedConfiguration,
     ResponseResult,
     StateURL,
+    TargetAction,
     TargetConfiguration
 } from './type'
 // endregion
@@ -71,6 +72,8 @@ import {
  * equal).
  * @property static:knownPropertyOrdering - Order of known properties to
  * apply on inputs.
+ *
+ * @property actionResults - Mapping of action names to their results.
  *
  * @property clearButtons - Reference to form clear button nodes.
  * @property resetButtons - Reference to form reset button nodes.
@@ -136,24 +139,34 @@ export class AgileForm<
 > extends Web<TElement, ExternalProperties, InternalProperties> {
     // region properties
     static baseScopeNames:Array<string> = [
+        'actionResults',
+
         'determineStateURL',
         'determinedTargetURL',
+
         'getData',
+
         'initialResponse',
-        'invalid',
-        'invalidConstraint',
         'latestResponse',
-        'pending',
-        'queryParameters',
         'response',
-        'stateMessage',
+
         'submitted',
-        'Tools',
-        'valid'
+        'pending',
+        'invalid',
+        'valid',
+        'invalidConstraint',
+
+        'queryParameters',
+
+        'stateMessage',
+
+        'Tools'
     ]
     static content = '<form novalidate><slot></slot></form>'
     static defaultConfiguration:RecursiveEvaluateable<Configuration> = {
+        actions: {},
         targetActions: {},
+
         animation: true,
         constraints: [],
         data: null,
@@ -296,6 +309,8 @@ export class AgileForm<
     ]
     static _name = 'AgileForm'
 
+    actionResults:Mapping<unknown> = {}
+
     clearButtons:Array<AnnotatedDomNode> = []
     resetButtons:Array<AnnotatedDomNode> = []
     spinner:Array<AnnotatedDomNode> = []
@@ -425,6 +440,12 @@ export class AgileForm<
         for (const domNode of this.truncateButtons)
             domNode.removeEventListener('click', this.onTruncate)
 
+        for (const action of Object.values(this.resolvedConfiguration.actions))
+            for (const domNode of action.determinedDomNodes)
+                domNode.removeEventListener(
+                    action.event || 'click', action.handler
+                )
+
         for (const callback of Object.values(this.inputEventBindings))
             callback()
     }
@@ -444,7 +465,7 @@ export class AgileForm<
             model object with their defaults.
         */
         await this.digest()
-        await this.configureContentProjectedInputs()
+        await this.configureContentProjectedElements()
 
         this.reCaptchaFallbackInput = this.root.querySelector(
             this.resolvedConfiguration.selector.reCaptchaFallbackInput
@@ -779,20 +800,29 @@ export class AgileForm<
         )
 
         const values:Array<unknown> = [
+            this.actionResults,
+
             this.determineStateURL,
             this.determinedTargetURL,
+
             this.getData,
+
             this.initialResponse,
-            this.invalid,
-            this.invalidConstraint,
             this.latestResponse,
-            this.pending,
-            this.queryParameters,
             this.response,
-            this.message,
+
             this.onceSubmitted,
-            Tools,
+            this.pending,
+            this.invalid,
             this.valid,
+            this.invalidConstraint,
+
+            this.queryParameters,
+
+            this.message,
+
+            Tools,
+
             ...this._evaluationResults,
             ...this.inputNames.map((name:string):InputConfiguration =>
                 this.inputConfigurations[name]
@@ -1163,17 +1193,57 @@ export class AgileForm<
     /// endregion
     /// region apply configurations to components
     /**
+     * Determines action triggering dom nodes to add event listener to.
+     * @returns Nothing.
+     */
+    registerActionListener():void {
+        for (const [name, action] of Object.entries(
+            this.resolvedConfiguration.actions
+        )) {
+            action.determinedDomNodes =
+                action.domNodes ? [...action.domNodes] : []
+            if (action.globalSelectors)
+                for (const selector of action.globalSelectors)
+                    action.determinedDomNodes =
+                        action.determinedDomNodes.concat(Array.from(
+                            document.documentElement.querySelectorAll(selector)
+                        ))
+            if (action.localSelectors)
+                for (const selector of action.localSelectors)
+                    action.determinedDomNodes =
+                        action.determinedDomNodes.concat(Array.from(
+                            this.root.querySelectorAll(selector)
+                        ))
+            else
+                action.determinedDomNodes =
+                    action.determinedDomNodes.concat(Array.from(
+                        this.root.querySelectorAll(`[action="${name}"]`)
+                    ))
+
+            action.handler = (event:Event):void => {
+                action.run(event, action)
+            }
+
+            for (const domNode of action.determinedDomNodes)
+                domNode.addEventListener(
+                    action.event || 'click', action.handler
+                )
+        }
+    }
+    /**
      * Forwards all input specifications to their corresponding input node.
      * Observes fields for changes to apply specified inter-constraints between
      * them.
      * @returns Nothing.
      */
-    async configureContentProjectedInputs():Promise<void> {
-        const lockName = 'configureContentProjectedInputs'
+    async configureContentProjectedElements():Promise<void> {
+        const lockName = 'configureContentProjectedElements'
         await this.lock.acquire(lockName)
 
         const missingInputs:Mapping<InputConfiguration> =
             await this.connectSpecificationWithDomNodes()
+
+        this.registerActionListener()
 
         // Configure input components to hide validation states first.
         for (const {domNodes} of Object.values(this.inputConfigurations))
@@ -1671,20 +1741,29 @@ export class AgileForm<
                     ):boolean => {
                         try {
                             return Boolean(templateFunction(
+                                this.actionResults,
+
                                 this.determineStateURL,
                                 this.determinedTargetURL,
+
                                 this.getData,
+
                                 this.initialResponse,
-                                this.invalid,
-                                this.invalidConstraint,
                                 this.latestResponse,
-                                this.pending,
-                                this.queryParameters,
                                 this.response,
-                                this.message,
+
                                 this.onceSubmitted,
-                                Tools,
+                                this.pending,
+                                this.invalid,
                                 this.valid,
+                                this.invalidConstraint,
+
+                                this.queryParameters,
+
+                                this.message,
+
+                                Tools,
+
                                 shownSubNodes,
                                 subNodes,
                                 subNodes.length === 0 ||
@@ -1787,20 +1866,29 @@ export class AgileForm<
             configuration[type as 'transformer'] = (value:unknown):unknown => {
                 try {
                     return templateFunction(
+                        this.actionResults,
+
                         this.determineStateURL,
                         this.determinedTargetURL,
+
                         this.getData,
+
                         this.initialResponse,
-                        this.invalid,
-                        this.invalidConstraint,
                         this.latestResponse,
-                        this.pending,
-                        this.queryParameters,
                         this.response,
-                        this.message,
+
                         this.onceSubmitted,
-                        Tools,
+                        this.pending,
+                        this.invalid,
                         this.valid,
+                        this.invalidConstraint,
+
+                        this.queryParameters,
+
+                        this.message,
+
+                        Tools,
+
                         configuration,
                         value,
                         ...this._evaluationResults,
@@ -1877,20 +1965,29 @@ export class AgileForm<
             configuration.dynamicExtend![subName] = (event:Event):unknown => {
                 const scope:Mapping<unknown> = {}
                 const context:Array<unknown> = [
+                    this.actionResults,
+
                     this.determineStateURL,
                     this.determinedTargetURL,
+
                     this.getData,
+
                     this.initialResponse,
-                    this.invalid,
-                    this.invalidConstraint,
                     this.latestResponse,
-                    this.pending,
-                    this.queryParameters,
                     this.response,
-                    this.message,
+
                     this.onceSubmitted,
-                    Tools,
+                    this.pending,
+                    this.invalid,
                     this.valid,
+                    this.invalidConstraint,
+
+                    this.queryParameters,
+
+                    this.message,
+
+                    Tools,
+
                     event,
                     this.determineEventName(event),
                     scope,
@@ -1926,10 +2023,86 @@ export class AgileForm<
         }
     }
     /**
-     * Pre-compiles all specified target action source expressions.
+     * Pre-compiles all specified action expressions.
      * @returns Nothing.
      */
-    preCompileActionSources():void {
+    preCompileActions():void {
+        const originalScopeNames:Array<string> = this.self.baseScopeNames
+            .concat(
+                'event',
+                'action',
+                this.evaluations.map(
+                    (evaluation:Evaluation):string => evaluation[0]
+                ),
+                this.inputNames
+            )
+
+        for (const [name, action] of Object.entries(
+            this.resolvedConfiguration.actions
+        )) {
+            if (!action.name)
+                action.name = name
+
+            const code:string = action.code
+            if (!action.run && code.trim() === 'fallback')
+                continue
+
+            const {error, scopeNames, templateFunction} =
+                Tools.stringCompile(code, originalScopeNames)
+            if (error)
+                console.error(
+                    `Failed to compile action expression "${name}": ${error}`
+                )
+
+            action.run = (event:Event, action:Action):void => {
+                try {
+                    this.actionResults[name] = templateFunction(
+                        this.actionResults,
+
+                        this.determineStateURL,
+                        this.determinedTargetURL,
+
+                        this.getData,
+
+                        this.initialResponse,
+                        this.latestResponse,
+                        this.response,
+
+                        this.onceSubmitted,
+                        this.pending,
+                        this.invalid,
+                        this.valid,
+                        this.invalidConstraint,
+
+                        this.queryParameters,
+
+                        this.message,
+
+                        Tools,
+
+                        event,
+                        action,
+
+                        ...this._evaluationResults,
+                        ...this.inputNames.map((
+                            name:string
+                        ):InputConfiguration => this.inputConfigurations[name])
+                    )
+                } catch (error) {
+                    console.error(
+                        `Failed running action "${name}" expression "${code}` +
+                        `" with bound names "${scopeNames.join('", "')}": "` +
+                        `${Tools.represent(error)}".`
+                    )
+                }
+            }
+        }
+    }
+    /**
+     * Pre-compiles all specified target action expressions.
+     * @returns Nothing.
+     */
+    preCompileTargetActions():void {
         const originalScopeNames:Array<string> = this.self.baseScopeNames
             .concat(
                 this.evaluations.map(
@@ -1941,35 +2114,47 @@ export class AgileForm<
         for (const [name, action] of Object.entries(
             this.resolvedConfiguration.targetActions
         )) {
+            if (!action.name)
+                action.name = name
+
             const code:string = action.code
-            if (code.trim() === 'fallback')
+            if (!action.indicator && code.trim() === 'fallback')
                 continue
 
             const {error, scopeNames, templateFunction} =
                 Tools.stringCompile(code, originalScopeNames)
             if (error)
                 console.error(
-                    `Failed to compile action source expression "${name}":`,
+                    `Failed to compile target action expression "${name}":`,
                     error
                 )
 
             action.indicator = ():unknown => {
                 try {
                     return templateFunction(
+                        this.actionResults,
+
                         this.determineStateURL,
                         this.determinedTargetURL,
+
                         this.getData,
+
                         this.initialResponse,
-                        this.invalid,
-                        this.invalidConstraint,
                         this.latestResponse,
-                        this.pending,
-                        this.queryParameters,
                         this.response,
-                        this.message,
+
                         this.onceSubmitted,
-                        Tools,
+                        this.pending,
+                        this.invalid,
                         this.valid,
+                        this.invalidConstraint,
+
+                        this.queryParameters,
+
+                        this.message,
+
+                        Tools,
+
                         ...this._evaluationResults,
                         ...this.inputNames.map((
                             name:string
@@ -1977,7 +2162,7 @@ export class AgileForm<
                     )
                 } catch (error) {
                     console.error(
-                        `Failed running action source "${name}" expression "` +
+                        `Failed running target action "${name}" expression "` +
                         `${code}" with bound names "` +
                         `${scopeNames.join('", "')}": "` +
                         `${Tools.represent(error)}".`
@@ -2028,20 +2213,29 @@ export class AgileForm<
             this.evaluations.push([name, ():unknown => {
                 try {
                     return templateFunction(
+                        this.actionResults,
+
                         this.determineStateURL,
                         this.determinedTargetURL,
+
                         this.getData,
+
                         this.initialResponse,
-                        this.invalid,
-                        this.invalidConstraint,
                         this.latestResponse,
-                        this.pending,
-                        this.queryParameters,
                         this.response,
-                        this.message,
+
                         this.onceSubmitted,
-                        Tools,
+                        this.pending,
+                        this.invalid,
                         this.valid,
+                        this.invalidConstraint,
+
+                        this.queryParameters,
+
+                        this.message,
+
+                        Tools,
+
                         ...this._evaluationResults,
                         ...this.inputNames.map(
                             (name:string):InputConfiguration =>
@@ -2066,7 +2260,8 @@ export class AgileForm<
      */
     preCompileConfigurationExpressions():void {
         this.preCompileGenericEvaluations()
-        this.preCompileActionSources()
+        this.preCompileActions()
+        this.preCompileTargetActions()
 
         for (const [name, configuration] of Object.entries(
             this.inputConfigurations
@@ -2183,7 +2378,7 @@ export class AgileForm<
      *
      * @returns A target action url result or undefined.
      */
-    resolveTargetAction(action:Action, name:string):null|string {
+    resolveTargetAction(action:TargetAction, name:string):null|string {
         const actionResult:unknown = action.indicator()
         if (actionResult) {
             console.debug(
@@ -2898,20 +3093,29 @@ export class AgileForm<
                         this.inputConfigurations[name]
                     )
                 const values:Array<unknown> = [
+                    this.actionResults,
+
                     this.determineStateURL,
                     this.determinedTargetURL,
+
                     this.getData,
+
                     this.initialResponse,
-                    this.invalid,
-                    this.invalidConstraint,
                     this.latestResponse,
-                    this.pending,
-                    this.queryParameters,
                     this.response,
-                    this.message,
+
                     this.onceSubmitted,
-                    Tools,
+                    this.pending,
+                    this.invalid,
                     this.valid,
+                    this.invalidConstraint,
+
+                    this.queryParameters,
+
+                    this.message,
+
+                    Tools,
+
                     ...fieldValues
                 ]
                 const scope:Mapping<unknown> = this.self.baseScopeNames

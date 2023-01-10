@@ -76,6 +76,14 @@
             src="/web-input-material/index.bundle.js"
         ></script>
         <script>
+            window.testAction = function(action, actionResults) {
+                var run = actionResults.test || 1
+
+                console.info(run + '. tests actions triggered:', action)
+
+                return run + 1
+            }
+
             window.onload = function() {
                 /* region fetch mock */
                 window.fetch = function(url, options) {
@@ -120,6 +128,8 @@
     <body>
         <agile-form
             base-configuration="{
+                actions: {test: {code: 'testAction(action, actionResults)'}},
+
                 debug: true,
 
                 evaluations: [
@@ -366,6 +376,8 @@
             <button clear>Clear</button>
             <button type="reset">Reset</button>
             <button type="submit">OK</button>
+
+            <button action="test">Test</button>
 
             <hr/>
 
