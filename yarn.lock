@@ -2116,12 +2116,12 @@
     "@sinonjs/commons" "^1.7.0"
 
 "@tinymce/tinymce-react@*":
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/@tinymce/tinymce-react/-/tinymce-react-4.2.0.tgz#af2a098153e6eeadc36cfb8940880d7dce425ac5"
-  integrity sha512-Oyi/hDvARR29oqUwTgYXDnMV9E/c7C8V+iK+gUj9tndVXsfSJRYVOw3MTK9CCC9f7alN/S4CYaPpIaA3f4VZzw==
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@tinymce/tinymce-react/-/tinymce-react-4.3.0.tgz#5e2f5a58526a1bba9710f54f5fcf16abd4c742a1"
+  integrity sha512-iB4cUsYfcJL4NGuKhqCGYuTmFTje3nPxyPv1HxprTsp/YMGuuiiSNWrv3zwI31QX5Cn8qeq9MrMDnbxuRugHyg==
   dependencies:
     prop-types "^15.6.2"
-    tinymce "^6.0.0 || ^5.5.1"
+    tinymce "^6.3.1"
 
 "@tootallnate/once@2":
   version "2.0.0"
@@ -4049,9 +4049,9 @@ cli-table3@^0.5.0:
     colors "^1.1.2"
 
 clientnode@*:
-  version "3.0.1010"
-  resolved "https://registry.yarnpkg.com/clientnode/-/clientnode-3.0.1010.tgz#070f45b568663492320ae6f0a1d828378da71916"
-  integrity sha512-0o4QJclRrK4kOcYSyc7CByTTM5JRCP3euFaqVQNqoXaMLYl2rSOgg/lcELR9Y6Ihr2RfWlkqwZ5D5Av9kq+LvA==
+  version "3.0.1014"
+  resolved "https://registry.yarnpkg.com/clientnode/-/clientnode-3.0.1014.tgz#ae592844b14debb9753ce74f9d63d23f30470f44"
+  integrity sha512-2UgqEmONvLIB9vadvBpfiMNAPMjTg1nLmlTWuj1E999TYa8j/YqlfKqsst+0KNJkrT8NkvRv+LLub258s/0Dlg==
 
 cliui@^4.0.0:
   version "4.1.0"
@@ -6718,9 +6718,9 @@ minimatch@^3.0.4, minimatch@^3.0.5, minimatch@^3.1.1, minimatch@^3.1.2:
     brace-expansion "^1.1.7"
 
 minimatch@^5.0.1:
-  version "5.1.4"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-5.1.4.tgz#4e2d39d872684e97b309a9104251c3f1aa4e9d1c"
-  integrity sha512-U0iNYXt9wALljzfnGkhFSy5sAC6/SCR3JrHrlsdJz4kF8MvhTRQNiC59iUi1iqsitV7abrNAJWElVL9pdnoUgw==
+  version "5.1.6"
+  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-5.1.6.tgz#1cfcb8cf5522ea69952cd2af95ae09477f122a96"
+  integrity sha512-lKwV/1brpG6mBUFHtb7NUmtABCb2WZZmm2wNiOA5hAb8VdCS4B3dtMWyvcoViccwAW/COERjXLt0zP1zXUN26g==
   dependencies:
     brace-expansion "^2.0.1"
 
@@ -7866,14 +7866,14 @@ react-dom@*:
     scheduler "^0.23.0"
 
 react-generic-dummy@*:
-  version "0.0.18"
-  resolved "https://registry.yarnpkg.com/react-generic-dummy/-/react-generic-dummy-0.0.18.tgz#aa20ef72f7c1cf649e72040aa76a47cacef2b447"
-  integrity sha512-2BrfMnDwUQvY/RTHXl4NHTxA7tPx15Cp8V6EOmyxYnLfh6cHACAfJR1ZFfU1NaKCtLuF7//UoImpnzx/OM6eWg==
+  version "0.0.20"
+  resolved "https://registry.yarnpkg.com/react-generic-dummy/-/react-generic-dummy-0.0.20.tgz#474a7057be47435925afb2a7bc8474f966208392"
+  integrity sha512-pUvatwYBL8On2FHh2ms+ANLeOz/JeQ3g3zyeDW2cDA6Sb135qIgYuauGh8deto5AITIQwdDWLPxFTPBt2GxMgw==
 
 react-input-material@*:
-  version "0.0.511"
-  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.511.tgz#32a31d78e4c336f9e0af585145932bcb0588c03d"
-  integrity sha512-TL4UDOIehma7+vV2lkYr/2yTS6PoPATLEG1Sn57qmBkxeTnR0oiwePvzyt3dxQDThf93YfIyrM948vivyLGRxw==
+  version "0.0.512"
+  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.512.tgz#452adda937679377c9ce63ffde3659288e8fb99f"
+  integrity sha512-V/tQPcKrzWM9BeacwTsIe4FJSf2cVjClS+fP327SG8qOanpo+9hAtABXXpdiFg7UNLhLWNHIefTKPnAUTdU8RQ==
 
 react-is@^16.12.0, react-is@^16.13.1:
   version "16.13.1"
@@ -8137,9 +8137,9 @@ reusify@^1.0.4:
   integrity sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==
 
 rimraf@*, rimraf@>=4:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-4.1.0.tgz#c503e3b75b0da4e276846b45cace9a93d16a4903"
-  integrity sha512-ZJdkUR5/dRrRJHdcSKJLrpRn6tVjl9ALxd4yrTCxFsMpjQNzwHF6GLqMsuEzEYIXxHlFPDSk21Vr8VPuFBEz0g==
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-4.1.1.tgz#ec29817863e5d82d22bca82f9dc4325be2f1e72b"
+  integrity sha512-Z4Y81w8atcvaJuJuBB88VpADRH66okZAuEm+Jtaufa+s7rZmIz+Hik2G53kGaNytE7lsfXyWktTmfVz0H9xuDg==
 
 rimraf@^3.0.2:
   version "3.0.2"
@@ -8684,7 +8684,7 @@ thunky@^1.0.2:
   resolved "https://registry.yarnpkg.com/thunky/-/thunky-1.1.0.tgz#5abaf714a9405db0504732bbccd2cedd9ef9537d"
   integrity sha512-eHY7nBftgThBqOyHGVN+l8gF0BucP09fMo0oO/Lb0w1OF80dJv+lDVpXG60WMQvkcxAkNybKsrEIE3ZtKGmPrA==
 
-"tinymce@^6.0.0 || ^5.5.1":
+tinymce@^6.3.1:
   version "6.3.1"
   resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-6.3.1.tgz#cc5cf2b9f702d429cf5d1d21ed62245d768bfc4f"
   integrity sha512-+oCwXuTxAdJXVJ0130OxQz0JDNsqg3deuzgeUo8X5Vb27EzCJgXwO5eWvCxvkxpQo4oiHMVlM4tUIpTUHufHGQ==
@@ -8937,14 +8937,14 @@ wbuf@^1.1.0, wbuf@^1.7.3:
     minimalistic-assert "^1.0.0"
 
 web-component-wrapper@*:
-  version "0.0.431"
-  resolved "https://registry.yarnpkg.com/web-component-wrapper/-/web-component-wrapper-0.0.431.tgz#06bd1fea97674069ef74285622dfee27d0fe4919"
-  integrity sha512-ZCXlCUmP8/YrJJRaYxhgJZhmzbMTXdK+vMBy0iDjvVLgperxgbV5PuCBAaVuVhWYs6BrMs3nbdRL7NGI+Tu3pQ==
+  version "0.0.432"
+  resolved "https://registry.yarnpkg.com/web-component-wrapper/-/web-component-wrapper-0.0.432.tgz#d24189b93ec473d1d85ad729bc5869af548585d7"
+  integrity sha512-dLkAG7Rg2zSjL9KRlp0DWpnU0wd/uDz9/epzQ4vmne7+X8gTc2qeJoqztYE9T3lc+FxUZ7IOFR6Q2SiXKGYeVg==
 
 web-input-material@*:
-  version "0.0.358"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.358.tgz#fbb4c052cb929fd3bdd0bec2a7aeca12b9b23c17"
-  integrity sha512-QDLY3+9LqUjYdW3AvIOudSUZNb77quLuiLcHvlyfKbqLIuZjpyV0CPTU2PCfchSZYd7Bbr8HDXj6/v36z2WqIA==
+  version "0.0.360"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.360.tgz#08594958b5177281e0d394c55efbb0dc71f2b7e7"
+  integrity sha512-mlIXu0rREbAbZdsJX9DP0hB0O0DkOurDmovk9n8d6IPpZhfEYPGyF5uvV65texQz9ZKiHxAw2A46vqgBM3VjMw==
   dependencies:
     prop-types "*"
     react "*"
@@ -8964,9 +8964,9 @@ webidl-conversions@^7.0.0:
   integrity sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==
 
 weboptimizer@*:
-  version "2.0.1279"
-  resolved "https://registry.yarnpkg.com/weboptimizer/-/weboptimizer-2.0.1279.tgz#89795db814dd55f48e1e90c952228c6813840a9b"
-  integrity sha512-QSDf+xjnU0O8kRWOW2E4bzLgkGB47YAX8iYfMqat0MxCfsHBBls1FBu3bMQi2oyzE1Wo70f4A+u5Zd3vbkBiUg==
+  version "2.0.1281"
+  resolved "https://registry.yarnpkg.com/weboptimizer/-/weboptimizer-2.0.1281.tgz#d09d9b052b84e17ce55320542e6869e6fa929e0a"
+  integrity sha512-elv4+qAqsBorRsrqq35dr5FPrD7uHlWJIKt5vlzCfj5VRFKl/x9CgW/iD5W5WBgyQ/2MlyQPfvZfzbfCHmVk1Q==
   dependencies:
     "@babel/core" "*"
     "@babel/plugin-proposal-decorators" "*"
