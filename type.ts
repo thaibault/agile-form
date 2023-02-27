@@ -46,22 +46,31 @@ export interface Model<T = unknown> extends BaseModel<T> {
 }
 export interface InputConfiguration<Type = unknown> {
     changedEventName?:string
-    dataMapping?:Mapping|string
+
     dependsOn?:Array<string>|null
+
     domNode?:AnnotatedInputDomNode
     domNodes:Array<AnnotatedInputDomNode>
+
     dynamicExtend?:Mapping<(event:Event) => unknown>
     dynamicExtendExpressions?:Mapping<DynamicExtendExpression>
+
     name:string
     properties:Partial<InputAnnotation<Type>>
+
     serializer?:(value:unknown) => Primitive
     serializerExpression?:string
+
     showIf?:IndicatorFunction
     showIfExpression?:string
     shown?:boolean
+
     target?:string
+
+    dataMapping?:Mapping|string
     transformer?:(value:unknown) => unknown
     transformerExpression?:string
+
     value?:null|Type
     valuePersistence?:'persistent'|'resetOnHide'
 }

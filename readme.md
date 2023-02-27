@@ -29,4 +29,24 @@ Project status
 Use case
 --------
 
-Reusable highly configurable form.
+Agile-Form is a reusable highly configurable low-code form technology. This
+Library enables you to decouple a form data specification from its
+representation.
+
+Features included:
+
+- Full input agnostic. Use native inputs or web-components providing its
+  internal state via `value` and `invalid` properties.
+- Powerful Low-Code-Engine to formulate constraints appearance criteria or
+  determine output schema for rest-endpoints.
+- Conditionally hide and show various html content determined by the current
+  form state.
+- Integrated Re-Captcha v3 (no user challenge) and v2 (with user challenge)
+  fallback mechanism.
+- Powerful dynamic input configuration via input attributes, form attributes or
+  url query parameter.
+- Explicit enable-listing capability to allow what to configure via url.
+- Fully configurable data transformation and serialisation engine.
+- Dynamic connect input configurations. Derive input configurations from other
+  input or form state at runtime.
+- Statically type checked and interface specification via Typescript.
