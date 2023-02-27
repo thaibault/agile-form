@@ -77,36 +77,46 @@ export interface InputConfiguration<Type = unknown> {
 
 export interface Annotation {
     clearFading?:ProcedureFunction
+
     oldDisplay?:string
     oldOpacity?:number
+
     reason:null|Array<string>|string
+
     showIf?:IndicatorFunction
     showIfExpression?:string
     shown:boolean
 }
 export interface InputAnnotation<Type = unknown> {
     changeTrigger?:unknown
-    default:Type
-    dirty:boolean
-    disabled:boolean
-    dynamicExtendExpressions?:Mapping<DynamicExtendExpression>
-    externalProperties?:Partial<InputAnnotation<Type>>
-    initialValue?:Type
-    invalid:boolean
-    model?:RecursivePartial<Model<Type>>
-    pristine:boolean
-    required?:boolean
-    selection:Array<Type>
-    showInitialValidationState:boolean
+
     type:string
-    valid:boolean
+    default:Type
+    initialValue?:Type
+    selection:Array<Type>
     value:Type
+
+    dirty:boolean
+    invalid:boolean
+    pristine:boolean
+    valid:boolean
+
+    showInitialValidationState:boolean
+
+    disabled:boolean
+    model?:RecursivePartial<Model<Type>>
+    required?:boolean
+
+    dynamicExtendExpressions?:Mapping<DynamicExtendExpression>
+
+    externalProperties?:Partial<InputAnnotation<Type>>
 }
 export type AnnotatedDomNode = HTMLElement & Annotation
 export type AnnotatedInputDomNode<Type = unknown> =
     AnnotatedDomNode & Partial<InputAnnotation<Type>>
 export interface GroupSpecification {
     childs:Array<AnnotatedInputDomNode>
+
     showIf?:IndicatorFunction
     showIfExpression?:string
     showReason?:Array<AnnotatedDomNode>|null|string
