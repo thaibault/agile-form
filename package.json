@@ -49,6 +49,7 @@
     "postinstall": "yarn patch || true",
     "postversion": "yarn publish --non-interactive; git push --tags && git push",
     "serve": "weboptimizer serve",
+    "serve:simple": "yarn serve '{files: {defaultHTML: {filename: \"examples/simple.html\"}}}'",
     "start": "yarn serve",
     "test": "yarn clear && weboptimizer test",
     "test:browser": "yarn clear && weboptimizer test:browser",
