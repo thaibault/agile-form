@@ -69,9 +69,17 @@ Features included:
 
         <title>playground</title>
 
-        <%- include('web-component-wrapper/polyfill.html') %>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/2.7.0/webcomponents-bundle.js"
+        ></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/2.7.0/custom-elements-es5-adapter.js"
+        ></script>
 
-        <script src="/agile-form/index.bundle.js"></script>
+        <script
+            src="https://torben.website/agile-form/data/distributionBundle/index.bundle.js"
+        ></script>
+
         <script>
             agileForm.index.api.register()
         </script>
