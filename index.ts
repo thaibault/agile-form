@@ -923,11 +923,9 @@ export class AgileForm<
 
             for (const key of ['selection', 'value'] as const)
                 if (Object.prototype.hasOwnProperty.call(input, key)) {
-                    /* eslint-disable @typescript-eslint/no-extra-semi */
-                    ;(input.properties as InputAnnotation)[
+                    (input.properties as InputAnnotation)[
                         key as 'value'
                     ] = (input as InputAnnotation)[key as 'value']
-                    /* eslint-enable @typescript-eslint/no-extra-semi */
 
                     delete (input as {
                         selection?:unknown
@@ -936,8 +934,7 @@ export class AgileForm<
                 }
 
             if (Object.prototype.hasOwnProperty.call(input, 'nullable')) {
-                // eslint-disable-next-line @typescript-eslint/no-extra-semi
-                ;(input.properties as InputAnnotation).required =
+                (input.properties as InputAnnotation).required =
                     !(input as {nullable?:boolean}).nullable
 
                 delete (input as {nullable?:boolean}).nullable
@@ -945,13 +942,11 @@ export class AgileForm<
 
             for (const key of ['mutable', 'writable'] as const)
                 if (Object.prototype.hasOwnProperty.call(input, key)) {
-                    /* eslint-disable @typescript-eslint/no-extra-semi */
-                    ;(input.properties as InputAnnotation)
+                    (input.properties as InputAnnotation)
                         .disabled = !(input as {
                             mutable?:boolean
                             writable?:boolean
                         })[key]
-                    /* eslint-enable @typescript-eslint/no-extra-semi */
 
                     delete (input as {
                         mutable?:boolean
@@ -961,7 +956,6 @@ export class AgileForm<
         }
 
         if (Object.keys(inputs).length)
-            // eslint-disable-next-line @typescript-eslint/no-extra-semi
             (currentConfiguration as
                 unknown as
                 {inputs:Mapping<RecursivePartial<InputConfiguration<unknown>>>}
