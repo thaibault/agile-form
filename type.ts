@@ -28,7 +28,7 @@ import {
     ValueOf
 } from 'clientnode/type'
 import 'grecaptcha'
-import {Model as BaseModel} from 'web-input-material/type'
+import {BaseModel} from 'web-input-material/type'
 // endregion
 declare global {
     interface Window {
