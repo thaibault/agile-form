@@ -4289,9 +4289,9 @@ cli-table3@^0.5.0:
     colors "^1.1.2"
 
 clientnode@*:
-  version "3.0.1076"
-  resolved "https://registry.yarnpkg.com/clientnode/-/clientnode-3.0.1076.tgz#b53a59089c97dabc3a0b2b03c059270de2a8bc0f"
-  integrity sha512-cQE+UdRvH2pomfcAWDIEzuT/9U9oGV77RkVFHPE44gymc58NCNc4acwXGIJkFgBfNzGWFEGAUxtEA3HqyYy0OA==
+  version "3.0.1077"
+  resolved "https://registry.yarnpkg.com/clientnode/-/clientnode-3.0.1077.tgz#a13850ff9f4851592082a808fe41d5aa3fe8e104"
+  integrity sha512-L9Vm518L6YzSP2r+pQeasE3eVwLgV9WUA9m5sft+dx+fMvdTdGO8GPNnh3KkXkV43dduV8LpnNeHC3CYVfrZqA==
 
 cliui@^4.0.0:
   version "4.1.0"
@@ -4644,9 +4644,9 @@ css-what@^6.0.1, css-what@^6.1.0:
   integrity sha512-HTUrgRJ7r4dsZKU6GjmpfRK1O76h97Z8MfS1G0FozR+oF2kG6Vfe8JE6zwrkbxigziPHinCJ+gCPjA9EaBDtRw==
 
 cssdb@^7.7.2:
-  version "7.7.2"
-  resolved "https://registry.yarnpkg.com/cssdb/-/cssdb-7.7.2.tgz#fbebd90edfc6af129fda4fd986f9dd604a209094"
-  integrity sha512-pQPYP7/kch4QlkTcLuUNiNL2v/E+O+VIdotT+ug62/+2B2/jkzs5fMM6RHCzGCZ9C82pODEMSIzRRUzJOrl78g==
+  version "7.7.3"
+  resolved "https://registry.yarnpkg.com/cssdb/-/cssdb-7.7.3.tgz#f05893bd7b631abb1ad744e69ce9accc7bb760f7"
+  integrity sha512-QPbpOl+jR13quGTIvwCavognmtpr6T9ra6G9S++scJek7BY4xdkJpB3slU1JkjQmzKmpDHnPB+wkz+mxoT/h4w==
 
 cssesc@^3.0.0:
   version "3.0.0"
@@ -8272,14 +8272,14 @@ react-dom@*:
     scheduler "^0.23.0"
 
 react-generic-dummy@*:
-  version "0.0.49"
-  resolved "https://registry.yarnpkg.com/react-generic-dummy/-/react-generic-dummy-0.0.49.tgz#02ce19fdc362faabb7e90c2be0417e2e234ce953"
-  integrity sha512-NOPPDEPOfEDoIX4hV3WGGRpga1AaIXUVTg/HYcj9qoSyxw8Lni55GAdO78FhOHadhcm8vnl3pV5hWJezvG6bkA==
+  version "0.0.50"
+  resolved "https://registry.yarnpkg.com/react-generic-dummy/-/react-generic-dummy-0.0.50.tgz#08268fee9fe464445b9234f107e1370e248ee05f"
+  integrity sha512-tjm8iHmuJ2k3KWTCXr4qTANQ3gB7lLWl3uRco79OFgO5GDbjyZafYL7qan2pX+i+N14Il9ihdqOD/jXV2NtEGw==
 
 react-input-material@*:
-  version "0.0.571"
-  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.571.tgz#0e59a7afa23cfb55dd3b2c3a0e06a1bdd2b69c54"
-  integrity sha512-n/rm/hFXbUM+I82SsYwrorS4/elOSm6MMXQb6N8+0z80JFo72dUNiFf4bmOc8sB9wJD1fy9xQLB0TIx8E7nbbQ==
+  version "0.0.572"
+  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.572.tgz#a53dadf820fc867c8a2ce361d74eaadd0daacd45"
+  integrity sha512-viipednVtjw0DLLYJFnkFP9ZgPcsso+4JEjgz+ThFxrrQbSCpdIFmyOY8VNhJXhVYP7B2Z0RR8hjstWNet3Kcw==
 
 react-is@^16.12.0, react-is@^16.13.1:
   version "16.13.1"
@@ -9346,14 +9346,14 @@ wbuf@^1.1.0, wbuf@^1.7.3:
     minimalistic-assert "^1.0.0"
 
 web-component-wrapper@*:
-  version "0.0.462"
-  resolved "https://registry.yarnpkg.com/web-component-wrapper/-/web-component-wrapper-0.0.462.tgz#83c55d7ae90339ca3a301a595a26443932c473c7"
-  integrity sha512-322ita9t2wwYt90FhC98CecCDZjcTeIhW79BEMfG7jEyBftWxgmohPX/mQeOrIrmxkkoD63iywOGpSmAOfnDDA==
+  version "0.0.463"
+  resolved "https://registry.yarnpkg.com/web-component-wrapper/-/web-component-wrapper-0.0.463.tgz#0b961b8bcda928e1faf168a990864117f7ff77fd"
+  integrity sha512-y2+Gxwxz92mPOKew4Wh3Flx8+xg8rVRNfKGRRp8zHJ7x1lPM+/a/67Hi2+F5eiYw9KRZmLYmQuUV+mhvkmJ7AQ==
 
 web-input-material@*:
-  version "0.0.395"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.395.tgz#f2fe4996ee388b667c87944e7472a4ec570edf8e"
-  integrity sha512-Qb6nJxPRZveLXVr196TylSFFMqZCYhYU67ApvagsSa/psEVlbMs0FNeMPAC36YUUk4Ma24iGCBuaeb7sJGfolg==
+  version "0.0.396"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.396.tgz#013330222011f64606924c711bd01375b4cd0c36"
+  integrity sha512-1afuBSHMh953poqtc+6Wq8HQMtgQ0F0QoVY8jBxjH9QgBbX/e4yJccc1VOU5T7RdBVxF+CCDs1lDsX24szH+Ew==
   dependencies:
     prop-types "*"
     react "*"
@@ -9373,9 +9373,9 @@ webidl-conversions@^7.0.0:
   integrity sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==
 
 weboptimizer@*:
-  version "2.0.1374"
-  resolved "https://registry.yarnpkg.com/weboptimizer/-/weboptimizer-2.0.1374.tgz#5c51423d88d09ded01ef651c356cac3cce64bd3f"
-  integrity sha512-ZmTHmVovmKO7h55HYNxPesUy1XmdavmNlzamUhT9JEkydr41m6/0hDc+xZIYY/ydhM4zlYMs7wEEVX2MjJE19g==
+  version "2.0.1375"
+  resolved "https://registry.yarnpkg.com/weboptimizer/-/weboptimizer-2.0.1375.tgz#17f055e2c9577fd9c7185cff8c2ea4b55ce6365b"
+  integrity sha512-Hm2S+Z3y5ly0AFokJCmOdtK5rJRbG1h8ylAonPg9v2tQUQrwHPas6qFLHW1ZBJbev540f6m4TdTlxn+Lc77/Tw==
   dependencies:
     "@babel/core" "*"
     "@babel/plugin-proposal-class-properties" "*"
