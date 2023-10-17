@@ -13,18 +13,20 @@ endregion -->
 Project status
 --------------
 
-[![npm](https://img.shields.io/npm/v/agile-form?color=%23d55e5d&label=npm%20package%20version&logoColor=%23d55e5d)](https://www.npmjs.com/package/agile-form)
-[![npm downloads](https://img.shields.io/npm/dy/agile-form.svg)](https://www.npmjs.com/package/agile-form)
+[![npm](https://img.shields.io/npm/v/agile-form?color=%23d55e5d&label=npm%20package%20version&logoColor=%23d55e5d&style=for-the-badge)](https://www.npmjs.com/package/agile-form)
+[![npm downloads](https://img.shields.io/npm/dy/agile-form.svg?style=for-the-badge)](https://www.npmjs.com/package/agile-form)
 
-[![<LABEL>](https://github.com/thaibault/agile-form/actions/workflows/build.yaml/badge.svg)](https://github.com/thaibault/agile-form/actions/workflows/build.yaml)
-[![<LABEL>](https://github.com/thaibault/agile-form/actions/workflows/test.yaml/badge.svg)](https://github.com/thaibault/agile-form/actions/workflows/test.yaml)
-[![<LABEL>](https://github.com/thaibault/agile-form/actions/workflows/test-coverage-report.yaml/badge.svg)](https://github.com/thaibault/agile-form/actions/workflows/test-coverage-report.yaml)
-[![<LABEL>](https://github.com/thaibault/agile-form/actions/workflows/check-types.yaml/badge.svg)](https://github.com/thaibault/agile-form/actions/workflows/check-types.yaml)
-[![<LABEL>](https://github.com/thaibault/agile-form/actions/workflows/lint.yaml/badge.svg)](https://github.com/thaibault/agile-form/actions/workflows/lint.yaml)
+[![build](https://img.shields.io/github/actions/workflow/status/thaibault/agile-form/build.yaml?style=for-the-badge)](https://github.com/thaibault/agile-form/actions/workflows/build.yaml)
 
-[![code coverage](https://coveralls.io/repos/github/thaibault/agile-form/badge.svg)](https://coveralls.io/github/thaibault/agile-form)
+[![check types](https://img.shields.io/github/actions/workflow/status/thaibault/agile-form/check-types.yaml?label=check%20types&style=for-the-badge)](https://github.com/thaibault/agile-form/actions/workflows/check-types.yaml)
+[![lint](https://img.shields.io/github/actions/workflow/status/thaibault/agile-form/lint.yaml?label=lint&style=for-the-badge)](https://github.com/thaibault/agile-form/actions/workflows/lint.yaml)
+[![test](https://img.shields.io/github/actions/workflow/status/thaibault/agile-form/test-coverage-report.yaml?label=test&style=for-the-badge)](https://github.com/thaibault/agile-form/actions/workflows/test-coverage-report.yaml)
 
-[![documentation website](https://img.shields.io/website-up-down-green-red/https/torben.website/agile-form.svg?label=documentation-website)](https://torben.website/agile-form)
+[![code coverage](https://img.shields.io/coverallsCoverage/github/thaibault/agile-form?label=code%20coverage&style=for-the-badge)](https://coveralls.io/github/thaibault/agile-form)
+
+[![documentation website](https://img.shields.io/website-up-down-green-red/https/torben.website/agile-form.svg?label=documentation-website&style=for-the-badge)](https://torben.website/agile-form)
+
+[![Try out](https://img.shields.io/badge/Try%20it%20on%20runkit-%2345cc11?style=for-the-badge)](https://npm.runkit.com/agile-form)
 
 Use case
 --------
