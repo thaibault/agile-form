@@ -1,28 +1,28 @@
 name: Build
+
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  # NOTE: Runs on branch to tag creation.
+  create:
+    branches:
+      - main
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      debug:
+        description: Sets "NODE_ENV" to "debug".
+        default: false
+        type: boolean
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: node:latest
+    container: node:lts
     steps:
-      - uses: actions/checkout@v2
-
-      # Runs a set of commands using the runners shell
-
-      #- name: Install yarn
-      #  run: npm install --global yarn
-
-      - name: Disable node version check
-        run: yarn config set ignore-engines true
-
-      - name: Install packages marked as dependencies
-        run: yarn
+      - uses: thaibault/install-npm-package-dependencies-action@main
+        with:
+          debug: ${{ inputs.debug }}
 
       - name: Build package contents
+        env:
+          NODE_ENV: ${{ contains(inputs.debug, 'true') && 'debug' }}
         run: yarn build
