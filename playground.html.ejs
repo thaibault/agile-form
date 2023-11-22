@@ -281,61 +281,61 @@
 
             <input name="simple" />
 
-            <generic-input
+            <text-input
                 declaration="Please fill in your type."
                 description="Type"
                 labels="{A: 'Label A', B: 'Label B', C: 'Label C'}"
                 selection="['A', 'B', 'C', 'D', 'E']"
                 name="type"
-            ></generic-input>
+            ></text-input>
 
-            <generic-input
+            <text-input
                 declaration="Additional type."
                 description="Second type"
                 name="type"
-            ></generic-input>
+            ></text-input>
 
-            <generic-input
+            <text-input
                 declaration="Password declaration."
                 description="Password"
                 name="password"
                 trailing-icon="'password_preset'"
-            ></generic-input>
+            ></text-input>
 
-            <generic-input
+            <text-input
                 declaration="Please fill in your name."
                 description="Name"
                 name="name"
-            ></generic-input>
-            <generic-input
+            ></text-input>
+            <text-input
                 declaration="This is your provided name."
                 description="Synchronized name"
                 name="name.value"
-            ></generic-input>
+            ></text-input>
 
-            <generic-input
+            <text-input
                 bind-on-blur="this.title = 'Current input: ' + this.value"
                 declaration="Please provide a message."
                 description="Message"
                 editor="text"
                 name="message"
                 placeholder="Please type in a message..."
-            ></generic-input>
+            ></text-input>
 
-            <generic-input
+            <text-input
                 description="How do you feel?"
                 declaration="Do you feel good?"
                 labels="{true: 'Yess!', false: 'Oh noo I am sad...'}"
                 name="feelsGood"
                 placeholder="Please select your feeling"
                 search-selection
-            ></generic-input>
+            ></text-input>
 
-            <generic-input
+            <text-input
                 description="Disabled selection"
                 labels="{A: 'Label A', B: 'Label B', C: 'Label C', D: 'Label D'}"
                 name="disabledSelection"
-            ></generic-input>
+            ></text-input>
 
             <generic-inputs
                 default="['coding is much fun']"

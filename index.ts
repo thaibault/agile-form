@@ -203,7 +203,7 @@ export class AgileForm<
             inputs: `
                 button[name],
 
-                file-input, generic-input, generic-inputs,
+                file-input, text-input, generic-inputs,
                 requireable-checkbox, slider-input, input,
 
                 select, textarea

@@ -180,7 +180,7 @@
         "react-useanimations$": "react-generic-dummy",
         "react-useanimations/lib/lock$": "react-generic-dummy",
         "react-useanimations/lib/plusToX$": "react-generic-dummy",
-        "web-input-material/components/GenericInput$": "web-input-material/components/GenericInput.bundle"
+        "web-input-material/components/TextInput$": "web-input-material/components/TextInput.bundle"
       },
       "enforceDeduplication": true,
       "html": {
