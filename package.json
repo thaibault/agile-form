@@ -73,6 +73,7 @@
     "@rmwc/textfield": "*",
     "@rmwc/theme": "*",
     "@rmwc/tooltip": "*",
+    "@rmwc/touch-target": "*",
     "@rmwc/typography": "*",
     "@tinymce/tinymce-react": "*",
     "@types/ejs": "*",
