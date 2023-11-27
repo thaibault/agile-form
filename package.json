@@ -101,6 +101,7 @@
     "jest": "*",
     "jest-canvas-mock": "*",
     "jsdoc": "*",
+    "material-components-web": "*",
     "material-icons": "*",
     "mini-css-extract-plugin": "*",
     "node-fetch": "*",
