@@ -73,6 +73,7 @@
     "@rmwc/textfield": "*",
     "@rmwc/theme": "*",
     "@rmwc/tooltip": "*",
+    "@rmwc/touch-target": "*",
     "@rmwc/typography": "*",
     "@tinymce/tinymce-react": "*",
     "@types/ejs": "*",
@@ -100,6 +101,7 @@
     "jest": "*",
     "jest-canvas-mock": "*",
     "jsdoc": "*",
+    "material-components-web": "*",
     "material-icons": "*",
     "mini-css-extract-plugin": "*",
     "node-fetch": "*",
@@ -180,7 +182,7 @@
         "react-useanimations$": "react-generic-dummy",
         "react-useanimations/lib/lock$": "react-generic-dummy",
         "react-useanimations/lib/plusToX$": "react-generic-dummy",
-        "web-input-material/components/GenericInput$": "web-input-material/components/GenericInput.bundle"
+        "web-input-material/components/TextInput$": "web-input-material/components/TextInput.bundle"
       },
       "enforceDeduplication": true,
       "html": {

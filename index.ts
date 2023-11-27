@@ -59,6 +59,7 @@ import {
     TargetConfiguration
 } from './type'
 // endregion
+console.warn('HANS')
 // region components
 /**
  * Form handler which accepts a various number of content projected dom nodes
@@ -203,7 +204,7 @@ export class AgileForm<
             inputs: `
                 button[name],
 
-                file-input, generic-input, generic-inputs,
+                file-input, text-input, generic-inputs,
                 requireable-checkbox, slider-input, input,
 
                 select, textarea

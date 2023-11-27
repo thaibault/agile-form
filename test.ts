@@ -18,7 +18,7 @@ import {describe, expect, test} from '@jest/globals'
 import '@webcomponents/webcomponentsjs/custom-elements-es5-adapter'
 import Tools, {globalContext} from 'clientnode'
 import nodeFetch from 'node-fetch'
-import GenericInput from 'web-input-material/components/GenericInput'
+import TextInput from 'web-input-material/components/TextInput'
 
 import api, {AgileForm} from './index'
 import {Configuration, Evaluation} from './type'
@@ -30,8 +30,8 @@ import {Configuration, Evaluation} from './type'
 require('node-fetch/src/utils/multipart-parser')
 globalContext.fetch = nodeFetch as unknown as typeof fetch
 
-// Registers "generic-input" tag.
-GenericInput.register()
+// Registers "text-input" tag.
+TextInput.register()
 
 const name = 'test-form'
 api.register(name)
@@ -66,7 +66,7 @@ describe('AgileForm', ():void => {
 
         expect(form).toHaveProperty('inputConfigurations', {})
 
-        const input:HTMLElement = document.createElement('generic-input')
+        const input:HTMLElement = document.createElement('text-input')
         const inputName = 'test'
         input.setAttribute('name', inputName)
         form.appendChild(input)

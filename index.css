@@ -11,8 +11,8 @@ endregion */
 
 .agile-form__group,
 .agile-form__re-captcha-fallback,
-generic-checkbox,
-generic-input {
+requireable-checkbox,
+text-input {
     display: none;
 }
 
