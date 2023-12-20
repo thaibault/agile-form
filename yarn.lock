@@ -8569,9 +8569,9 @@ react-generic-dummy@*:
   integrity sha512-cqZ+G5WmoWSnCHwdOrggzVSjR++q1Trx5g0uvEcL9zQi/QhRerDT9L72lXbV1mmTrIP3I8M2cUkbfwzViYwrbw==
 
 react-input-material@*:
-  version "0.0.600"
-  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.600.tgz#3a3cf453967fd3dc93c4514b6fa445e890812fe4"
-  integrity sha512-46iU2xuyzncLFxBl9n50UAEAHWSOxgOWRASud3d7c1rpaMOhnrzeOHJ2O+Nza2U07uZSYpIylIraDPKndbizcg==
+  version "0.0.601"
+  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.601.tgz#086409b31e0af808d9283e188d91c1db4263f276"
+  integrity sha512-P0FhFBsvLoXD8WcjIb+WBDkAhAPp5dx0/it6mtW5AHHgbHeAhgXiHWLlM4aoBQa26hn2lwG7fo7epQIbx3LKoA==
 
 react-is@^16.13.1:
   version "16.13.1"
@@ -9645,9 +9645,9 @@ web-component-wrapper@*:
   integrity sha512-iCIJS4D6kYbQkGQiciz2Vzf0WOmyZxh/lwxIUCQ0U1ysHVsOTGPDQFnKi4MxeTwh4pEKrPpYnxyVOquq+QwC4w==
 
 web-input-material@*:
-  version "0.0.410"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.410.tgz#68a40f7c4c7108383be335b1afe5950697a30395"
-  integrity sha512-TBxhm0iZtQ7jCq4qzyinM9Bk8ZiyZa8uu12IJx9DV9D9RdvGCgjj4XfASyCaOaRWK1XEzRVWI/6vZhHV2QnJQg==
+  version "0.0.411"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.411.tgz#d1eee47623e2ff01609c0e6cacf8f3583297b194"
+  integrity sha512-Y7MXerNVfvuByHu9gQuSxP1yAyTpZJ9ePA6LI+i8L2DNtNESeH+x9f8v7An4AN4FaRYRUoZfVMESsq8vedbgBg==
   dependencies:
     prop-types "*"
     react "*"
