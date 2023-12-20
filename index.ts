@@ -59,7 +59,6 @@ import {
     TargetConfiguration
 } from './type'
 // endregion
-console.warn('HANS')
 // region components
 /**
  * Form handler which accepts a various number of content projected dom nodes

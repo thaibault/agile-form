@@ -23,6 +23,7 @@ text-input {
 .agile-form__re-captcha-fallback > div > div {
     border: 2px solid transparent;
     border-radius: 4px;
+
     height: 76px;
     width: 302px;
 }

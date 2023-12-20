@@ -23,6 +23,26 @@
         <!--region style-->
         <link rel="stylesheet" href="/@material/slider/dist/mdc.slider.css">
         <style>
+            agile-form {
+                file-input,
+                text-input,
+                generic-inputs,
+                generic-interval,
+                slider-input {
+                    display: block;
+                    width: 400px;
+                }
+
+                file-input,
+                text-input {
+                    margin-bottom: 20px;
+                }
+
+                generic-inputs {
+                    margin-bottom: 60px;
+                }
+            }
+
             <%-
                 require('material-icons/iconfont/material-icons.css')
                     .replace(
