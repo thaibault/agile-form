@@ -258,6 +258,29 @@
           }
         }
       }
+    },
+    "webpack": {
+      "snapshot": {
+        "unmanagedPaths": [
+          {
+            "__evaluate__": "/^.+?[\\/]node_modules[\\/]clientnode[\\/]/"
+          },
+          {
+            "__evaluate__": "/^.+?[\\/]node_modules[\\/]react-generic-(animate|dummy|tools)[\\/]/"
+          },
+          {
+            "__evaluate__": "/^.+?[\\/]node_modules[\\/](react|web)-input-material[\\/]/"
+          },
+          {
+            "__evaluate__": "/^.+?[\\/]node_modules[\\/]web-component-wrapper[\\/]/"
+          }
+        ]
+      },
+      "watchOptions": {
+        "ignored": {
+          "__remove__": "**/node_modules"
+        }
+      }
     }
   }
 }
