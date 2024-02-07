@@ -263,25 +263,16 @@
       "snapshot": {
         "unmanagedPaths": [
           {
-            "__evaluate__":  "/^(.+?[\\/]node_modules[\\/])clientnode[\\/]/"
+            "__evaluate__": "/^.+?[\\/]node_modules[\\/]clientnode[\\/]/"
           },
           {
-            "__evaluate__":  "/^(.+?[\\/]node_modules[\\/])react-generic-animate[\\/]/"
+            "__evaluate__": "/^.+?[\\/]node_modules[\\/]react-generic-(animate|dummy|tools)[\\/]/"
           },
           {
-            "__evaluate__":  "/^(.+?[\\/]node_modules[\\/])react-generic-dummy[\\/]/"
+            "__evaluate__": "/^.+?[\\/]node_modules[\\/](react|web)-input-material[\\/]/"
           },
           {
-            "__evaluate__":  "/^(.+?[\\/]node_modules[\\/])react-generic-tools[\\/]/"
-          },
-          {
-            "__evaluate__":  "/^(.+?[\\/]node_modules[\\/])react-input-material[\\/]/"
-          },
-          {
-            "__evaluate__":  "/^(.+?[\\/]node_modules[\\/])web-component-wrapper[\\/]/"
-          },
-          {
-            "__evaluate__":  "/^(.+?[\\/]node_modules[\\/])web-input-material[\\/]/"
+            "__evaluate__": "/^.+?[\\/]node_modules[\\/]web-component-wrapper[\\/]/"
           }
         ]
       },
