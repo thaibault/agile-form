@@ -2962,9 +2962,9 @@
     "@types/react" "*"
 
 "@types/react@*":
-  version "18.2.59"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.59.tgz#14c7bcab22e2ce71d9eaa02f78d3d55067724d7f"
-  integrity sha512-DE+F6BYEC8VtajY85Qr7mmhTd/79rJKIHCg99MU9SWPB4xvLb6D1za2vYflgZfmPqQVEr6UqJTnLXEwzpVPuOg==
+  version "18.2.60"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.60.tgz#df026eaef1100b6dafe420f36fecb1d209a8cee1"
+  integrity sha512-dfiPj9+k20jJrLGOu9Nf6eqxm2EyJRrq2NvwOFsfbb7sFExZ9WELPs67UImHj3Ayxg8ruTtKtNnbjaF8olPq0A==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -8664,9 +8664,9 @@ react-generic-dummy@*:
   integrity sha512-Q9JoBGYDgCZyNMXl6Nffejc9sE/Zt7aAvNigxVC5Oq09C3ZqWWZRoPOu9urJZkPCCwnxvx4Ad2GTFlXd9DsV7A==
 
 react-input-material@*:
-  version "0.0.635"
-  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.635.tgz#f914eb7571d65baecec02f77aecdb8fb98266ce0"
-  integrity sha512-+FKnr7CBYR7vhb89ScX7JBg8e41vTn7+U3GS7F7BsDbmGMC3nbLmFtvxE3mO0fGlkAiew4Z54u1q12mr6va1mw==
+  version "0.0.636"
+  resolved "https://registry.yarnpkg.com/react-input-material/-/react-input-material-0.0.636.tgz#ed444bf04713e1927d2d6fb9a61ee0883e7e4c5c"
+  integrity sha512-9uPorLeEqYMs77A0BeZvM7ELDE5fZYd9rkJKhIrbOO5dmLnCGXFV4RIiRypda3oyBwrtiZ5JtIlzksY9TUVO/Q==
 
 react-is@^16.13.1:
   version "16.13.1"
@@ -9748,9 +9748,9 @@ web-component-wrapper@*:
   integrity sha512-WfBBToBUigSA/+DN9tPokcFPai9fFgTVrAKeUpgy2CbcYUuo0JtiGPbQg9Gw4oaCYQjqgA4wQAb87hE6fDrX6w==
 
 web-input-material@*:
-  version "0.0.429"
-  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.429.tgz#d51d27b9d3517a8a31802401a7dd188723d2ee01"
-  integrity sha512-7u2gN4tnxzvcvrkoDTnUiuZSTsgm3ieTiagtu9uD2SjW6nIZRQgEud6X0B1a6Ocx0FGRMlTh+A8bs7O8Jh4/Dw==
+  version "0.0.430"
+  resolved "https://registry.yarnpkg.com/web-input-material/-/web-input-material-0.0.430.tgz#33f39ce4cd5c3856d8a828e50cfe761533679793"
+  integrity sha512-SJhnXU31mm3HOylaAolhrskkWcMru0Bp0WEOkl24qrQMIYDB2VX/xFqai7Qh0UWrPUjpGfBnCOu+ncIOtz/FGA==
   dependencies:
     prop-types "*"
     react "*"
