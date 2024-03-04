@@ -3411,7 +3411,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/select@npm:^14.0.11":
+"@rmwc/ripple@patch:@rmwc/ripple@npm%3A14.0.11#~/.yarn/patches/@rmwc-ripple-npm-14.0.11-22d1530040.patch":
+  version: 14.0.11
+  resolution: "@rmwc/ripple@patch:@rmwc/ripple@npm%3A14.0.11#~/.yarn/patches/@rmwc-ripple-npm-14.0.11-22d1530040.patch::version=14.0.11&hash=51db23"
+  dependencies:
+    "@material/ripple": "npm:^14.0.0"
+    "@rmwc/base": "npm:14.0.11"
+    "@rmwc/provider": "npm:14.0.11"
+    "@rmwc/types": "npm:14.0.11"
+  peerDependencies:
+    react: ">=16.8.x"
+    react-dom: ">=16.8.x"
+  checksum: 10c0/5a8bbdc73b3f41f66cc1b3c3f3a0b272bec0fb91bf479662da587abd96209428bac31b1e802aab8cabcd2e9d0dad8bc411a3350f4bca3cc1d76ed3ec220f1ead
+  languageName: node
+  linkType: hard
+
+"@rmwc/select@npm:14.0.11":
   version: 14.0.11
   resolution: "@rmwc/select@npm:14.0.11"
   dependencies:
@@ -3429,6 +3444,27 @@ __metadata:
     react: ">=16.8.x"
     react-dom: ">=16.8.x"
   checksum: 10c0/b88b8fad45e0a14100c4d9bf5bcfd08b7d3282b4e9f6c1322f15e7029059a84a592e442e1909d2601a320b5f8e9ae3ec63fd521f1099e77a232cdf93f33c47ef
+  languageName: node
+  linkType: hard
+
+"@rmwc/select@patch:@rmwc/select@npm%3A14.0.11#~/.yarn/patches/@rmwc-select-npm-14.0.11-9eb2618d5f.patch":
+  version: 14.0.11
+  resolution: "@rmwc/select@patch:@rmwc/select@npm%3A14.0.11#~/.yarn/patches/@rmwc-select-npm-14.0.11-9eb2618d5f.patch::version=14.0.11&hash=67c50a"
+  dependencies:
+    "@material/select": "npm:^14.0.0"
+    "@rmwc/base": "npm:14.0.11"
+    "@rmwc/floating-label": "npm:14.0.11"
+    "@rmwc/icon": "npm:14.0.11"
+    "@rmwc/line-ripple": "npm:14.0.11"
+    "@rmwc/list": "npm:14.0.11"
+    "@rmwc/menu": "npm:14.0.11"
+    "@rmwc/notched-outline": "npm:14.0.11"
+    "@rmwc/ripple": "npm:14.0.11"
+    "@rmwc/types": "npm:14.0.11"
+  peerDependencies:
+    react: ">=16.8.x"
+    react-dom: ">=16.8.x"
+  checksum: 10c0/ee4bfad25f80b31d70aedf350dad7bb2f40646065afa528afd0be8ee499c7cca16000bf6d75a6699f6ba036810101041828e28a9a878d2ab5fba15fe5cac7367
   languageName: node
   linkType: hard
 
@@ -4578,7 +4614,7 @@ __metadata:
     "@rmwc/formfield": "npm:^14.0.11"
     "@rmwc/icon": "npm:^14.0.11"
     "@rmwc/icon-button": "npm:^14.0.11"
-    "@rmwc/select": "npm:^14.0.11"
+    "@rmwc/select": "patch:@rmwc/select@npm%3A14.0.11#~/.yarn/patches/@rmwc-select-npm-14.0.11-9eb2618d5f.patch"
     "@rmwc/slider": "npm:^14.0.11"
     "@rmwc/tabs": "npm:^14.0.11"
     "@rmwc/textfield": "npm:^14.0.11"
