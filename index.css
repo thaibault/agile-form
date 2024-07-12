@@ -33,7 +33,3 @@ text-input {
     border-color: #b00020 !important;
     border-color: var(--mdc-theme-error, #b00020) !important;
 }
-/* region vim modline
-vim: set tabstop=4 shiftwidth=4 expandtab:
-vim: foldmethod=marker foldmarker=region,endregion:
-endregion */

@@ -279,7 +279,7 @@
                 name="send-report"
                 show-if="submitted"
             >
-                Form-Result: <pre>${Tools.represent(getData())}</pre>
+                Form-Result: <pre>${object.represent(getData())}</pre>
             </div>
             <div
                 class="agile-form__group"
@@ -287,10 +287,10 @@
                 show-if="latestResponse"
             >
                 Initial Response (Status: ${initialResponse.status}):
-                <pre>${Tools.represent(initialResponse.data)}</pre>
+                <pre>${object.represent(initialResponse.data)}</pre>
                 <br />
                 Response (Status: ${latestResponse.status}):
-                <pre>${Tools.represent(latestResponse.data)}</pre>
+                <pre>${object.represent(latestResponse.data)}</pre>
             </div>
 
             <hr

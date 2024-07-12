@@ -16,7 +16,6 @@
     endregion
 */
 // region imports
-import PropertyTypes from 'clientnode/property-types'
 import {
     Mapping,
     ObjectMaskConfiguration,
@@ -26,7 +25,8 @@ import {
     RecursiveEvaluateable,
     RecursivePartial,
     ValueOf
-} from 'clientnode/type'
+} from 'clientnode'
+import PropertyTypes from 'clientnode/dist/property-types'
 import 'grecaptcha'
 import {BaseModel} from 'web-input-material/type'
 // endregion
@@ -263,7 +263,3 @@ export type ResponseResult = {
     data:Mapping<unknown>
     invalidInputNames:Array<string>
 }
-// region vim modline
-// vim: set tabstop=4 shiftwidth=4 expandtab:
-// vim: foldmethod=marker foldmarker=region,endregion:
-// endregion

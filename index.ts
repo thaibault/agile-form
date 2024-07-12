@@ -17,23 +17,40 @@
     endregion
 */
 // region imports
-import Tools, {Lock, $} from 'clientnode'
 import {
+    $,
+    camelCaseToDelimited,
+    compile,
     CompilationResult,
+    convertToValidVariableName,
+    copy,
+    debounce,
+    evaluate,
+    evaluateDynamicData,
     EvaluationResult,
-    Mapping,
+    extend,
+    getSubstructure,
+    getURLParameter,
+    isFunction,
+    isPlainObject,
+    Lock,
     Offset,
+    Mapping,
+    mask,
+    MAXIMAL_SUPPORTED_INTERNET_EXPLORER_VERSION,
     PlainObject,
     QueryParameters,
     RecursiveEvaluateable,
     RecursivePartial,
+    represent,
     TemplateFunction,
-    UnknownFunction
-} from 'clientnode/type'
-/* eslint-disable @typescript-eslint/no-unused-vars, no-unused-vars */
-import {object} from 'clientnode/property-types'
+    timeout,
+    UnknownFunction,
+    UTILITY_SCOPE_NAMES,
+    UTILITY_SCOPE_VALUES, UTILITY_SCOPE, KEY_CODES
+} from 'clientnode'
+import {object} from 'clientnode/dist/property-types'
 import property from 'web-component-wrapper/decorator'
-/* eslint-enable @typescript-eslint/no-unused-vars, no-unused-vars */
 import Web from 'web-component-wrapper/Web'
 import {WebComponentAPI, StaticWebComponent} from 'web-component-wrapper/type'
 
@@ -63,18 +80,15 @@ import {
 /**
  * Form handler which accepts a various number of content projected dom nodes
  * to interact with them following a given specification object.
- * @property static:baseScopeNames - List of generic scope names available in
- * all evaluations environments.
- * @property static:defaultConfiguration - Holds default extendable
- * configuration object.
- * @property static:specificationToPropertyMapping - Mapping model
- * specification keys to their corresponding input field property name (if not
- * equal).
- * @property static:knownPropertyOrdering - Order of known properties to
- * apply on inputs.
- *
+ * @property baseScopeNames - List of generic scope names available in all
+ * evaluations environments.
+ * @property defaultConfiguration - Holds default extendable configuration
+ * object.
+ * @property specificationToPropertyMapping - Mapping model specification keys
+ * to their corresponding input field property name (if not equal).
+ * @property knownPropertyOrdering - Order of known properties to apply on
+ * inputs.
  * @property actionResults - Mapping of action names to their results.
- *
  * @property clearButtons - Reference to form clear button nodes.
  * @property resetButtons - Reference to form reset button nodes.
  * @property spinner - Reference to a spinner dom node.
@@ -82,12 +96,9 @@ import {
  * messages.
  * @property submitButtons - Reference to submit button nodes.
  * @property truncateButtons - Reference to form truncate buttons.
-
  * @property dependencyMapping - Mapping from each field to their dependent one.
-
  * @property groups - Mapping from group dom nodes to containing field names
  * and conditional show if expression.
-
  * @property determinedTargetURL - Last determined target url.
  * @property initialData - Initialed form input values.
  * @property initialResponse - Initialisation server response.
@@ -95,13 +106,11 @@ import {
  * @property message - Current error message about unsatisfied given
  * specification.
  * @property response - Current parsed response from send form data.
-
  * @property inputEventBindings - Holds a mapping from nodes with registered
  * event handlers mapped to their de-registration function.
  * @property inputConfigurations - Mapping from field name to corresponding
  * configuration.
  * @property inputNames - Specified transformer environment variable names.
-
  * @property invalid - Indicates whether this form has invalid input.
  * @property invalidConstraint - Indicates whether which constraint or none if
  * none where determined as invalid.
@@ -111,7 +120,6 @@ import {
  * @property submitted - Indicates whether this form state was submitted
  * already.
  * @property valid - Indicates whether this form has valid input.
-
  * @property reCaptchaFallbackInput - Reference to render re-captcha fallback
  * into.
  * @property reCaptchaFallbackRendered - Indicates whether a fallback
@@ -119,7 +127,6 @@ import {
  * @property reCaptchaPromise - Reference to re-captcha initialisation promise.
  * @property reCaptchaPromiseResolver - Reference to re-captcha initialisation.
  * @property reCaptchaToken - Last challenge result token promise resolver.
-
  * @property additionalConfiguration - Holds given configuration object.
  * @property baseConfiguration - Holds given configuration object.
  * @property configuration - Holds given configuration object.
@@ -127,9 +134,7 @@ import {
  * @property resolvedConfiguration - Holds given configuration object.
  * @property urlConfiguration - URL given configurations object.
  * @property queryParameters - All determined query parameters.
- *
  * @property lock - Holds lock instance for saving instance specific locks.
- *
  * @property _evaluationResults - Last known evaluation result cache.
  */
 export class AgileForm<
@@ -138,7 +143,7 @@ export class AgileForm<
     InternalProperties extends Mapping<unknown> = Mapping<unknown>,
 > extends Web<TElement, ExternalProperties, InternalProperties> {
     // region properties
-    static baseScopeNames:Array<string> = [
+    static baseScopeNames = [
         'actionResults',
 
         'determineStateURL',
@@ -160,7 +165,7 @@ export class AgileForm<
 
         'stateMessage',
 
-        'Tools'
+        ...UTILITY_SCOPE_NAMES
     ]
     static content = '<form novalidate><slot></slot></form>'
     static defaultConfiguration:RecursiveEvaluateable<Configuration> = {
@@ -283,7 +288,7 @@ export class AgileForm<
             }
         */
         }
-    static knownPropertyOrdering:Array<string> = [
+    static knownPropertyOrdering = [
         'model',
         'name',
         'type',
@@ -392,7 +397,7 @@ export class AgileForm<
         */
         this.defineGetterAndSetterInterface()
 
-        this.queryParameters = Tools.stringGetURLParameter() as QueryParameters
+        this.queryParameters = getURLParameter() as QueryParameters
 
         this.resolveConfiguration()
     }
@@ -402,28 +407,24 @@ export class AgileForm<
      * @param name - Attribute name which was updates.
      * @param oldValue - Old attribute value.
      * @param newValue - New updated value.
-     *
-     * @returns Nothing.
      */
     attributeChangedCallback(
         name:string, oldValue:string, newValue:string
-    ):void {
+    ) {
         super.attributeChangedCallback(name, oldValue, newValue)
 
         this.resolveConfiguration()
     }
     /**
      * Registers new re-captcha token.
-     * @returns Nothing.
      */
-    connectedCallback():void {
+    connectedCallback() {
         super.connectedCallback()
 
         void this.updateReCaptchaToken()
     }
     /**
      * De-registers all needed event listener.
-     * @returns Nothing.
      */
     disconnectedCallback():void {
         super.disconnectedCallback()
@@ -453,7 +454,6 @@ export class AgileForm<
      * Triggered when content projected and nested dom nodes are ready to be
      * traversed. Selects all needed dom nodes.
      * @param reason - Description why rendering is necessary.
-     *
      * @returns A promise resolving to nothing.
      */
     async render(reason = 'unknown'):Promise<void> {
@@ -532,8 +532,6 @@ export class AgileForm<
      * @param domNode - Node to fade.
      * @param opacity - Opacity value between 0 and 1.
      * @param durationInMilliseconds - Duration of animation.
-     *
-     * @returns Nothing.
      */
     fade(
         domNode:AnnotatedDomNode, opacity = 1, durationInMilliseconds = 100
@@ -612,7 +610,7 @@ export class AgileForm<
                 durationInMilliseconds * .1
             )
 
-            domNode.clearFading = ():void => {
+            domNode.clearFading = () => {
                 clearInterval(timer)
 
                 domNode.style.opacity = `${domNode.oldOpacity || 1}`
@@ -624,10 +622,8 @@ export class AgileForm<
     /**
      * Adds given dom nodes visual representation.
      * @param domNode - Node to show.
-     *
-     * @returns Nothing.
      */
-    show(domNode:AnnotatedDomNode):void {
+    show(domNode:AnnotatedDomNode) {
         this.fade(domNode)
 
         domNode.removeAttribute('aria-hidden')
@@ -635,19 +631,16 @@ export class AgileForm<
     /**
      * Removes given dom nodes visual representation.
      * @param domNode - Node to hide.
-     *
-     * @returns Nothing.
      */
-    hide(domNode:AnnotatedDomNode):void {
+    hide(domNode:AnnotatedDomNode) {
         this.fade(domNode, 0)
 
         domNode.setAttribute('aria-hidden', 'true')
     }
     /**
      * Shows the spinner.
-     * @returns Nothing.
      */
-    showSpinner():void {
+    showSpinner() {
         if (this.spinner.length) {
             for (const domNode of this.spinner)
                 this.show(domNode)
@@ -657,18 +650,16 @@ export class AgileForm<
     }
     /**
      * Hides the spinner.
-     * @returns Nothing.
      */
-    hideSpinner():void {
+    hideSpinner() {
         for (const domNode of this.spinner)
             this.hide(domNode)
     }
     /**
      * Updates given field (by name) visibility state.
      * @param name - Field name to update.
-     *
      * @returns A promise resolving to a boolean value indicating whether a
-     * visibility change has been happen.
+     * visibility change happened.
      */
     async updateInputVisibility(name:string):Promise<boolean> {
         const inputConfiguration:InputConfiguration =
@@ -719,7 +710,6 @@ export class AgileForm<
     }
     /**
      * Updates all group visibility states.
-     * @returns Nothing.
      */
     updateAllGroups():void {
         for (const [domNode, specification] of this.groups) {
@@ -787,8 +777,6 @@ export class AgileForm<
     /**
      * Evaluate dynamic text content.
      * @param domNode - Dom node to render its content.
-     *
-     * @returns Nothing.
      */
     updateGroupContent(domNode:AnnotatedDomNode):void {
         const scope:Mapping<unknown> = {}
@@ -821,7 +809,7 @@ export class AgileForm<
 
             this.message,
 
-            Tools,
+            ...UTILITY_SCOPE_VALUES,
 
             ...this._evaluationResults,
             ...this.inputNames.map((name:string):InputConfiguration =>
@@ -860,8 +848,6 @@ export class AgileForm<
     /**
      * Updates current error message box state.
      * @param message - New message string to show.
-     *
-     * @returns Nothing.
      */
     updateMessageBox(message?:null|string):void {
         if (typeof message === 'string')
@@ -889,13 +875,12 @@ export class AgileForm<
      * 4. Alias top level input property configuration "nullable" into
      *    properties top level inverted "required" configuration.
      * @param configuration - Configuration object to normalize.
-     *
      * @returns Normalized configuration.
      */
     static normalizeURLConfiguration(
         configuration:PlainObject
     ):RecursivePartial<Configuration> {
-        const currentConfiguration:PlainObject = Tools.copy(configuration)
+        const currentConfiguration:PlainObject = copy(configuration)
 
         // Consolidate aliases for "input" configuration item.
         const inputs:Mapping<RecursivePartial<InputConfiguration>> =
@@ -903,7 +888,7 @@ export class AgileForm<
                 Mapping<RecursivePartial<InputConfiguration>> ||
             {}
         if (currentConfiguration.model) {
-            Tools.extend(
+            extend(
                 true,
                 inputs,
                 currentConfiguration.model as
@@ -966,7 +951,6 @@ export class AgileForm<
     /**
      * Normalizes given evaluations.
      * @param evaluations - Given evaluations to normalize.
-     *
      * @returns Normalized evaluations.
      */
     static normalizeEvaluations(
@@ -1056,14 +1040,13 @@ export class AgileForm<
     /**
      * Normalizes given configuration.
      * @param configuration - Configuration object to normalize.
-     *
      * @returns Normalized configuration.
      */
     static normalizeConfiguration(
         configuration:RecursivePartial<Configuration>
     ):NormalizedConfiguration {
         const currentConfiguration:RecursivePartial<Configuration> =
-            Tools.copy(configuration)
+            copy(configuration)
 
         currentConfiguration.evaluations = AgileForm.normalizeEvaluations(
             currentConfiguration.evaluations as GivenEvaluations|undefined
@@ -1094,8 +1077,6 @@ export class AgileForm<
     /**
      * Merge given configuration into resolved configuration object.
      * @param configuration - Configuration to merge.
-     *
-     * @returns Nothing.
      */
     mergeConfiguration(configuration:RecursivePartial<Configuration>):void {
         const normalizedConfiguration:NormalizedConfiguration =
@@ -1106,7 +1087,7 @@ export class AgileForm<
             (this.resolvedConfiguration.evaluations as Array<Evaluation>)
                 .concat(normalizedConfiguration.evaluations)
 
-        Tools.extend(
+        extend(
             true,
             this.resolvedConfiguration,
             normalizedConfiguration as RecursivePartial<Configuration>
@@ -1114,7 +1095,6 @@ export class AgileForm<
     }
     /**
      * Resolve and merges configuration sources into final object.
-     * @returns Nothing.
      */
     resolveConfiguration():void {
         this.resolvedConfiguration = this.self.normalizeConfiguration(
@@ -1139,9 +1119,9 @@ export class AgileForm<
             this.mergeConfiguration(this.urlConfiguration)
 
         this.resolvedConfiguration.initializeTarget =
-            Tools.extend<TargetConfiguration>(
+            extend<TargetConfiguration>(
                 true,
-                Tools.copy<TargetConfiguration>(
+                copy<TargetConfiguration>(
                     this.resolvedConfiguration.target as TargetConfiguration
                 ),
                 this.resolvedConfiguration.initializeTarget
@@ -1149,8 +1129,7 @@ export class AgileForm<
 
         if (this.resolvedConfiguration.debug)
             console.debug(
-                'Got configuration:',
-                Tools.represent(this.resolvedConfiguration)
+                'Got configuration:', represent(this.resolvedConfiguration)
             )
     }
     /**
@@ -1161,7 +1140,7 @@ export class AgileForm<
         const parameter:Array<string>|string|undefined =
             this.queryParameters[this.resolvedConfiguration.name]
         if (typeof parameter === 'string') {
-            const evaluated:EvaluationResult = Tools.stringEvaluate(parameter)
+            const evaluated:EvaluationResult = evaluate(parameter)
 
             if (evaluated.error) {
                 console.warn(
@@ -1176,7 +1155,7 @@ export class AgileForm<
                 evaluated.result !== null &&
                 typeof evaluated.result === 'object'
             )
-                return Tools.mask<RecursivePartial<Configuration>>(
+                return mask<RecursivePartial<Configuration>>(
                     this.self.normalizeURLConfiguration(evaluated.result),
                     this.resolvedConfiguration.urlConfigurationMask
                 ) as RecursivePartial<Configuration>
@@ -1188,7 +1167,6 @@ export class AgileForm<
     /// region apply configurations to components
     /**
      * Determines action triggering dom nodes to add event listener to.
-     * @returns Nothing.
      */
     registerActionListener():void {
         for (const [name, action] of Object.entries(
@@ -1232,7 +1210,6 @@ export class AgileForm<
      * Forwards all input specifications to their corresponding input node.
      * Observes fields for changes to apply specified inter-constraints between
      * them.
-     * @returns Nothing.
      */
     async configureContentProjectedElements():Promise<void> {
         const lockName = 'configureContentProjectedElements'
@@ -1271,14 +1248,11 @@ export class AgileForm<
      * Determine all environment variables to run expressions again. We have to
      * do this a second time to include dynamically added inputs in prototyping
      * mode.
-     * @returns Nothing.
      */
     determineInputNames():void {
         this.inputNames = Object.keys(this.inputConfigurations)
             .filter((name:string):boolean => !name.includes('.'))
-            .map((name:string):string =>
-                Tools.stringConvertToValidVariableName(name)
-            )
+            .map((name:string):string => convertToValidVariableName(name))
     }
     /**
      * Finds all fields and connects them with their corresponding model
@@ -1432,7 +1406,7 @@ export class AgileForm<
                         if (!configuration.dynamicExtendExpressions)
                             configuration.dynamicExtendExpressions = {}
 
-                        Tools.extend<RecursivePartial<Model>>(
+                        extend<RecursivePartial<Model>>(
                             true,
                             configuration.dynamicExtendExpressions,
                             domNode.externalProperties
@@ -1450,7 +1424,7 @@ export class AgileForm<
 
                     if (domNode.externalProperties?.model)
                         // Merge dom node and form model configurations.
-                        Tools.extend<RecursivePartial<Model>>(
+                        extend<RecursivePartial<Model>>(
                             true,
                             configuration.properties.model,
                             domNode.externalProperties.model
@@ -1505,29 +1479,19 @@ export class AgileForm<
                         console.debug(
                             `Apply form configuration for input "${name}" ` +
                             `with property "${key}" and value "` +
-                            Tools.represent(configuration.properties[key]) +
-                            '".'
+                            `${represent(configuration.properties[key])}".`
                         )
 
-                        /*
-                            eslint-disable
-                            @typescript-eslint/no-unnecessary-type-assertion
-                        */
                         ;(domNode[key as keyof InputAnnotation] as unknown) =
                             configuration.properties[key]
-                        /*
-                            eslint-disable
-                            @typescript-eslint/no-unnecessary-type-assertion
-                        */
                     } else
                         console.debug(
                             `Form configuration for input "${name}" with ` +
                             `property "${key}" and value "` +
-                            Tools.represent(configuration.properties[key]) +
+                            represent(configuration.properties[key]) +
                             '" has been shadowed by dom nodes configuration ' +
                             'value "' +
-                            Tools.represent(domNode.externalProperties![key]) +
-                            '".'
+                            `${represent(domNode.externalProperties![key])}".`
                         )
 
                 try {
@@ -1641,18 +1605,16 @@ export class AgileForm<
      * its internal state has been reflected.
      * @param numberOfCycles - Number of digest cycles to wait until resolve
      * resulting promise.
-     *
      * @returns A promise resolving when digest hast been finished.
-    */
+     */
     async digest(numberOfCycles = 1):Promise<void> {
         for (let cycle = 0; cycle < numberOfCycles; cycle += 1)
-            await Tools.timeout()
+            await timeout()
     }
     /**
      * Finds all groups and connects them with their corresponding compiled
-     * show if indicator functions. Additionally some description will be
+     * show if indicator functions. Additionally, some description will be
      * supplied.
-     * @returns Nothing.
      */
     setGroupSpecificConfigurations():void {
         this.groups = []
@@ -1725,7 +1687,7 @@ export class AgileForm<
                 specification.showIfExpression = code
 
                 const {error, scopeNames, templateFunction} =
-                    Tools.stringCompile(code, originalScopeNames)
+                    compile(code, originalScopeNames)
 
                 if (error)
                     console.error(
@@ -1760,7 +1722,7 @@ export class AgileForm<
 
                                 this.message,
 
-                                Tools,
+                                ...UTILITY_SCOPE_VALUES,
 
                                 shownSubNodes,
                                 subNodes,
@@ -1778,7 +1740,7 @@ export class AgileForm<
                                 `Failed to evaluate group "${name}" code "` +
                                 `${code}" with bound names "` +
                                 `${scopeNames.join('", "')}": "` +
-                                `${Tools.represent(error)}".`
+                                `${represent(error)}".`
                             )
                         }
 
@@ -1799,7 +1761,6 @@ export class AgileForm<
     /**
      * Generates a mapping from each field name to their corresponding
      * dependent field names.
-     * @returns Nothing.
      */
     createDependencyMapping():void {
         this.dependencyMapping = {}
@@ -1833,8 +1794,6 @@ export class AgileForm<
      * Pre-compiles specified given expression for given field.
      * @param name - Field name to pre-compile their expression.
      * @param type - Indicates which expression type should be compiled.
-     *
-     * @returns Nothing.
      */
     preCompileExpressions(name:string, type = 'transformer'):void {
         const typeName:'transformerExpression' = `${type}Expression` as
@@ -1844,7 +1803,7 @@ export class AgileForm<
 
         if (configuration[typeName]) {
             const code:string = configuration[typeName] as string
-            const {error, scopeNames, templateFunction} = Tools.stringCompile(
+            const {error, scopeNames, templateFunction} = compile(
                 code,
                 this.self.baseScopeNames.concat(
                     'self',
@@ -1885,7 +1844,7 @@ export class AgileForm<
 
                         this.message,
 
-                        Tools,
+                        ...UTILITY_SCOPE_VALUES,
 
                         configuration,
                         value,
@@ -1899,8 +1858,7 @@ export class AgileForm<
                     console.warn(
                         `Failed running "${typeName}" "${code}" for field ` +
                         `field "${name}" with bound names "` +
-                        `${scopeNames.join('", "')}": "` +
-                        `${Tools.represent(error)}".`
+                        `${scopeNames.join('", "')}": "${represent(error)}".`
                     )
                 }
 
@@ -1911,8 +1869,6 @@ export class AgileForm<
     /**
      * Pre-compiles specified given dynamic extend expressions for given field.
      * @param name - Field name to pre-compile their expression.
-     *
-     * @returns Nothing.
      */
     preCompileDynamicExtendStructure(name:string):void {
         const configuration:InputConfiguration = this.inputConfigurations[name]
@@ -1944,7 +1900,7 @@ export class AgileForm<
 
             if (typeof code === 'string') {
                 const result:CompilationResult<unknown> =
-                    Tools.stringCompile<unknown>(code, originalScopeNames)
+                    compile<unknown>(code, originalScopeNames)
 
                 scopeNames = result.scopeNames
                 templateFunction = result.templateFunction
@@ -1957,7 +1913,7 @@ export class AgileForm<
                     )
             } else
                 scopeNames = originalScopeNames.map((name:string):string =>
-                    Tools.stringConvertToValidVariableName(name)
+                    convertToValidVariableName(name)
                 )
 
             configuration.dynamicExtend![subName] = (event:Event):unknown => {
@@ -1984,7 +1940,7 @@ export class AgileForm<
 
                     this.message,
 
-                    Tools,
+                    ...UTILITY_SCOPE_VALUES,
 
                     event,
                     this.determineEventName(event),
@@ -2005,7 +1961,7 @@ export class AgileForm<
                 }
 
                 try {
-                    return Tools.isFunction(code) ?
+                    return isFunction(code) ?
                         code(event, scope) :
                         templateFunction!(...context)
                 } catch (error) {
@@ -2013,8 +1969,7 @@ export class AgileForm<
                         `Failed running "dynamicExtendExpression" "` +
                         `${code as string}" for property "${subName}" in ` +
                         `field "${name}" with bound names "` +
-                        `${scopeNames.join('", "')}": "` +
-                        `${Tools.represent(error)}".`
+                        `${scopeNames.join('", "')}": "${represent(error)}".`
                     )
                 }
             }
@@ -2022,7 +1977,6 @@ export class AgileForm<
     }
     /**
      * Pre-compiles all specified action expressions.
-     * @returns Nothing.
      */
     preCompileActions():void {
         const originalScopeNames:Array<string> = this.self.baseScopeNames
@@ -2046,7 +2000,7 @@ export class AgileForm<
                 continue
 
             const {error, scopeNames, templateFunction} =
-                Tools.stringCompile(code, originalScopeNames)
+                compile(code, originalScopeNames)
             if (error)
                 console.error(
                     `Failed to compile action expression "${name}": ${error}`
@@ -2076,7 +2030,7 @@ export class AgileForm<
 
                         this.message,
 
-                        Tools,
+                        ...UTILITY_SCOPE_VALUES,
 
                         event,
                         action,
@@ -2097,7 +2051,7 @@ export class AgileForm<
                     console.error(
                         `Failed running action "${name}" expression "${code}` +
                         `" with bound names "${scopeNames.join('", "')}": "` +
-                        `${Tools.represent(error)}".`
+                        `${represent(error)}".`
                     )
                 }
             }
@@ -2105,7 +2059,6 @@ export class AgileForm<
     }
     /**
      * Pre-compiles all specified target action expressions.
-     * @returns Nothing.
      */
     preCompileTargetActions():void {
         const originalScopeNames:Array<string> = this.self.baseScopeNames
@@ -2127,7 +2080,7 @@ export class AgileForm<
                 continue
 
             const {error, scopeNames, templateFunction} =
-                Tools.stringCompile(code, originalScopeNames)
+                compile(code, originalScopeNames)
             if (error)
                 console.error(
                     `Failed to compile target action expression "${name}":`,
@@ -2158,7 +2111,7 @@ export class AgileForm<
 
                         this.message,
 
-                        Tools,
+                        ...UTILITY_SCOPE_VALUES,
 
                         ...this._evaluationResults,
                         ...this.inputNames.map((
@@ -2169,8 +2122,7 @@ export class AgileForm<
                     console.error(
                         `Failed running target action "${name}" expression "` +
                         `${code}" with bound names "` +
-                        `${scopeNames.join('", "')}": "` +
-                        `${Tools.represent(error)}".`
+                        `${scopeNames.join('", "')}": "${represent(error)}".`
                     )
                 }
             }
@@ -2178,7 +2130,6 @@ export class AgileForm<
     }
     /**
      * Pre-compiles all specified generic evaluations.
-     * @returns Nothing.
      */
     preCompileGenericEvaluations():void {
         this.evaluations = []
@@ -2201,7 +2152,7 @@ export class AgileForm<
                 continue
             }
 
-            const {error, scopeNames, templateFunction} = Tools.stringCompile(
+            const {error, scopeNames, templateFunction} = compile(
                 code, this.self.baseScopeNames.concat(names, this.inputNames)
             )
             if (error)
@@ -2239,7 +2190,7 @@ export class AgileForm<
 
                         this.message,
 
-                        Tools,
+                        ...UTILITY_SCOPE_VALUES,
 
                         ...this._evaluationResults,
                         ...this.inputNames.map(
@@ -2251,8 +2202,7 @@ export class AgileForm<
                     console.error(
                         `Failed running generic expression "${name}" ` +
                         `"${code}" with bound names "` +
-                        `${scopeNames.join('", "')}": "` +
-                        `${Tools.represent(error)}"`
+                        `${scopeNames.join('", "')}": "${represent(error)}"`
                     )
                 }
             }])
@@ -2261,7 +2211,6 @@ export class AgileForm<
     /**
      * Pre-compiles all specified expressions given by the current
      * configuration.
-     * @returns Nothing.
      */
     preCompileConfigurationExpressions():void {
         this.preCompileGenericEvaluations()
@@ -2288,9 +2237,9 @@ export class AgileForm<
      */
     determineEvaluationScope():Mapping<unknown> {
         return {
+            ...UTILITY_SCOPE,
             determineStateURL: this.determineStateURL,
             queryParameters: this.queryParameters,
-            Tools,
 
             ...Object.fromEntries(
                 this.evaluations
@@ -2332,8 +2281,8 @@ export class AgileForm<
 
             await this.startBackgroundProcess(event)
 
-            detail.target = Tools.evaluateDynamicData(
-                Tools.copy(this.resolvedConfiguration.initializeTarget),
+            detail.target = evaluateDynamicData(
+                copy(this.resolvedConfiguration.initializeTarget),
                 this.determineEvaluationScope()
             )
 
@@ -2380,7 +2329,6 @@ export class AgileForm<
      * Resolve target action.
      * @param action - Action to resolve.
      * @param name - Action description.
-     *
      * @returns A target action url result or undefined.
      */
     resolveTargetAction(action:TargetAction, name:string):null|string {
@@ -2423,8 +2371,6 @@ export class AgileForm<
     /**
      * Sets all given input fields to their corresponding default values.
      * @param event - Triggered event object.
-     *
-     * @returns Nothing.
      */
     onClear = (event:MouseEvent):void => {
         void this.doReset(event, true)
@@ -2433,12 +2379,10 @@ export class AgileForm<
      * Callback triggered when any keyboard events occur.
      * Enter key down events in input fields trigger a form submit.
      * @param event - Keyboard event object.
-     *
-     * @returns Nothing.
      */
     onKeyDown = (event:KeyboardEvent):void => {
         if (
-            Tools.keyCode.ENTER === event.keyCode &&
+            KEY_CODES.ENTER === event.keyCode &&
             (event.target as HTMLElement)?.closest
         ) {
             const inputTarget:HTMLElement|null =
@@ -2452,28 +2396,22 @@ export class AgileForm<
     /**
      * Sets all given input fields to their corresponding initial values.
      * @param event - Triggered event object.
-     *
-     * @returns Nothing.
      */
-    onReset = (event:MouseEvent):void => {
+    onReset = (event:MouseEvent) => {
         void this.doReset(event, false)
     }
     /**
      * Triggers form submit.
      * @param event - Triggered event object.
-     *
-     * @returns Nothing.
      */
-    onSubmit = (event:KeyboardEvent|MouseEvent):void => {
+    onSubmit = (event:KeyboardEvent|MouseEvent) => {
         void this.doSubmit(event)
     }
     /**
      * Clears all given input fields.
      * @param event - Triggered event object.
-     *
-     * @returns Nothing.
      */
-    onTruncate = (event:MouseEvent):void => {
+    onTruncate = (event:MouseEvent) => {
         void this.doReset(event)
     }
     //// endregion
@@ -2481,7 +2419,6 @@ export class AgileForm<
      * Sets all given input fields to their initial value.
      * @param event - Triggered event object.
      * @param useDefault - Indicates to use default value while resetting.
-     *
      * @returns A promise resolving to nothing.
      */
     doReset = async (
@@ -2496,7 +2433,7 @@ export class AgileForm<
             } catch (error) {
                 console.warn(
                     `Failed to reset input "${name}": ` +
-                    Tools.represent(error)
+                    represent(error)
                 )
             }
     }
@@ -2504,7 +2441,6 @@ export class AgileForm<
      * Sets given input field their initial value.
      * @param name - Name of the field to clear.
      * @param useDefault - Indicates to use default value while resetting.
-     *
      * @returns A promise resolving to a boolean indicating whether provided
      * field name exists.
      */
@@ -2522,7 +2458,7 @@ export class AgileForm<
                 Object.prototype.hasOwnProperty.call(this.initialData, name)
             )
                 for (const domNode of configuration.domNodes)
-                    domNode.value = Tools.copy(this.initialData[name])
+                    domNode.value = copy(this.initialData[name])
             else if (
                 useDefault &&
                 Object.prototype.hasOwnProperty.call(
@@ -2530,8 +2466,7 @@ export class AgileForm<
                 )
             )
                 for (const domNode of configuration.domNodes)
-                    domNode.value =
-                        Tools.copy(configuration.properties.default)
+                    domNode.value = copy(configuration.properties.default)
             else
                 for (const domNode of configuration.domNodes)
                     domNode.value = null
@@ -2548,7 +2483,6 @@ export class AgileForm<
      * Calculates current document relative offset of given dom node's
      * position.
      * @param domNode - Target node to calculate from.
-     *
      * @returns Calculated values.
      */
     getOffset(domNode:AnnotatedDomNode):Offset {
@@ -2565,7 +2499,6 @@ export class AgileForm<
      * Scrolls to given element and focuses it.
      * @param targetDomNode - Dom node to scroll to.
      * @param smooth - Indicates whether to animate scrolling.
-     *
      * @returns A promise resolving when focusing has finished.
      */
     scrollAndFocus(
@@ -2595,7 +2528,10 @@ export class AgileForm<
 
             onScroll()
 
-            if (Tools.maximalSupportedInternetExplorerVersion === 0 && smooth)
+            if (
+                MAXIMAL_SUPPORTED_INTERNET_EXPLORER_VERSION.value === 0 &&
+                smooth
+            )
                 window.scrollTo(
                     {
                         behavior: 'smooth',
@@ -2610,7 +2546,7 @@ export class AgileForm<
     }
     /// region form submission
     /**
-     * Sets all hidden non persistent input fields to their initial value.
+     * Sets all hidden non-persistent input fields to their initial value.
      * @returns A promise resolving to nothing.
      */
     async resetAllHiddenNonPersistentInputs():Promise<void> {
@@ -2661,11 +2597,9 @@ export class AgileForm<
                         }
 
                         if (typeof configuration.dataMapping === 'string') {
-                            const evaluated:EvaluationResult =
-                                Tools.stringEvaluate(
-                                    configuration.dataMapping as string,
-                                    scope
-                                )
+                            const evaluated:EvaluationResult = evaluate(
+                                configuration.dataMapping as string, scope
+                            )
 
                             if (evaluated.error)
                                 throw new Error(evaluated.error)
@@ -2676,7 +2610,7 @@ export class AgileForm<
                                 configuration.dataMapping as Mapping
                             )) {
                                 const evaluated:EvaluationResult =
-                                    Tools.stringEvaluate(expression, scope)
+                                    evaluate(expression, scope)
 
                                 if (evaluated.error)
                                     throw new Error(evaluated.error)
@@ -2706,8 +2640,6 @@ export class AgileForm<
      * Sets global validation message and scrolls to first invalid field.
      * @param data - Data given by the form.
      * @param invalidInputNames - All currently invalid fields names.
-     *
-     * @returns Nothing.
      */
     handleInvalidSubmittedInput(
         data:Mapping<unknown>, invalidInputNames:Array<string>
@@ -2732,7 +2664,6 @@ export class AgileForm<
      * @param data - Data given by the form.
      * @param newWindow - Indicates whether action targets should be opened in
      * a new window.
-     *
      * @returns Redirection target.
      */
     handleValidSentData(data:Mapping<unknown>, newWindow = false):string {
@@ -2781,8 +2712,6 @@ export class AgileForm<
      * events.
      * @param response - Servers response.
      * @param rawData - Data given by the form.
-     *
-     * @returns Nothing.
      */
     handleUnsuccessfulSentRequest(
         response:FormResponse, rawData:null|PlainObject
@@ -2837,8 +2766,7 @@ export class AgileForm<
      * response dependent events.
      * @param target - Configuration how to request.
      * @param rawData - Initial data to sent, needed for tracking additional
-     * informations for triggered request.
-     *
+     * information for triggered request.
      * @returns A promise wrapping the response.
      */
     async doRequest(
@@ -2881,7 +2809,7 @@ export class AgileForm<
                 unknown as
                 FormResponse
         } catch (error) {
-            const statusText:string = Tools.represent(error)
+            const statusText:string = represent(error)
 
             console.warn(`Could not request "${target.url}" "${statusText}".`)
 
@@ -2909,7 +2837,7 @@ export class AgileForm<
                 )
 
             response!.data = JSON.parse(responseString) as PlainObject
-            response!.data = Tools.getSubstructure(
+            response!.data = getSubstructure(
                 (response as FormResponse).data,
                 this.resolvedConfiguration.responseDataWrapperSelector.path,
                 this.resolvedConfiguration.responseDataWrapperSelector.optional
@@ -2917,7 +2845,7 @@ export class AgileForm<
         } catch (error) {
             console.warn(
                 `Given response could not be interpret as json "` +
-                `${Tools.represent(error)}".`
+                `${represent(error)}".`
             )
         }
 
@@ -2950,7 +2878,6 @@ export class AgileForm<
      * @param data - Valid data given by the form.
      * @param newWindow - Indicates whether action targets should be opened in
      * a new window.
-     *
      * @returns Promise holding nothing.
      */
     async handleValidSubmittedInput(
@@ -2962,8 +2889,8 @@ export class AgileForm<
 
         this.resolvedConfiguration.data = data
         this.resolvedConfiguration.targetData = this.mapTargetNames(data)
-        const target:null|TargetConfiguration = Tools.evaluateDynamicData(
-            Tools.copy(this.resolvedConfiguration.target),
+        const target:null|TargetConfiguration = evaluateDynamicData(
+            copy(this.resolvedConfiguration.target),
             this.determineEvaluationScope()
         )
         // endregion
@@ -2996,7 +2923,7 @@ export class AgileForm<
             await this.startBackgroundProcess(event)
 
             if (this.resolvedConfiguration.debug)
-                console.debug('Retrieved data:', Tools.represent(data))
+                console.debug('Retrieved data:', represent(data))
         }
 
         await this.stopBackgroundProcess(event)
@@ -3004,7 +2931,6 @@ export class AgileForm<
     /**
      * Maps given field names to endpoint's expected ones.
      * @param data - To transform.
-     *
      * @returns Resulting transformed data.
      */
     mapTargetNames(data:Mapping<unknown>):Mapping<unknown> {
@@ -3035,8 +2961,6 @@ export class AgileForm<
      * Check validation state of all content projected inputs, represents
      * overall validation state and sends data to configured target.
      * @param event - Triggered event object.
-     *
-     * @returns Nothing.
      */
     doSubmit = async (event:KeyboardEvent|MouseEvent):Promise<void> => {
         try {
@@ -3119,7 +3043,7 @@ export class AgileForm<
 
                     this.message,
 
-                    Tools,
+                    ...UTILITY_SCOPE_VALUES,
 
                     ...fieldValues
                 ]
@@ -3139,7 +3063,7 @@ export class AgileForm<
                     const constraint of this.resolvedConfiguration.constraints
                 ) {
                     const evaluatedConstraint:EvaluationResult =
-                        Tools.stringEvaluate(constraint.evaluation, scope)
+                        evaluate(constraint.evaluation, scope)
                     if (evaluatedConstraint.error)
                         throw new Error(evaluatedConstraint.error)
                     if (!evaluatedConstraint.result) {
@@ -3167,7 +3091,7 @@ export class AgileForm<
                 this.submitted = false
             }
         } catch (error) {
-            console.warn(`Submitting failed: ${Tools.represent(error)}`)
+            console.warn(`Submitting failed: ${represent(error)}`)
         }
     }
     /// endregion
@@ -3175,14 +3099,15 @@ export class AgileForm<
     /**
      * Add all needed field event listener to trigger needed checks and start
      * dependent field change cascade.
-     * @returns Nothing.
      */
     applyInputBindings():void {
-        const scope:{
-            instance:AgileForm
-            name:string
-            Tools:typeof Tools
-        } = {instance: this, name: 'UNKNOWN_NAME', Tools}
+        const scope:(
+            typeof UTILITY_SCOPE &
+            {
+                instance:AgileForm
+                name:string
+            }
+        ) = {...UTILITY_SCOPE, instance: this, name: 'UNKNOWN_NAME'}
 
         for (const [name, configuration] of Object.entries(
             this.inputConfigurations
@@ -3201,7 +3126,7 @@ export class AgileForm<
                         configuration.changedEventName as string :
                         'change'
 
-                const handler:EventListener = Tools.debounce<void>(
+                const handler:EventListener = debounce<void>(
                     (async (event:Event):Promise<void> => {
                         await this.digest()
 
@@ -3271,7 +3196,6 @@ export class AgileForm<
     /**
      * Updates all fields.
      * @param event - Triggering event object.
-     *
      * @returns Promise holding nothing.
      */
     async updateAllInputs(event:Event):Promise<void> {
@@ -3283,7 +3207,6 @@ export class AgileForm<
      * state.
      * @param name - Field name to update.
      * @param event - Triggering event object.
-     *
      * @returns A Promise resolving to a boolean indicator whether a state
      * changed happened or not.
      */
@@ -3322,7 +3245,7 @@ export class AgileForm<
                     mappedSelector
 
                 const target:Mapping<unknown> =
-                    Tools.getSubstructure(configuration.properties, path)
+                    getSubstructure(configuration.properties, path)
 
                 const oldValue:unknown = target[key]
 
@@ -3342,11 +3265,11 @@ export class AgileForm<
                         `${oldValue as string}" to "${newValue as string}".`
                     )
 
-                    Tools.getSubstructure<
+                    getSubstructure<
                         Partial<InputAnnotation>, Mapping<unknown>
                     >(configuration.properties, path)[key] = newValue
                     for (const domNode of configuration.domNodes)
-                        Tools.getSubstructure<
+                        getSubstructure<
                             AnnotatedInputDomNode, Mapping<unknown>
                         >(domNode, path)[key] = newValue
 
@@ -3366,7 +3289,6 @@ export class AgileForm<
      * Updates all related fields for given field name.
      * @param name - Field to check their dependent fields.
      * @param event - Triggering event.
-     *
      * @returns Promise holding nothing.
      */
     async updateInputDependencies(name:string, event:Event):Promise<void> {
@@ -3376,7 +3298,6 @@ export class AgileForm<
     /**
      * Trigger inputs internal change detection.
      * @param name - Field name to update their model.
-     *
      * @returns A promise resolving to nothing.
      */
     async triggerModelUpdate(name:string):Promise<void> {
@@ -3409,7 +3330,6 @@ export class AgileForm<
     /**
      * Derives event name from given event.
      * @param event - Event to derive name from.
-     *
      * @returns Derived name.
      */
     determineEventName(
@@ -3445,14 +3365,13 @@ export class AgileForm<
     }
     /**
      * Evaluate all generic expression results.
-     * @returns Nothing.
      */
     runEvaluations():void {
         this._evaluationResults = []
 
         for (const evaluation of this.evaluations)
             this._evaluationResults.push(
-                Tools.isFunction(evaluation[1]) ?
+                isFunction(evaluation[1]) ?
                     evaluation[1]() :
                     evaluation[1]
             )
@@ -3461,7 +3380,6 @@ export class AgileForm<
      * Indicates a background running process. Sets "pending" property and
      * triggers a loading spinner.
      * @param event - Triggering event object.
-     *
      * @returns A Promise resolving when all items render updates has been
      * done.
      */
@@ -3480,7 +3398,6 @@ export class AgileForm<
      * Stops indicating a background running process. Sets "pending" property
      * and stop showing a loading spinner.
      * @param event - Triggering event object.
-     *
      * @returns A Promise resolving when all items render updates has been
      * done.
      */
@@ -3499,7 +3416,6 @@ export class AgileForm<
      * Determines whether the current value state can be derived by given
      * configuration or has to be saved.
      * @param name - Model name to derive from.
-     *
      * @returns A boolean indicating the neediness.
      */
     determinedStateValueIsNeeded(name:string):boolean {
@@ -3542,7 +3458,7 @@ export class AgileForm<
         const parameter:NormalizedConfiguration =
             this.self.normalizeConfiguration(this.urlConfiguration || {})
 
-        if (!Tools.isPlainObject(parameter.inputs))
+        if (!isPlainObject(parameter.inputs))
             parameter.inputs = {}
 
         for (const [name, configuration] of Object.entries(
@@ -3555,7 +3471,7 @@ export class AgileForm<
                     configuration.domNode.dirty ||
                     /*
                         NOTE: This input seems to have limited input state
-                        support so we have to consider this.
+                        support, so we have to consider this.
                     */
                     configuration.domNode.dirty !== false &&
                     (
@@ -3634,7 +3550,7 @@ export class AgileForm<
 
         // Use only allowed configuration fields.
         const maskedParameter:RecursivePartial<NormalizedConfiguration> =
-            Tools.mask<NormalizedConfiguration>(
+            mask<NormalizedConfiguration>(
                 parameter, this.resolvedConfiguration.urlConfigurationMask
             )
 
@@ -3711,16 +3627,17 @@ export class AgileForm<
      * Tracks given data if tracking environment exists.
      * @param name - Event name to trigger.
      * @param data - Data to track.
-     *
-     * @returns Nothing.
+     * @returns "false" if event is cancelable, and at least one of the event
+     * handlers which received event called "Event.eventDefault()" and "true"
+     * otherwise.
      */
     triggerEvent(name:string, data:Mapping<unknown>):boolean {
         /*
-            NOTE: We should forwarded runtime data to avoid unexpected behavior
+            NOTE: We should forward runtime data to avoid unexpected behavior
             if gtm or configured tracking tool manipulates given data.
         */
         if (Object.prototype.hasOwnProperty.call(data, 'reference'))
-            data.reference = Tools.copy(data.reference)
+            data.reference = copy(data.reference)
 
         return this.dispatchEvent(new CustomEvent(name, {detail: data}))
     }
@@ -3844,7 +3761,7 @@ export class AgileForm<
             } catch (error) {
                 console.warn(
                     `Could not retrieve a re-captcha token: "` +
-                    `${Tools.represent(error)}".`
+                    `${represent(error)}".`
                 )
             }
         else {
@@ -3861,11 +3778,7 @@ export class AgileForm<
 export const api:WebComponentAPI<typeof AgileForm> = {
     component: AgileForm,
     register: (
-        tagName:string = Tools.stringCamelCaseToDelimited(AgileForm._name)
+        tagName:string = camelCaseToDelimited(AgileForm._name)
     ):void => customElements.define(tagName, AgileForm)
 }
 export default api
-// region vim modline
-// vim: set tabstop=4 shiftwidth=4 expandtab:
-// vim: foldmethod=marker foldmarker=region,endregion:
-// endregion
