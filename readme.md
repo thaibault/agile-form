@@ -101,7 +101,7 @@ Features included:
                 name="send-report"
                 show-if="submitted"
             >
-                Form-Result: <pre>${Tools.represent(getData())}</pre>
+                Form-Result: <pre>${object.represent(getData())}</pre>
             </div>
 
             <input name="name" />

@@ -16,7 +16,7 @@
 // region imports
 import {describe, expect, test} from '@jest/globals'
 import '@webcomponents/webcomponentsjs/custom-elements-es5-adapter'
-import Tools, {globalContext} from 'clientnode'
+import {copy, globalContext} from 'clientnode'
 import nodeFetch from 'node-fetch'
 import TextInput from 'web-input-material/components/TextInput'
 
@@ -37,7 +37,7 @@ const name = 'test-form'
 api.register(name)
 
 describe('api', ():void => {
-    test('api definitions', ():void => {
+    test('api definitions', () => {
         expect(api).toBeDefined()
         expect(api).toHaveProperty('component', AgileForm)
 
@@ -45,13 +45,13 @@ describe('api', ():void => {
     })
 })
 describe('AgileForm', ():void => {
-    test('custom element definition', ():void => {
+    test('custom element definition', () => {
         const form:AgileForm = document.createElement(name) as AgileForm
         document.body.appendChild(form)
 
         expect(form).toBeDefined()
     })
-    test('attribute configuration', ():void => {
+    test('attribute configuration', () => {
         const form:AgileForm = document.createElement(name) as AgileForm
         document.body.appendChild(form)
 
@@ -159,7 +159,7 @@ describe('AgileForm', ():void => {
         const form:AgileForm = document.createElement(name) as AgileForm
 
         const initialConfiguration:Configuration =
-            Tools.copy(form.resolvedConfiguration)
+            copy(form.resolvedConfiguration)
 
         form.mergeConfiguration({})
         expect(form.resolvedConfiguration).toStrictEqual(initialConfiguration)
@@ -182,7 +182,7 @@ describe('AgileForm', ():void => {
         const form:AgileForm = document.createElement(name) as AgileForm
 
         const initialConfiguration:Configuration =
-            Tools.copy(form.resolvedConfiguration)
+            copy(form.resolvedConfiguration)
 
         form.resolveConfiguration()
         expect(form.resolvedConfiguration).toStrictEqual(initialConfiguration)
@@ -231,7 +231,3 @@ describe('AgileForm', ():void => {
     })
     // endregion
 })
-// region vim modline
-// vim: set tabstop=4 shiftwidth=4 expandtab:
-// vim: foldmethod=marker foldmarker=region,endregion:
-// endregion
