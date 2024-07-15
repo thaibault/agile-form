@@ -87,11 +87,11 @@
     "@typescript-eslint/parser": "^7.16.0",
     "@webcomponents/webcomponentsjs": "^2.8.0",
     "blob-util": "^2.0.2",
-    "clientnode": "^3.0.1163",
+    "clientnode": "^3.0.1166",
     "css-loader": "^7.1.2",
     "cssnano": "^7.0.4",
     "documentation-website": "^1.0.328",
-    "eslint": "^9.6.0",
+    "eslint": "^9.7.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-jsdoc": "^48.7.0",
     "identity-obj-proxy": "^3.0.0",
@@ -114,7 +114,7 @@
     "typescript-eslint": "^7.16.0",
     "web-component-wrapper": "^0.0.489",
     "web-input-material": "^0.0.437",
-    "weboptimizer": "^2.0.1483",
+    "weboptimizer": "^2.0.1486",
     "webpack-dev-server": "^5.0.4"
   },
   "peerDependencies": {

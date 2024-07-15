@@ -201,8 +201,6 @@ describe('AgileForm', ():void => {
         expect(Object.keys(form.getConfigurationFromURL()!))
             .toHaveProperty('length', 0)
 
-        return
-
         form.queryParameters[form.resolvedConfiguration.name] = '{a: 2}'
         expect(form.getConfigurationFromURL()).toStrictEqual({})
 
