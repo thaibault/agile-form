@@ -37,7 +37,7 @@ const name = 'test-form'
 api.register(name)
 
 describe('api', ():void => {
-    test('api definitions', ():void => {
+    test('api definitions', () => {
         expect(api).toBeDefined()
         expect(api).toHaveProperty('component', AgileForm)
 
@@ -45,13 +45,13 @@ describe('api', ():void => {
     })
 })
 describe('AgileForm', ():void => {
-    test('custom element definition', ():void => {
+    test('custom element definition', () => {
         const form:AgileForm = document.createElement(name) as AgileForm
         document.body.appendChild(form)
 
         expect(form).toBeDefined()
     })
-    test('attribute configuration', ():void => {
+    test('attribute configuration', () => {
         const form:AgileForm = document.createElement(name) as AgileForm
         document.body.appendChild(form)
 
