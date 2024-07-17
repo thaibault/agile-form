@@ -5070,13 +5070,13 @@ __metadata:
     postcss-preset-env: "npm:^9.6.0"
     prop-types: "npm:^15.8.1"
     react-ace: "npm:^12.0.0"
-    react-generic-dummy: "npm:^0.0.74"
+    react-generic-dummy: "npm:^0.0.75"
     rimraf: "npm:^6.0.1"
     style-loader: "npm:^4.0.0"
     tslib: "npm:^2.6.3"
     typescript-eslint: "npm:^7.16.1"
-    web-component-wrapper: "npm:^0.0.492"
-    web-input-material: "npm:^0.0.439"
+    web-component-wrapper: "npm:^0.0.493"
+    web-input-material: "npm:^0.0.440"
     weboptimizer: "npm:^2.0.1487"
     webpack-dev-server: "npm:^5.0.4"
   peerDependencies:
@@ -12648,9 +12648,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-generic-dummy@npm:^0.0.74":
-  version: 0.0.74
-  resolution: "react-generic-dummy@npm:0.0.74"
+"react-generic-dummy@npm:^0.0.75":
+  version: 0.0.75
+  resolution: "react-generic-dummy@npm:0.0.75"
   peerDependencies:
     "@babel/runtime": "*"
     "@types/react": "*"
@@ -12672,13 +12672,13 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/d4d0730d2a007d2f31a16a940e65ff21fa29c0d59f7e9778cb3da07a1c94a591d95cd458a06165f582448748c915d48991bc67706e3a7461fec8fc2b672a6a9f
+  checksum: 10c0/36b3b038a783807228e2a69fbe0bba4d9054c705f7821388c782633c52fa460f0591a48b292224ba85b1184cc02b5d7e16a8afa04fc009a4f9f6777ed05b3899
   languageName: node
   linkType: hard
 
-"react-input-material@npm:^0.0.652":
-  version: 0.0.652
-  resolution: "react-input-material@npm:0.0.652"
+"react-input-material@npm:^0.0.653":
+  version: 0.0.653
+  resolution: "react-input-material@npm:0.0.653"
   peerDependencies:
     "@babel/runtime": "*"
     "@rmwc/card": "*"
@@ -12762,7 +12762,7 @@ __metadata:
       optional: true
     tinymce:
       optional: true
-  checksum: 10c0/6236abade0b3a5414ef79eb13ea38b99694d911d019f84422633890e6e9be899b82b1ff3a8aae510757ec68bef7fc330977435ddf501559a0f7f5b518f649648
+  checksum: 10c0/9da0e4b725a39fd03057656595b4a61d8f1d7df71b5b998de33a06825d40b657a543a1d91c4a58a822859855ce6c317dd70a2f2e5091afd3111c2dcb212a24fc
   languageName: node
   linkType: hard
 
@@ -14383,9 +14383,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-component-wrapper@npm:^0.0.492":
-  version: 0.0.492
-  resolution: "web-component-wrapper@npm:0.0.492"
+"web-component-wrapper@npm:^0.0.493":
+  version: 0.0.493
+  resolution: "web-component-wrapper@npm:0.0.493"
   peerDependencies:
     "@babel/runtime": "*"
     "@types/react": "*"
@@ -14404,27 +14404,27 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/ee61b57061a2615932380e047261d8211bf488b6855192e8fff23dc8dfe6b85f3afa29638f4333291ad4f9ec3c9d662848c25db12f993ff47af51a8e15f0300f
+  checksum: 10c0/305fe78fde241b6eff42b0a6b9b1db8cad7801e415675f631098c17ca9f2ed4a66fbe99ad565a625fffb6e9d84d35e2440fd294a72bbbdb1c4de17fef7396830
   languageName: node
   linkType: hard
 
-"web-input-material@npm:^0.0.439":
-  version: 0.0.439
-  resolution: "web-input-material@npm:0.0.439"
+"web-input-material@npm:^0.0.440":
+  version: 0.0.440
+  resolution: "web-input-material@npm:0.0.440"
   dependencies:
     prop-types: "npm:^15.8.1"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-input-material: "npm:^0.0.652"
+    react-input-material: "npm:^0.0.653"
     react-transition-group: "npm:^4.4.5"
-    web-component-wrapper: "npm:^0.0.492"
+    web-component-wrapper: "npm:^0.0.493"
   peerDependencies:
     "@babel/runtime": "*"
     clientnode: "*"
   peerDependenciesMeta:
     "@babel/runtime":
       optional: true
-  checksum: 10c0/7ea9f4b81345499f989a04c4bd2c09386d1fafc27f6a570b11a0e9f9fb5f8cda814e39bb9b7157cade7fabcb0d4d2667188312e6afcdcae542b572a76f1b1d6e
+  checksum: 10c0/f9f26b306ac0904a43723ef8928974a984ee650871308058a7aa91cc7a5caf78ae69e7160c2926335518c9f456a7368f7f1fe73844a1364211244c938612fc83
   languageName: node
   linkType: hard
 
