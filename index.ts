@@ -269,6 +269,7 @@ export class AgileForm<
                 tags: true
             }
         },
+        urlConfigurationCharacterLimit: 800,
         version: 1
     }
     static inputValueMapping:Mapping<(value:unknown) => unknown> = {
@@ -1078,7 +1079,7 @@ export class AgileForm<
      * Merge given configuration into resolved configuration object.
      * @param configuration - Configuration to merge.
      */
-    mergeConfiguration(configuration:RecursivePartial<Configuration>):void {
+    mergeConfiguration(configuration:RecursivePartial<Configuration>) {
         const normalizedConfiguration:NormalizedConfiguration =
             this.self.normalizeConfiguration(configuration)
 
@@ -1249,7 +1250,7 @@ export class AgileForm<
      * do this a second time to include dynamically added inputs in prototyping
      * mode.
      */
-    determineInputNames():void {
+    determineInputNames() {
         this.inputNames = Object.keys(this.inputConfigurations)
             .filter((name:string):boolean => !name.includes('.'))
             .map((name:string):string => convertToValidVariableName(name))
@@ -2212,7 +2213,7 @@ export class AgileForm<
      * Pre-compiles all specified expressions given by the current
      * configuration.
      */
-    preCompileConfigurationExpressions():void {
+    preCompileConfigurationExpressions() {
         this.preCompileGenericEvaluations()
         this.preCompileActions()
         this.preCompileTargetActions()
@@ -2372,7 +2373,7 @@ export class AgileForm<
      * Sets all given input fields to their corresponding default values.
      * @param event - Triggered event object.
      */
-    onClear = (event:MouseEvent):void => {
+    onClear = (event:MouseEvent) => {
         void this.doReset(event, true)
     }
     /**
@@ -2380,7 +2381,7 @@ export class AgileForm<
      * Enter key down events in input fields trigger a form submit.
      * @param event - Keyboard event object.
      */
-    onKeyDown = (event:KeyboardEvent):void => {
+    onKeyDown = (event:KeyboardEvent) => {
         if (
             KEY_CODES.ENTER === event.keyCode &&
             (event.target as HTMLElement)?.closest
@@ -2643,7 +2644,7 @@ export class AgileForm<
      */
     handleInvalidSubmittedInput(
         data:Mapping<unknown>, invalidInputNames:Array<string>
-    ):void {
+    ) {
         this.updateMessageBox(
             'The following inputs are invalid "' +
             `${invalidInputNames.join('", "')}".`
@@ -3366,7 +3367,7 @@ export class AgileForm<
     /**
      * Evaluate all generic expression results.
      */
-    runEvaluations():void {
+    runEvaluations() {
         this._evaluationResults = []
 
         for (const evaluation of this.evaluations)
@@ -3418,7 +3419,7 @@ export class AgileForm<
      * @param name - Model name to derive from.
      * @returns A boolean indicating the neediness.
      */
-    determinedStateValueIsNeeded(name:string):boolean {
+    isDeterminedStateValueNeeded(name:string):boolean {
         const domNode:AnnotatedInputDomNode|undefined =
             this.inputConfigurations[name].domNode
 
@@ -3480,7 +3481,25 @@ export class AgileForm<
                             StaticWebComponent
                     ).webComponentAdapterWrapped !== 'react'
                 )
-            )
+            ) {
+                /*
+                    NOTE: Initial values derived from existing state url
+                    shouldn't be a problem because of the prior condition.
+                */
+                let serializedValue:unknown = null
+                let useValue = false
+                if (this.isDeterminedStateValueNeeded(name)) {
+                    serializedValue = configuration.serializer ?
+                        configuration.serializer!(
+                            configuration.value
+                        ) :
+                        configuration.value
+                    useValue =
+                        JSON.stringify(serializedValue).length <
+                        this.resolvedConfiguration
+                            .urlConfigurationCharacterLimit
+                }
+
                 if (Object.prototype.hasOwnProperty.call(
                     parameter.inputs, name
                 )) {
@@ -3494,24 +3513,14 @@ export class AgileForm<
 
                     if (
                         this.inputConfigurations[name].value !==
-                            parameter.inputs[name as keyof Model]!.properties!
-                                .value
+                        parameter.inputs[name as keyof Model]!.properties!
+                            .value
                     )
-                        /*
-                            NOTE: Initial values derived from existing state
-                            url shouldn't be a problem because of the prior
-                            condition.
-                         */
-                        if (this.determinedStateValueIsNeeded(name))
+                        if (useValue)
                             parameter.inputs[name]!.properties!.value =
-                                configuration.serializer ?
-                                    configuration.serializer!(
-                                        configuration.value
-                                    ) :
-                                    configuration.value
+                                serializedValue
                         else {
-                            delete parameter.inputs[name as keyof Model]!
-                                .properties!.value
+                            delete parameter.inputs[name]!.properties!.value
 
                             if (Object.keys(
                                 parameter.inputs[name as keyof Model]!
@@ -3524,20 +3533,11 @@ export class AgileForm<
                             ).length === 0)
                                 delete parameter.inputs[name]
                         }
-                /*
-                    NOTE: Initial values derived from existing state url
-                    shouldn't be a problem because of the prior condition.
-                 */
-                } else if (this.determinedStateValueIsNeeded(name))
+                } else if (useValue && this.isDeterminedStateValueNeeded(name))
                     parameter.inputs[name] = {
-                        properties: {
-                            value: configuration.serializer ?
-                                configuration.serializer!(
-                                    configuration.value
-                                ) :
-                                configuration.value
-                        }
+                        properties: {value: serializedValue}
                     }
+            }
 
         if (parameter.evaluations.length === 0)
             delete (parameter as Partial<NormalizedConfiguration>).evaluations
@@ -3666,7 +3666,7 @@ export class AgileForm<
             )
         ) {
             this.reCaptchaPromise =
-                new Promise((resolve:(_result:null|string) => void):void => {
+                new Promise((resolve:(_result:null|string) => void) => {
                     this.reCaptchaPromiseResolver = resolve
                 })
 

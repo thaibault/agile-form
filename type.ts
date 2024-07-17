@@ -236,6 +236,7 @@ export interface Configuration {
     targetData:null|Mapping<unknown>
 
     urlConfigurationMask:ObjectMaskConfiguration
+    urlConfigurationCharacterLimit:number
 
     version:number
 }
