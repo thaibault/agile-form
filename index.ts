@@ -33,6 +33,7 @@ import {
     getURLParameter,
     isFunction,
     isPlainObject,
+    KEYBOARD_CODES,
     Lock,
     Offset,
     Mapping,
@@ -46,8 +47,9 @@ import {
     TemplateFunction,
     timeout,
     UnknownFunction,
+    UTILITY_SCOPE,
     UTILITY_SCOPE_NAMES,
-    UTILITY_SCOPE_VALUES, UTILITY_SCOPE, KEY_CODES
+    UTILITY_SCOPE_VALUES
 } from 'clientnode'
 import {object} from 'clientnode/dist/property-types'
 import property from 'web-component-wrapper/decorator'
@@ -2383,7 +2385,7 @@ export class AgileForm<
      */
     onKeyDown = (event:KeyboardEvent) => {
         if (
-            KEY_CODES.ENTER === event.keyCode &&
+            KEYBOARD_CODES.ENTER === event.code &&
             (event.target as HTMLElement)?.closest
         ) {
             const inputTarget:HTMLElement|null =
