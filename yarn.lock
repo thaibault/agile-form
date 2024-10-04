@@ -3831,7 +3831,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/select@npm:^14.3.4":
+"@rmwc/ripple@patch:@rmwc/ripple@npm%3A14.3.4#~/.yarn/patches/@rmwc-ripple-npm-14.3.4-27648eff11.patch":
+  version: 14.3.4
+  resolution: "@rmwc/ripple@patch:@rmwc/ripple@npm%3A14.3.4#~/.yarn/patches/@rmwc-ripple-npm-14.3.4-27648eff11.patch::version=14.3.4&hash=08c188"
+  dependencies:
+    "@material/ripple": "npm:^14.0.0"
+    "@rmwc/base": "npm:14.3.4"
+    "@rmwc/provider": "npm:14.3.4"
+    "@rmwc/types": "npm:14.3.4"
+  peerDependencies:
+    react: ">=16.8.x"
+    react-dom: ">=16.8.x"
+  checksum: 10c0/9a1dc659d0a2097cfbd31a5df185c72d7ec44238f899a820a226c615c3f78ef97c553d9ddc9fe8ddee513958cf268bd9ae0b3d4f0d20a756b9025838d92dd0c7
+  languageName: node
+  linkType: hard
+
+"@rmwc/select@npm:14.3.4":
   version: 14.3.4
   resolution: "@rmwc/select@npm:14.3.4"
   dependencies:
@@ -3852,7 +3867,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rmwc/slider@npm:^14.3.4":
+"@rmwc/select@patch:@rmwc/select@npm%3A14.3.4#~/.yarn/patches/@rmwc-select-npm-14.3.4-6d0aebe22c.patch":
+  version: 14.3.4
+  resolution: "@rmwc/select@patch:@rmwc/select@npm%3A14.3.4#~/.yarn/patches/@rmwc-select-npm-14.3.4-6d0aebe22c.patch::version=14.3.4&hash=39b72c"
+  dependencies:
+    "@material/select": "npm:^14.0.0"
+    "@rmwc/base": "npm:14.3.4"
+    "@rmwc/floating-label": "npm:14.3.4"
+    "@rmwc/icon": "npm:14.3.4"
+    "@rmwc/line-ripple": "npm:14.3.4"
+    "@rmwc/list": "npm:14.3.4"
+    "@rmwc/menu": "npm:14.3.4"
+    "@rmwc/notched-outline": "npm:14.3.4"
+    "@rmwc/ripple": "npm:14.3.4"
+    "@rmwc/types": "npm:14.3.4"
+  peerDependencies:
+    react: ">=16.8.x"
+    react-dom: ">=16.8.x"
+  checksum: 10c0/497fbf0da6b7a024d52b4d4523316251d5558aca1147aa4ef46bb25f12eefc3683e4972cbbf65e0f98b16bbae5dd7b4c9766c12c6145fb0e4958b449d18409f5
+  languageName: node
+  linkType: hard
+
+"@rmwc/slider@npm:14.3.4":
   version: 14.3.4
   resolution: "@rmwc/slider@npm:14.3.4"
   dependencies:
@@ -3863,6 +3899,20 @@ __metadata:
     react: ">=16.8.x"
     react-dom: ">=16.8.x"
   checksum: 10c0/3dcd163c569c7a46c96566395b4b53548ee45729ce112dc8b39eafbd07057c6063e6e9df8a7c53ca46295e1dedc668b9755010d2f2dcc870a0c0024e6dd4d640
+  languageName: node
+  linkType: hard
+
+"@rmwc/slider@patch:@rmwc/slider@npm%3A14.3.4#~/.yarn/patches/@rmwc-slider-npm-14.3.4-c58d8ea166.patch":
+  version: 14.3.4
+  resolution: "@rmwc/slider@patch:@rmwc/slider@npm%3A14.3.4#~/.yarn/patches/@rmwc-slider-npm-14.3.4-c58d8ea166.patch::version=14.3.4&hash=1e2e2a"
+  dependencies:
+    "@material/slider": "npm:^14.0.0"
+    "@rmwc/base": "npm:14.3.4"
+    "@rmwc/types": "npm:14.3.4"
+  peerDependencies:
+    react: ">=16.8.x"
+    react-dom: ">=16.8.x"
+  checksum: 10c0/34ec93417cf87caee0bdf35975fe797f9605a660ba10f52f77c12a23dfbb0d6f721e1d67cf98fde72f83f61ec96b2a24ac7f7131b3a28156e26f934778674229
   languageName: node
   linkType: hard
 
@@ -4003,6 +4053,19 @@ __metadata:
   dependencies:
     "@sinonjs/commons": "npm:^3.0.0"
   checksum: 10c0/2e2fb6cc57f227912814085b7b01fede050cd4746ea8d49a1e44d5a0e56a804663b0340ae2f11af7559ea9bf4d087a11f2f646197a660ea3cb04e19efc04aa63
+  languageName: node
+  linkType: hard
+
+"@stylistic/eslint-plugin-ts@npm:^2.8.0":
+  version: 2.8.0
+  resolution: "@stylistic/eslint-plugin-ts@npm:2.8.0"
+  dependencies:
+    "@typescript-eslint/utils": "npm:^8.4.0"
+    eslint-visitor-keys: "npm:^4.0.0"
+    espree: "npm:^10.1.0"
+  peerDependencies:
+    eslint: ">=8.40.0"
+  checksum: 10c0/74cfa44933ca39431d96cb6e7d13e5277c2aabbfeb49c017757feaf78827327f34d6047021c8ad258d89bf756922b3bcc4563b3040a3859c44044269aecc25a8
   languageName: node
   linkType: hard
 
@@ -4619,7 +4682,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/utils@npm:8.8.0":
+"@typescript-eslint/utils@npm:8.8.0, @typescript-eslint/utils@npm:^8.4.0":
   version: 8.8.0
   resolution: "@typescript-eslint/utils@npm:8.8.0"
   dependencies:
@@ -4972,14 +5035,15 @@ __metadata:
     "@rmwc/formfield": "npm:^14.3.4"
     "@rmwc/icon": "npm:^14.3.4"
     "@rmwc/icon-button": "npm:^14.3.4"
-    "@rmwc/select": "npm:^14.3.4"
-    "@rmwc/slider": "npm:^14.3.4"
+    "@rmwc/select": "patch:@rmwc/select@npm%3A14.3.4#~/.yarn/patches/@rmwc-select-npm-14.3.4-6d0aebe22c.patch"
+    "@rmwc/slider": "patch:@rmwc/slider@npm%3A14.3.4#~/.yarn/patches/@rmwc-slider-npm-14.3.4-c58d8ea166.patch"
     "@rmwc/tabs": "npm:^14.3.4"
     "@rmwc/textfield": "npm:^14.3.4"
     "@rmwc/theme": "npm:^14.3.4"
     "@rmwc/tooltip": "npm:^14.3.4"
     "@rmwc/touch-target": "npm:^14.3.4"
     "@rmwc/typography": "npm:^14.3.4"
+    "@stylistic/eslint-plugin-ts": "npm:^2.8.0"
     "@tinymce/tinymce-react": "npm:^5.1.1"
     "@types/ejs": "npm:^3.1.5"
     "@types/grecaptcha": "npm:^3.0.9"
@@ -4995,10 +5059,10 @@ __metadata:
     "@typescript-eslint/parser": "npm:^8.8.0"
     "@webcomponents/webcomponentsjs": "npm:^2.8.0"
     blob-util: "npm:^2.0.2"
-    clientnode: "npm:^3.0.1194"
+    clientnode: "npm:^3.0.1201"
     css-loader: "npm:^7.1.2"
     cssnano: "npm:^7.0.6"
-    documentation-website: "npm:^1.0.334"
+    documentation-website: "npm:^1.0.335"
     eslint: "npm:^9.11.1"
     eslint-config-google: "npm:^0.14.0"
     eslint-plugin-jsdoc: "npm:^50.3.1"
@@ -5015,14 +5079,14 @@ __metadata:
     postcss-preset-env: "npm:^10.0.5"
     prop-types: "npm:^15.8.1"
     react-ace: "npm:^12.0.0"
-    react-generic-dummy: "npm:^0.0.78"
+    react-generic-dummy: "npm:^0.0.79"
     rimraf: "npm:^6.0.1"
     style-loader: "npm:^4.0.0"
     tslib: "npm:^2.7.0"
     typescript-eslint: "npm:^8.8.0"
-    web-component-wrapper: "npm:^0.0.496"
-    web-input-material: "npm:^0.0.442"
-    weboptimizer: "npm:^2.0.1518"
+    web-component-wrapper: "npm:^0.0.498"
+    web-input-material: "npm:^0.0.444"
+    weboptimizer: "npm:^2.0.1519"
     webpack-dev-server: "npm:^5.1.0"
   peerDependencies:
     "@babel/runtime": "*"
@@ -6736,9 +6800,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clientnode@npm:3.0.1192":
-  version: 3.0.1192
-  resolution: "clientnode@npm:3.0.1192"
+"clientnode@npm:3.0.1199":
+  version: 3.0.1199
+  resolution: "clientnode@npm:3.0.1199"
   peerDependencies:
     "@babel/runtime": "*"
     "@types/prop-types": "*"
@@ -6756,13 +6820,13 @@ __metadata:
       optional: true
     prop-types:
       optional: true
-  checksum: 10c0/1502c98d4bf8122eae84fe4526fd30586a23a12fa8384bce3cf38c49717844e6303a5ec8f97ad4de2326507da64a3b96bcb93881fda0cc506a1244d62afb7219
+  checksum: 10c0/9ef7f2a1ac3d7e8e75d697a1bc6e3534592c21698f671bafb4a572ee1fac96feaf549182d7ec356c62229c28619db1dd01bc5a777662632cdc8becd1d87bc46e
   languageName: node
   linkType: hard
 
-"clientnode@npm:^3.0.1194":
-  version: 3.0.1194
-  resolution: "clientnode@npm:3.0.1194"
+"clientnode@npm:^3.0.1201":
+  version: 3.0.1201
+  resolution: "clientnode@npm:3.0.1201"
   peerDependencies:
     "@babel/runtime": "*"
     "@types/prop-types": "*"
@@ -6780,7 +6844,7 @@ __metadata:
       optional: true
     prop-types:
       optional: true
-  checksum: 10c0/b700837ed9f92526b51c6518380f44a3f55d8859cc9280a045662ea344995891af9eaaca21054a56d1f70edd3d22430696db46893bdd0e00a92da71b3abdb2e9
+  checksum: 10c0/99388bd4ab34ce431a0648e7156a04725bd5c3423e1f7f379710c63d6ae1f623cb6648d31c2f6478010b554f2c92be692dcfcba94d3aefd1470262aaea1d53f1
   languageName: node
   linkType: hard
 
@@ -7556,12 +7620,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"documentation-website@npm:^1.0.334":
-  version: 1.0.334
-  resolution: "documentation-website@npm:1.0.334"
+"documentation-website@npm:^1.0.335":
+  version: 1.0.335
+  resolution: "documentation-website@npm:1.0.335"
   bin:
     documentation-website: build/deploy.js
-  checksum: 10c0/859c72a2568567000af62f9d715e876aae0b061df84d46732f58737fc19180dc26509e3b3eba64e779283a11262930cf50536fb4040305d97d88c63a202cdcd5
+  checksum: 10c0/64aaad4ce028a21f6181f56b0b8273f65df2f66a78ac1d9db28399a312ba55ee04680cfc8de1c93ae7f94b6ed9b8637fd46aee86bad4c8bd0c66ef18d2353289
   languageName: node
   linkType: hard
 
@@ -12624,9 +12688,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-generic-dummy@npm:^0.0.78":
-  version: 0.0.78
-  resolution: "react-generic-dummy@npm:0.0.78"
+"react-generic-dummy@npm:^0.0.79":
+  version: 0.0.79
+  resolution: "react-generic-dummy@npm:0.0.79"
   peerDependencies:
     "@babel/runtime": "*"
     "@types/react": "*"
@@ -12648,13 +12712,13 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/5cd557d1a30222c5baf765bcfebcc0f3d85ae0a1fff51a91729dba0ace21c332c57028f9a24d0a300c3a5d02f9e6402704a57614dadee04d235c31ac97716a4b
+  checksum: 10c0/06a4011bb8a180b103348390e4a1fac7ca9eb98244279e09074e72cf2bf89c0c82af83ffcdedff5f5f50c08fb47ee93e442d34edccfe36eef98d9f227c0a28db
   languageName: node
   linkType: hard
 
-"react-input-material@npm:^0.0.655":
-  version: 0.0.655
-  resolution: "react-input-material@npm:0.0.655"
+"react-input-material@npm:^0.0.659":
+  version: 0.0.659
+  resolution: "react-input-material@npm:0.0.659"
   peerDependencies:
     "@babel/runtime": "*"
     "@rmwc/card": "*"
@@ -12738,7 +12802,7 @@ __metadata:
       optional: true
     tinymce:
       optional: true
-  checksum: 10c0/915491de60969dda76479ead1a1090bc4051c5f9aabbff97f326a1ba546299f10c9d50a70cb4fe0d08dbc89bf5e0ecfac926f0fc0d67444cceee3807b1532933
+  checksum: 10c0/4d55efc1b105e49d44c5058a2a7a80e3459881a11ad593d4d10f2459056e24bf451250834acdb9a91e7b59aaaa27d1d7f110c9d2624ec3dbcdb451807381adf8
   languageName: node
   linkType: hard
 
@@ -14394,9 +14458,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-component-wrapper@npm:^0.0.493":
-  version: 0.0.493
-  resolution: "web-component-wrapper@npm:0.0.493"
+"web-component-wrapper@npm:^0.0.498":
+  version: 0.0.498
+  resolution: "web-component-wrapper@npm:0.0.498"
   peerDependencies:
     "@babel/runtime": "*"
     "@types/react": "*"
@@ -14415,52 +14479,27 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/305fe78fde241b6eff42b0a6b9b1db8cad7801e415675f631098c17ca9f2ed4a66fbe99ad565a625fffb6e9d84d35e2440fd294a72bbbdb1c4de17fef7396830
+  checksum: 10c0/cc183a81be763d8d1e0a5ae08779153cd449c0bd635db6d010bde938c7ca76de5d4d4c27aee27219a2436d78ea62efa80879d955b5aede4516f80359b7c4b991
   languageName: node
   linkType: hard
 
-"web-component-wrapper@npm:^0.0.496":
-  version: 0.0.496
-  resolution: "web-component-wrapper@npm:0.0.496"
-  peerDependencies:
-    "@babel/runtime": "*"
-    "@types/react": "*"
-    "@types/react-dom": "*"
-    clientnode: "*"
-    react: "*"
-    react-dom: "*"
-  peerDependenciesMeta:
-    "@babel/runtime":
-      optional: true
-    "@types/react":
-      optional: true
-    "@types/react-dom":
-      optional: true
-    react:
-      optional: true
-    react-dom:
-      optional: true
-  checksum: 10c0/5a9daff58e345d3e417a5ce2bb5d517bd17dad0fed2f3eed7403efa3d4d19ca33ff0f232d7b76c0d4eef7de86c5ead41b8ef345caf6be48fc818d5ed1d8a2bb4
-  languageName: node
-  linkType: hard
-
-"web-input-material@npm:^0.0.442":
-  version: 0.0.442
-  resolution: "web-input-material@npm:0.0.442"
+"web-input-material@npm:^0.0.444":
+  version: 0.0.444
+  resolution: "web-input-material@npm:0.0.444"
   dependencies:
     prop-types: "npm:^15.8.1"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-input-material: "npm:^0.0.655"
+    react-input-material: "npm:^0.0.659"
     react-transition-group: "npm:^4.4.5"
-    web-component-wrapper: "npm:^0.0.493"
+    web-component-wrapper: "npm:^0.0.498"
   peerDependencies:
     "@babel/runtime": "*"
     clientnode: "*"
   peerDependenciesMeta:
     "@babel/runtime":
       optional: true
-  checksum: 10c0/2635247f18a073df65ddf06aa10e967410dfd018d65e63eee6820cdcc84600b4f96b0478d125402ee5683c320f8bd0790567446e44dc8bc9c3534c83bc8ef6df
+  checksum: 10c0/79a8f41fd8a69c3c1004caedc5863d5ab7699c7440bcc401a4ffde2dd4f4579593ec6b232b2c67740d6d0c0ecf16c375ccb0b8bc31a5be4ffb354705ebcd182c
   languageName: node
   linkType: hard
 
@@ -14478,9 +14517,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"weboptimizer@npm:^2.0.1518":
-  version: 2.0.1518
-  resolution: "weboptimizer@npm:2.0.1518"
+"weboptimizer@npm:^2.0.1519":
+  version: 2.0.1519
+  resolution: "weboptimizer@npm:2.0.1519"
   dependencies:
     "@babel/core": "npm:^7.25.7"
     "@babel/plugin-proposal-class-properties": "npm:^7.18.6"
@@ -14493,7 +14532,7 @@ __metadata:
     babel-loader: "npm:^9.2.1"
     babel-plugin-transform-modern-regexp: "npm:^0.0.6"
     babel-preset-minify: "npm:^0.5.2"
-    clientnode: "npm:3.0.1192"
+    clientnode: "npm:3.0.1199"
     ejs: "npm:^3.1.10"
     exports-loader: "npm:^5.0.0"
     extract-loader: "npm:^5.1.0"
@@ -14619,7 +14658,7 @@ __metadata:
       optional: true
   bin:
     weboptimizer: index.js
-  checksum: 10c0/0c4629614790955bda890d34fb5b6771616cdbc76e2fbfd6e1abceddef2dee7fa311f8333a488ca2e95bb812fe223f136804ed70708382a294aed142d5415d30
+  checksum: 10c0/e04081c8426fe2d85cd7f96da42992692aa14b6e99ab0955b7883edaa5b4c69006ceadec2cdc814f17c682e55dee8430b4e9c2223e6ed7efc61b5daea21f21aa
   languageName: node
   linkType: hard
 

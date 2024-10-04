@@ -32,143 +32,143 @@ import {BaseModel} from 'web-input-material/type'
 // endregion
 declare global {
     interface Window {
-        dataLayer:Array<unknown>
+        dataLayer: Array<unknown>
     }
 }
 
-export type IndicatorFunction = (...parameters:Array<unknown>) => boolean
+export type IndicatorFunction = (...parameters: Array<unknown>) => boolean
 
 export type DynamicExtendExpression =
-    ((event:Event, scope:unknown) => unknown)|string
+    ((event: Event, scope: unknown) => unknown)|string
 
 export interface Model<T = unknown> extends BaseModel<T> {
-    dynamicExtendExpressions?:Mapping<DynamicExtendExpression>
+    dynamicExtendExpressions?: Mapping<DynamicExtendExpression>
 }
 export interface InputConfiguration<Type = unknown> {
-    changedEventName?:string
+    changedEventName?: string
 
-    dependsOn?:Array<string>|null
+    dependsOn?: Array<string>|null
 
-    domNode?:AnnotatedInputDomNode
-    domNodes:Array<AnnotatedInputDomNode>
+    domNode?: AnnotatedInputDomNode
+    domNodes: Array<AnnotatedInputDomNode>
 
-    dynamicExtend?:Mapping<(event:Event) => unknown>
-    dynamicExtendExpressions?:Mapping<DynamicExtendExpression>
+    dynamicExtend?: Mapping<(event: Event) => unknown>
+    dynamicExtendExpressions?: Mapping<DynamicExtendExpression>
 
-    name:string
-    properties:Partial<InputAnnotation<Type>>
+    name: string
+    properties: Partial<InputAnnotation<Type>>
 
-    serializer?:(value:unknown) => Primitive
-    serializerExpression?:string
+    serializer?: (value: unknown) => Primitive
+    serializerExpression?: string
 
-    showIf?:IndicatorFunction
-    showIfExpression?:string
-    shown?:boolean
+    showIf?: IndicatorFunction
+    showIfExpression?: string
+    shown?: boolean
 
-    target?:string
+    target?: string
 
-    dataMapping?:Mapping|string
-    transformer?:(value:unknown) => unknown
-    transformerExpression?:string
+    dataMapping?: Mapping|string
+    transformer?: (value: unknown) => unknown
+    transformerExpression?: string
 
-    value?:null|Type
-    valuePersistence?:'persistent'|'resetOnHide'
+    value?: null|Type
+    valuePersistence?: 'persistent'|'resetOnHide'
 }
 
 export interface Annotation {
-    clearFading?:ProcedureFunction
+    clearFading?: ProcedureFunction
 
-    oldDisplay?:string
-    oldOpacity?:number
+    oldDisplay?: string
+    oldOpacity?: number
 
-    reason:null|Array<string>|string
+    reason: null|Array<string>|string
 
-    showIf?:IndicatorFunction
-    showIfExpression?:string
-    shown:boolean
+    showIf?: IndicatorFunction
+    showIfExpression?: string
+    shown: boolean
 }
 export interface InputAnnotation<Type = unknown> {
-    changeTrigger?:unknown
+    changeTrigger?: unknown
 
-    type:string
-    default:Type
-    initialValue?:Type
-    selection:Array<Type>
-    value:Type
+    type: string
+    default: Type
+    initialValue?: Type
+    selection: Array<Type>
+    value: Type
 
-    dirty:boolean
-    invalid:boolean
-    pristine:boolean
-    valid:boolean
+    dirty: boolean
+    invalid: boolean
+    pristine: boolean
+    valid: boolean
 
-    showInitialValidationState:boolean
+    showInitialValidationState: boolean
 
-    disabled:boolean
-    model?:RecursivePartial<Model<Type>>
-    required?:boolean
+    disabled: boolean
+    model?: RecursivePartial<Model<Type>>
+    required?: boolean
 
-    dynamicExtendExpressions?:Mapping<DynamicExtendExpression>
+    dynamicExtendExpressions?: Mapping<DynamicExtendExpression>
 
-    externalProperties?:Partial<InputAnnotation<Type>>
+    externalProperties?: Partial<InputAnnotation<Type>>
 }
 export type AnnotatedDomNode = HTMLElement & Annotation
 export type AnnotatedInputDomNode<Type = unknown> =
     AnnotatedDomNode & Partial<InputAnnotation<Type>>
 export interface GroupSpecification {
-    childs:Array<AnnotatedInputDomNode>
+    childs: Array<AnnotatedInputDomNode>
 
-    showIf?:IndicatorFunction
-    showIfExpression?:string
-    showReason?:Array<AnnotatedDomNode>|null|string
+    showIf?: IndicatorFunction
+    showIfExpression?: string
+    showReason?: Array<AnnotatedDomNode>|null|string
 }
 
 export interface Action {
-    name:string
+    name: string
 
-    event?:string
-    handler:(event:Event) => void
+    event?: string
+    handler: (event: Event) => void
 
-    domNodes?:Array<HTMLElement>
-    determinedDomNodes:Array<HTMLElement>
-    globalSelectors?:Array<string>
-    localSelectors?:Array<string>
+    domNodes?: Array<HTMLElement>
+    determinedDomNodes: Array<HTMLElement>
+    globalSelectors?: Array<string>
+    localSelectors?: Array<string>
 
-    code:string
-    run:(event:Event, action:Action) => unknown
+    code: string
+    run: (event: Event, action: Action) => unknown
 }
 export interface TargetAction {
-    name:string
-    target:string
+    name: string
+    target: string
 
-    code:string
-    indicator:() => unknown
+    code: string
+    indicator: () => unknown
 }
 
 export interface Constraint {
-    description:string
-    evaluation:string
+    description: string
+    evaluation: string
 }
 
 export interface StateURL {
-    encoded:string
-    plain:string
+    encoded: string
+    plain: string
 }
 
 export interface TargetConfiguration {
-    options:RequestInit & Partial<{
-        cache:'default'|'reload'|'no-cache'
-        credentials:'omit'|'same-origin'|'include'
-        headers:Headers|Mapping
-        mode:'cors'|'no-cors'|'same-origin'|'navigate'
+    options: RequestInit & Partial<{
+        cache: 'default'|'reload'|'no-cache'
+        credentials: 'omit'|'same-origin'|'include'
+        headers: Headers|Mapping
+        mode: 'cors'|'no-cors'|'same-origin'|'navigate'
     }>
-    url:string
+    url: string
 }
 
 export type Evaluation = [string, unknown]
 export type GivenEvaluation = Evaluation|Mapping<unknown>
 export interface GivenNamedEvaluations {
-    evaluations:Array<GivenEvaluation>|GivenEvaluation
-    order:number
+    evaluations: Array<GivenEvaluation>|GivenEvaluation
+    order: number
 }
 export type GivenEvaluations =
     Array<GivenEvaluation> |
@@ -176,69 +176,69 @@ export type GivenEvaluations =
     GivenNamedEvaluations
 
 export interface Configuration {
-    name:string
+    name: string
 
-    actions:Mapping<Action>
-    targetActions:Mapping<TargetAction>
+    actions: Mapping<Action>
+    targetActions: Mapping<TargetAction>
 
-    constraints:Array<Constraint>
-    evaluations:GivenEvaluations
+    constraints: Array<Constraint>
+    evaluations: GivenEvaluations
 
-    animation:boolean
+    animation: boolean
 
-    data:null|Mapping<unknown>
+    data: null|Mapping<unknown>
 
-    debug:boolean
+    debug: boolean
 
-    initializeTarget:TargetConfiguration
-    inputs:Mapping<Partial<InputConfiguration>>
+    initializeTarget: TargetConfiguration
+    inputs: Mapping<Partial<InputConfiguration>>
 
-    offsetInPixel:number
+    offsetInPixel: number
 
-    reCaptcha:{
-        action:ReCaptchaV2.Action
-        key:{
-            v2:ReCaptchaV2.Parameters['sitekey']
-            v3:string
+    reCaptcha: {
+        action: ReCaptchaV2.Action
+        key: {
+            v2: ReCaptchaV2.Parameters['sitekey']
+            v3: string
         }
-        secret:string
-        skip:boolean
-        token:string
+        secret: string
+        skip: boolean
+        token: string
     }
 
-    responseDataWrapperSelector:{
-        optional:boolean
-        path:string
+    responseDataWrapperSelector: {
+        optional: boolean
+        path: string
     }
-    securityResponsePrefix:string
+    securityResponsePrefix: string
 
-    selector:{
-        clearButtons:string
-        groups:string
-        inputs:string
-        reCaptchaFallbackInput:string
-        resetButtons:string
-        spinner:string
-        statusMessageBoxes:string
-        submitButtons:string
-        truncateButtons:string
+    selector: {
+        clearButtons: string
+        groups: string
+        inputs: string
+        reCaptchaFallbackInput: string
+        resetButtons: string
+        spinner: string
+        statusMessageBoxes: string
+        submitButtons: string
+        truncateButtons: string
     }
 
-    showAll:boolean
+    showAll: boolean
 
-    tag:{
-        secret:string
-        values:Array<string>|string
+    tag: {
+        secret: string
+        values: Array<string>|string
     }
-    tags?:Array<string>|string
+    tags?: Array<string>|string
 
-    target:RecursiveEvaluateable<TargetConfiguration>
-    targetData:null|Mapping<unknown>
+    target: RecursiveEvaluateable<TargetConfiguration>
+    targetData: null|Mapping<unknown>
 
-    urlConfigurationMask:ObjectMaskConfiguration
-    urlConfigurationCharacterLimit:number
+    urlConfigurationMask: ObjectMaskConfiguration
+    urlConfigurationCharacterLimit: number
 
-    version:number
+    version: number
 }
 export type NormalizedConfiguration =
     Omit<
@@ -246,21 +246,21 @@ export type NormalizedConfiguration =
         'evaluations'|'expressions'|'tag'|'tags'
     > &
     {
-        evaluations:Array<Evaluation>
-        tag:{
-            secret:string
-            values:Array<string>
+        evaluations: Array<Evaluation>
+        tag: {
+            secret: string
+            values: Array<string>
         }
     }
 
 export interface PropertyTypes {
-    baseConfiguration:ValueOf<typeof PropertyTypes>
-    configuration:ValueOf<typeof PropertyTypes>
-    dynamicConfiguration:ValueOf<typeof PropertyTypes>
+    baseConfiguration: ValueOf<typeof PropertyTypes>
+    configuration: ValueOf<typeof PropertyTypes>
+    dynamicConfiguration: ValueOf<typeof PropertyTypes>
 }
 
-export type FormResponse = Response & {data:PlainObject}
-export type ResponseResult = {
-    data:Mapping<unknown>
-    invalidInputNames:Array<string>
+export type FormResponse = Response & {data: PlainObject}
+export interface ResponseResult {
+    data: Mapping<unknown>
+    invalidInputNames: Array<string>
 }

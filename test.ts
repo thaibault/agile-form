@@ -36,7 +36,7 @@ TextInput.register()
 const name = 'test-form'
 api.register(name)
 
-describe('api', ():void => {
+describe('api', () => {
     test('api definitions', () => {
         expect(api).toBeDefined()
         expect(api).toHaveProperty('component', AgileForm)
@@ -44,15 +44,15 @@ describe('api', ():void => {
         expect(document.createElement(name)).toBeInstanceOf(AgileForm)
     })
 })
-describe('AgileForm', ():void => {
+describe('AgileForm', (): void => {
     test('custom element definition', () => {
-        const form:AgileForm = document.createElement(name) as AgileForm
+        const form = document.createElement(name) as AgileForm
         document.body.appendChild(form)
 
         expect(form).toBeDefined()
     })
     test('attribute configuration', () => {
-        const form:AgileForm = document.createElement(name) as AgileForm
+        const form = document.createElement(name) as AgileForm
         document.body.appendChild(form)
 
         form.setAttribute('configuration', '{value: 2}')
@@ -60,13 +60,13 @@ describe('AgileForm', ():void => {
         expect(form).toHaveProperty('configuration.value', 2)
         expect(form).toHaveProperty('resolvedConfiguration.value', 2)
     })
-    test('input connections', async ():Promise<void> => {
-        const form:AgileForm = document.createElement(name) as AgileForm
+    test('input connections', async (): Promise<void> => {
+        const form = document.createElement(name) as AgileForm
         document.body.appendChild(form)
 
         expect(form).toHaveProperty('inputConfigurations', {})
 
-        const input:HTMLElement = document.createElement('text-input')
+        const input: HTMLElement = document.createElement('text-input')
         const inputName = 'test'
         input.setAttribute('name', inputName)
         form.appendChild(input)
@@ -86,8 +86,8 @@ describe('AgileForm', ():void => {
             .toHaveProperty([inputName, 'domNode'], input)
     })
     // region configuration
-    test('normalizeURLConfiguration', ():void => {
-        const form:AgileForm = document.createElement(name) as AgileForm
+    test('normalizeURLConfiguration', (): void => {
+        const form = document.createElement(name) as AgileForm
 
         expect(form.self.normalizeURLConfiguration({})).toStrictEqual({})
 
@@ -96,8 +96,8 @@ describe('AgileForm', ():void => {
 
         // TODO
     })
-    test('normalizeConfiguration', ():void => {
-        const form:AgileForm = document.createElement(name) as AgileForm
+    test('normalizeConfiguration', (): void => {
+        const form = document.createElement(name) as AgileForm
 
         expect(form.self.normalizeConfiguration({})).toStrictEqual({
             evaluations: [], tag: {values: []}
@@ -127,8 +127,8 @@ describe('AgileForm', ():void => {
             tag: {values: ['tag-a', 'tag-c', 'tag-b']}
         })
     })
-    test('normalizeEvaluations', ():void => {
-        const form:AgileForm = document.createElement(name) as AgileForm
+    test('normalizeEvaluations', (): void => {
+        const form = document.createElement(name) as AgileForm
 
         expect(form.self.normalizeEvaluations([])).toStrictEqual([])
         expect(form.self.normalizeEvaluations([{}])).toStrictEqual([])
@@ -155,10 +155,10 @@ describe('AgileForm', ():void => {
         }))
             .toStrictEqual([['a', 1], ['b', '1 + 1'], ['c', '2 + 1']])
     })
-    test('mergeConfiguration', ():void => {
-        const form:AgileForm = document.createElement(name) as AgileForm
+    test('mergeConfiguration', (): void => {
+        const form = document.createElement(name) as AgileForm
 
-        const initialConfiguration:Configuration =
+        const initialConfiguration: Configuration =
             copy(form.resolvedConfiguration)
 
         form.mergeConfiguration({})
@@ -178,10 +178,10 @@ describe('AgileForm', ():void => {
             ]
         )
     })
-    test('resolveConfiguration', ():void => {
-        const form:AgileForm = document.createElement(name) as AgileForm
+    test('resolveConfiguration', (): void => {
+        const form = document.createElement(name) as AgileForm
 
-        const initialConfiguration:Configuration =
+        const initialConfiguration: Configuration =
             copy(form.resolvedConfiguration)
 
         form.resolveConfiguration()
@@ -192,8 +192,8 @@ describe('AgileForm', ():void => {
         expect(form.resolvedConfiguration)
             .toStrictEqual({...initialConfiguration, a: 2})
     })
-    test('getConfigurationFromURL', ():void => {
-        const form:AgileForm = document.createElement(name) as AgileForm
+    test('getConfigurationFromURL', (): void => {
+        const form = document.createElement(name) as AgileForm
 
         expect(form.getConfigurationFromURL()).toStrictEqual(null)
 
