@@ -134,14 +134,14 @@ export interface Action {
     localSelectors?: Array<string>
 
     code: string
-    run: (event: Event, action: Action) => unknown
+    run?: (event: Event, action: Action) => unknown
 }
 export interface TargetAction {
     name: string
     target: string
 
     code: string
-    indicator: () => unknown
+    indicator?: () => unknown
 }
 
 export interface Constraint {
@@ -155,12 +155,15 @@ export interface StateURL {
 }
 
 export interface TargetConfiguration {
-    options: RequestInit & Partial<{
-        cache: 'default'|'reload'|'no-cache'
-        credentials: 'omit'|'same-origin'|'include'
-        headers: Headers|Mapping
-        mode: 'cors'|'no-cors'|'same-origin'|'navigate'
-    }>
+    options: (
+        RequestInit &
+        Partial<{
+            cache: 'default'|'reload'|'no-cache'
+            credentials: 'omit'|'same-origin'|'include'
+            headers: Headers|Mapping
+            mode: 'cors'|'no-cors'|'same-origin'|'navigate'
+        }>
+    )
     url: string
 }
 
@@ -259,7 +262,7 @@ export interface PropertyTypes {
     dynamicConfiguration: ValueOf<typeof PropertyTypes>
 }
 
-export type FormResponse = Response & {data: PlainObject}
+export type FormResponse = Response & {data: null|PlainObject}
 export interface ResponseResult {
     data: Mapping<unknown>
     invalidInputNames: Array<string>

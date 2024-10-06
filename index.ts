@@ -1196,9 +1196,11 @@ export class AgileForm<
 
             action.handler = (event: Event) => {
                 void (async (): Promise<void> => {
-                    await this.startBackgroundProcess(event)
-                    await action.run(event, action)
-                    await this.stopBackgroundProcess(event)
+                    if (action.run) {
+                        await this.startBackgroundProcess(event)
+                        await action.run(event, action)
+                        await this.stopBackgroundProcess(event)
+                    }
                 })()
             }
 
@@ -1969,7 +1971,7 @@ export class AgileForm<
                 try {
                     return isFunction(code) ?
                         code(event, scope) :
-                        templateFunction!(...context)
+                        templateFunction(...context)
                 } catch (error) {
                     console.error(
                         `Failed running "dynamicExtendExpression" "` +
@@ -2012,7 +2014,9 @@ export class AgileForm<
                     `Failed to compile action expression "${name}": ${error}`
                 )
 
-            action.run = async (event: Event, action: Action): Promise<void> => {
+            action.run = async (
+                event: Event, action: Action
+            ): Promise<void> => {
                 try {
                     const result: unknown = templateFunction(
                         this.actionResults,
@@ -2338,40 +2342,37 @@ export class AgileForm<
      * @returns A target action url result or undefined.
      */
     resolveTargetAction(action: TargetAction, name: string): null|string {
+        if (!action.indicator)
+            return null
+
         const actionResult: unknown = action.indicator()
-        if (actionResult) {
-            console.debug(
-                `Action "${name}" matched` +
-                (
-                    typeof actionResult === 'boolean' ?
-                        '' :
-                        ` (with result "${actionResult as string}")`
-                ) +
-                '.'
+        if (!actionResult)
+            return null
+
+        console.debug(
+            `Action "${name}" matched` +
+            (
+                typeof actionResult === 'boolean' ?
+                    '' :
+                    ` (with result "${actionResult as string}")`
+            ) +
+            '.'
+        )
+
+        let target: string = action.target
+        target = (target && typeof target === 'string') ? target.trim() : ''
+
+        if (typeof actionResult === 'string')
+            if (/^([a-z]+:)?\/\/.+$/.test(actionResult))
+                target = actionResult
+            else if (
+                target === '' || target.endsWith('?') || target.endsWith('&')
             )
+                target += actionResult
+            else
+                target += `${target.includes('?') ? '&' : '?'}${actionResult}`
 
-            let target: string = action.target
-            target = (target && typeof target === 'string') ?
-                target.trim() :
-                ''
-
-            if (typeof actionResult === 'string')
-                if (/^([a-z]+:)?\/\/.+$/.test(actionResult))
-                    target = actionResult
-                else if (
-                    target === '' ||
-                    target.endsWith('?') ||
-                    target.endsWith('&')
-                )
-                    target += actionResult
-                else
-                    target +=
-                        `${target.includes('?') ? '&' : '?'}${actionResult}`
-
-            return target
-        }
-
-        return null
+        return target
     }
     //// region event handler
     /**
@@ -2497,8 +2498,8 @@ export class AgileForm<
             domNode.getBoundingClientRect()
 
         return {
-            left: box.left + window.pageXOffset - documentNode.clientLeft,
-            top: box.top + window.pageYOffset - documentNode.clientTop
+            left: box.left + window.scrollX - documentNode.clientLeft,
+            top: box.top + window.scrollY - documentNode.clientTop
         }
     }
     /**
@@ -2516,11 +2517,8 @@ export class AgileForm<
                 0, offset.top - this.resolvedConfiguration.offsetInPixel
             )
 
-            const onScroll = (): void => {
-                if (
-                    window.pageYOffset.toFixed() ===
-                        newScrollPosition.toFixed()
-                ) {
+            const onScroll = () => {
+                if (window.scrollY.toFixed() === newScrollPosition.toFixed()) {
                     window.removeEventListener('scroll', onScroll)
 
                     if (typeof targetDomNode.focus === 'function')
@@ -2627,7 +2625,6 @@ export class AgileForm<
                         if (value.every((item: unknown): boolean =>
                             item !== null &&
                             typeof item === 'object' &&
-                            item &&
                             Object.prototype.hasOwnProperty.call(item, 'value')
                         ))
                             data[name] =
@@ -2722,19 +2719,19 @@ export class AgileForm<
     handleUnsuccessfulSentRequest(
         response: FormResponse, rawData: null|PlainObject
     ): void {
-        if (response && response.status === 406)
+        if (response.status === 406)
             // NOTE: We have an invalid e-mail address.
             this.triggerEvent(
                 'serverEMailAddressInvalid',
                 {reference: {request: rawData, response: response.data}}
             )
-        else if (response && [401, 403].includes(response.status))
+        else if ([401, 403].includes(response.status))
             // NOTE: We have an unauthenticated request.
             this.triggerEvent(
                 'serverAuthenticationInvalid',
                 {reference: {request: rawData, response: response.data}}
             )
-        else if (response && response.status === 420) {
+        else if (response.status === 420) {
             if (this.updateReCaptchaFallbackToken())
                 void this.scrollAndFocus(
                     this.reCaptchaFallbackInput as AnnotatedDomNode
@@ -2751,7 +2748,7 @@ export class AgileForm<
                     'reCaptchaCheckFailed',
                     {reference: {request: rawData, response: response.data}}
                 )
-        } else if (response && response.status === 428)
+        } else if (response.status === 428)
             // NOTE: We have sent an outdated form.
             this.triggerEvent(
                 'serverFormOutdated',
@@ -2763,7 +2760,7 @@ export class AgileForm<
                 'serverUnexpected',
                 {reference: {
                     request: rawData,
-                    response: response && response.data || null
+                    response: response.data || null
                 }}
             )
     }
@@ -2780,7 +2777,7 @@ export class AgileForm<
     ): Promise<null|FormResponse> {
         // region convert headers configuration to header object
         if (
-            window.Headers &&
+            Headers as unknown &&
             Object.prototype.hasOwnProperty.call(target, 'options') &&
             target.options !== null &&
             Object.prototype.hasOwnProperty.call(target.options, 'headers') &&
@@ -2806,7 +2803,7 @@ export class AgileForm<
         if (target.options.body && typeof target.options.body !== 'string')
             target.options.body = JSON.stringify(target.options.body)
 
-        let response: null|FormResponse = null
+        let response: FormResponse|null = null
 
         void this.updateReCaptchaToken()
 
@@ -2855,28 +2852,24 @@ export class AgileForm<
             )
         }
 
-        if (response) {
-            if (response.ok && response.data) {
-                if (
-                    response.data.result &&
-                    [401, 403, 407].includes(response.status)
+        if (response.ok && response.data) {
+            if (
+                response.data.result &&
+                [401, 403, 407].includes(response.status)
+            )
+                // NOTE: We have an unauthenticated request.
+                this.triggerEvent(
+                    'serverAuthenticationInvalid',
+                    {reference: {
+                        request: rawData,
+                        response: response.data
+                    }}
                 )
-                    // NOTE: We have an unauthenticated request.
-                    this.triggerEvent(
-                        'serverAuthenticationInvalid',
-                        {reference: {
-                            request: rawData,
-                            response: response.data
-                        }}
-                    )
 
-                return response
-            }
-
-            this.handleUnsuccessfulSentRequest(response, rawData)
+            return response
         }
 
-        return response
+        this.handleUnsuccessfulSentRequest(response, rawData)
     }
     /**
      * Send given data to server und interpret response.
