@@ -459,74 +459,76 @@ export class AgileForm<
      * @param reason - Description why rendering is necessary.
      * @returns A promise resolving to nothing.
      */
-    async render(reason = 'unknown'): Promise<void> {
+    render(reason = 'unknown'): void {
         if (!this.dispatchEvent(new CustomEvent('render', {detail: {reason}})))
             return
 
-        /*
-            NOTE: We need a digest loop to allow the components to extend given
-            model object with their defaults.
-        */
-        await this.digest()
-        await this.configureContentProjectedElements()
+        void (async () => {
+            /*
+                NOTE: We need a digest loop to allow the components to extend
+                given model object with their defaults.
+            */
+            await this.digest()
+            await this.configureContentProjectedElements()
 
-        this.reCaptchaFallbackInput = this.root.querySelector(
-            this.resolvedConfiguration.selector.reCaptchaFallbackInput
-        )
-        if (this.reCaptchaFallbackInput) {
-            if (this.resolvedConfiguration.showAll)
-                this.show(this.reCaptchaFallbackInput)
-            else
-                this.hide(this.reCaptchaFallbackInput)
+            this.reCaptchaFallbackInput = this.root.querySelector(
+                this.resolvedConfiguration.selector.reCaptchaFallbackInput
+            )
+            if (this.reCaptchaFallbackInput) {
+                if (this.resolvedConfiguration.showAll)
+                    this.show(this.reCaptchaFallbackInput)
+                else
+                    this.hide(this.reCaptchaFallbackInput)
 
-            if (this.resolvedConfiguration.debug)
-                this.updateReCaptchaFallbackToken()
-        }
+                if (this.resolvedConfiguration.debug)
+                    this.updateReCaptchaFallbackToken()
+            }
 
-        this.spinner = Array.from(this.root.querySelectorAll(
-            this.resolvedConfiguration.selector.spinner
-        ))
+            this.spinner = Array.from(this.root.querySelectorAll(
+                this.resolvedConfiguration.selector.spinner
+            ))
 
-        this.statusMessageBoxes = Array.from(this.root.querySelectorAll(
-            this.resolvedConfiguration.selector.statusMessageBoxes
-        ))
+            this.statusMessageBoxes = Array.from(this.root.querySelectorAll(
+                this.resolvedConfiguration.selector.statusMessageBoxes
+            ))
 
-        this.clearButtons = Array.from(this.root.querySelectorAll(
-            this.resolvedConfiguration.selector.clearButtons
-        ))
-        this.resetButtons = Array.from(this.root.querySelectorAll(
-            this.resolvedConfiguration.selector.resetButtons
-        ))
-        this.submitButtons = Array.from(this.root.querySelectorAll(
-            this.resolvedConfiguration.selector.submitButtons
-        ))
-        this.truncateButtons = Array.from(this.root.querySelectorAll(
-            this.resolvedConfiguration.selector.truncateButtons
-        ))
+            this.clearButtons = Array.from(this.root.querySelectorAll(
+                this.resolvedConfiguration.selector.clearButtons
+            ))
+            this.resetButtons = Array.from(this.root.querySelectorAll(
+                this.resolvedConfiguration.selector.resetButtons
+            ))
+            this.submitButtons = Array.from(this.root.querySelectorAll(
+                this.resolvedConfiguration.selector.submitButtons
+            ))
+            this.truncateButtons = Array.from(this.root.querySelectorAll(
+                this.resolvedConfiguration.selector.truncateButtons
+            ))
 
-        this.root.addEventListener(
-            'keydown', this.onKeyDown as EventListenerOrEventListenerObject
-        )
-        for (const domNode of this.clearButtons)
-            domNode.addEventListener('click', this.onClear)
-        for (const domNode of this.resetButtons)
-            domNode.addEventListener('click', this.onReset)
-        for (const domNode of this.submitButtons)
-            domNode.addEventListener('click', this.onSubmit)
-        for (const domNode of this.truncateButtons)
-            domNode.addEventListener('click', this.onTruncate)
+            this.root.addEventListener(
+                'keydown', this.onKeyDown as EventListenerOrEventListenerObject
+            )
+            for (const domNode of this.clearButtons)
+                domNode.addEventListener('click', this.onClear)
+            for (const domNode of this.resetButtons)
+                domNode.addEventListener('click', this.onReset)
+            for (const domNode of this.submitButtons)
+                domNode.addEventListener('click', this.onSubmit)
+            for (const domNode of this.truncateButtons)
+                domNode.addEventListener('click', this.onTruncate)
 
-        /*
-            Show potentially grabbed messages coming from the initialisation
-            phase.
-        */
-        this.updateMessageBox()
+            /*
+                Show potentially grabbed messages coming from the initialisation
+                phase.
+            */
+            this.updateMessageBox()
 
-        await this.stopBackgroundProcess(
-            new CustomEvent('rendered', {detail: {reason}})
-        )
+            await this.stopBackgroundProcess(
+                new CustomEvent('rendered', {detail: {reason}})
+            )
 
-        await this.initialize()
+            await this.initialize()
+        })()
     }
     // endregion
     // region handle visibility states
@@ -584,7 +586,7 @@ export class AgileForm<
 
             domNode.clearFading = () => {
                 clearInterval(timer)
-                domNode.style.opacity = `${opacity}`
+                domNode.style.opacity = String(opacity)
                 domNode.style.display = 'none'
                 domNode.style.position = oldPosition
                 delete domNode.clearFading
@@ -608,7 +610,7 @@ export class AgileForm<
                     }
 
                     currentOpacity *= 1.1
-                    domNode.style.opacity = `${currentOpacity}`
+                    domNode.style.opacity = String(currentOpacity)
                 },
                 durationInMilliseconds * .1
             )
@@ -616,7 +618,7 @@ export class AgileForm<
             domNode.clearFading = () => {
                 clearInterval(timer)
 
-                domNode.style.opacity = `${domNode.oldOpacity || 1}`
+                domNode.style.opacity = String(domNode.oldOpacity || 1)
 
                 delete domNode.clearFading
             }
@@ -834,14 +836,11 @@ export class AgileForm<
                         managed by their group component.
                     */
                     !(
-                        domNode.matches &&
-                        (
-                            domNode.matches(
-                                this.resolvedConfiguration.selector.groups
-                            ) ||
-                            domNode.matches(
-                                this.resolvedConfiguration.selector.inputs
-                            )
+                        domNode.matches(
+                            this.resolvedConfiguration.selector.groups
+                        ) ||
+                        domNode.matches(
+                            this.resolvedConfiguration.selector.inputs
                         )
                     ),
                 ignoreComponents: false
@@ -888,7 +887,7 @@ export class AgileForm<
         // Consolidate aliases for "input" configuration item.
         const inputs: Mapping<RecursivePartial<InputConfiguration>> =
             currentConfiguration.inputs as
-                Mapping<RecursivePartial<InputConfiguration>> ||
+                Mapping<RecursivePartial<InputConfiguration>>|undefined ||
             {}
         if (currentConfiguration.model) {
             extend(
@@ -957,7 +956,7 @@ export class AgileForm<
      * @returns Normalized evaluations.
      */
     static normalizeEvaluations(
-        evaluations?: GivenEvaluations
+        evaluations?: GivenEvaluations|null
     ): Array<Evaluation> {
         const preEvaluations: Array<GivenNamedEvaluations> = []
         const postEvaluations: Array<GivenNamedEvaluations> = []
@@ -985,8 +984,8 @@ export class AgileForm<
             typeof evaluations === 'object' &&
             Object.keys(evaluations).length > 0
         ) {
-            const namedEvaluationsList: Array<GivenNamedEvaluations> =
-                Object.values(evaluations) as Array<GivenNamedEvaluations>
+            const namedEvaluationsList =
+                Object.values(evaluations) as Array<GivenNamedEvaluations|null>
 
             if (
                 namedEvaluationsList[0] !== null &&
@@ -997,14 +996,14 @@ export class AgileForm<
                 )
             )
                 for (const namedEvaluations of namedEvaluationsList)
-                    if (namedEvaluations.order < 0)
+                    if (namedEvaluations && namedEvaluations.order < 0)
                         preEvaluations.push(namedEvaluations)
-                    else if (namedEvaluations.order > 0)
+                    else if (namedEvaluations && namedEvaluations.order > 0)
                         postEvaluations.push(namedEvaluations)
                     else
                         normalizedEvaluations =
                             AgileForm.normalizeEvaluations(
-                                namedEvaluations.evaluations
+                                namedEvaluations?.evaluations
                             )
             else
                 normalizedEvaluations = Object.entries(evaluations)
@@ -1146,7 +1145,7 @@ export class AgileForm<
         const parameter: Array<string>|string|undefined =
             this.queryParameters[this.resolvedConfiguration.name]
         if (typeof parameter === 'string') {
-            const evaluated: EvaluationResult = evaluate(parameter)
+            const evaluated: EvaluationResult<PlainObject> = evaluate(parameter)
 
             if (evaluated.error) {
                 console.warn(
@@ -1157,10 +1156,7 @@ export class AgileForm<
                 return null
             }
 
-            if (
-                evaluated.result !== null &&
-                typeof evaluated.result === 'object'
-            )
+            if (typeof evaluated.result === 'object')
                 return mask<RecursivePartial<Configuration>>(
                     this.self.normalizeURLConfiguration(evaluated.result),
                     this.resolvedConfiguration.urlConfigurationMask
@@ -1337,8 +1333,7 @@ export class AgileForm<
                     )
                         domNode.setAttribute(
                             'title',
-                            this.inputConfigurations[name].showIfExpression as
-                                string
+                            this.inputConfigurations[name].showIfExpression
                         )
                 } else if (name.includes('.'))
                     // Found input is a computable field.
@@ -1484,12 +1479,12 @@ export class AgileForm<
                         */
                         console.debug(
                             `Apply form configuration for input "${name}" ` +
-                            `with property "${key}" and value "` +
-                            `${represent(configuration.properties[key])}".`
+                            `with property "${key}" and value ` +
+                            `"${represent(configuration.properties[key])}".`
                         )
 
-                        ;(domNode[key as keyof InputAnnotation] as unknown) =
-                            configuration.properties[key]
+                        ;(domNode[key as keyof InputAnnotation]) =
+                            configuration.properties[key] as undefined
                     } else
                         console.debug(
                             `Form configuration for input "${name}" with ` +
@@ -1497,7 +1492,7 @@ export class AgileForm<
                             represent(configuration.properties[key]) +
                             '" has been shadowed by dom nodes configuration ' +
                             'value "' +
-                            `${represent(domNode.externalProperties![key])}".`
+                            `${represent(domNode.externalProperties[key])}".`
                         )
 
                 try {
@@ -1509,7 +1504,7 @@ export class AgileForm<
                         configuration,
                         'value',
                         {
-                            get: (): unknown => configuration.domNode!.value,
+                            get: (): unknown => configuration.domNode?.value,
                             set: (value: unknown): void => {
                                 const tagName: string =
                                     domNode.nodeName.toLowerCase()
@@ -1528,7 +1523,7 @@ export class AgileForm<
                             }
                         }
                     )
-                } catch (error) {
+                } catch (_error) {
                     // Property seems to already been set.
                 }
 
@@ -1584,7 +1579,8 @@ export class AgileForm<
                 this.initialData[name] = domNode.value
             } else
                 this.message =
-                    `Missing attribute "name" for ${index}. given input.`
+                    `Missing attribute "name" for ${String(index)}. ` +
+                    'given input.'
 
             index += 1
         }
@@ -1651,10 +1647,13 @@ export class AgileForm<
             )
 
             const specification: GroupSpecification = {
-                childs: candidates.filter((domNode: AnnotatedDomNode): boolean =>
-                    !candidates.some((otherDomNode: AnnotatedDomNode): boolean =>
-                        otherDomNode !== domNode &&
-                        otherDomNode.contains(domNode)
+                childs: candidates.filter((
+                    domNode: AnnotatedDomNode
+                ): boolean =>
+                    !candidates.some(
+                        (otherDomNode: AnnotatedDomNode): boolean =>
+                            otherDomNode !== domNode &&
+                            otherDomNode.contains(domNode)
                     )
                 ),
                 showReason: null
@@ -1781,7 +1780,7 @@ export class AgileForm<
 
             if (configuration.dependsOn)
                 for (const dependentName of ([] as Array<string>).concat(
-                    configuration.dependsOn as Array<string>
+                    configuration.dependsOn
                 ))
                     if (Object.prototype.hasOwnProperty.call(
                         this.dependencyMapping, dependentName
@@ -1807,7 +1806,7 @@ export class AgileForm<
         const configuration: InputConfiguration = this.inputConfigurations[name]
 
         if (configuration[typeName]) {
-            const code = configuration[typeName] as string
+            const code = configuration[typeName]
             const {error, scopeNames, templateFunction} = compile(
                 code,
                 this.self.baseScopeNames.concat(
@@ -1825,7 +1824,9 @@ export class AgileForm<
                     `Failed to compile "${typeName}" "${name}": ${error}`
                 )
 
-            configuration[type as 'transformer'] = (value: unknown): unknown => {
+            configuration[type as 'transformer'] = (
+                value: unknown
+            ): unknown => {
                 try {
                     return templateFunction(
                         this.actionResults,
@@ -1921,7 +1922,7 @@ export class AgileForm<
                     convertToValidVariableName(name)
                 )
 
-            configuration.dynamicExtend![subName] = (event: Event): unknown => {
+            configuration.dynamicExtend[subName] = (event: Event): unknown => {
                 const scope: Mapping<unknown> = {}
                 const context: Array<unknown> = [
                     this.actionResults,
@@ -2274,7 +2275,7 @@ export class AgileForm<
             {reference: this.resolvedConfiguration.initializeTarget}
         )
 
-        if (this.resolvedConfiguration.initializeTarget?.url) {
+        if (this.resolvedConfiguration.initializeTarget.url) {
             /*
                 NOTE: We have to start background process (run evaluations)
                 before rendering initial target to have corresponding
@@ -2580,7 +2581,7 @@ export class AgileForm<
             if (!name.includes('.')) {
                 const value: unknown =
                     configuration.transformer ?
-                        configuration.transformer!(configuration.value) :
+                        configuration.transformer(configuration.value) :
                         configuration.value
 
                 if (configuration.shown && configuration.domNode?.invalid)
@@ -2603,7 +2604,7 @@ export class AgileForm<
 
                         if (typeof configuration.dataMapping === 'string') {
                             const evaluated: EvaluationResult = evaluate(
-                                configuration.dataMapping as string, scope
+                                configuration.dataMapping, scope
                             )
 
                             if (evaluated.error)
@@ -2631,7 +2632,7 @@ export class AgileForm<
                         ))
                             data[name] =
                                 value.map((item: {value: unknown}): unknown =>
-                                    item!.value
+                                    item.value
                                 )
                         else
                             data[name] = value
@@ -2794,7 +2795,7 @@ export class AgileForm<
                         ['boolean', 'number', 'string'].includes(
                             typeof header
                         ) &&
-                        `${header}`.trim()
+                        header.trim()
                     )
                         headers.set(name, header)
 
@@ -2802,7 +2803,7 @@ export class AgileForm<
         }
         // endregion
 
-        if (target.options?.body && typeof target.options.body !== 'string')
+        if (target.options.body && typeof target.options.body !== 'string')
             target.options.body = JSON.stringify(target.options.body)
 
         let response: null|FormResponse = null
@@ -2833,7 +2834,7 @@ export class AgileForm<
         }
 
         try {
-            let responseString: string = await (response as FormResponse).text()
+            let responseString: string = await (response).text()
             if (responseString.startsWith(
                 this.resolvedConfiguration.securityResponsePrefix
             ))
@@ -2841,9 +2842,9 @@ export class AgileForm<
                     this.resolvedConfiguration.securityResponsePrefix.length
                 )
 
-            response!.data = JSON.parse(responseString) as PlainObject
-            response!.data = getSubstructure(
-                (response as FormResponse).data,
+            response.data = JSON.parse(responseString) as PlainObject
+            response.data = getSubstructure(
+                (response).data,
                 this.resolvedConfiguration.responseDataWrapperSelector.path,
                 this.resolvedConfiguration.responseDataWrapperSelector.optional
             )
@@ -2899,7 +2900,7 @@ export class AgileForm<
             this.determineEvaluationScope()
         )
         // endregion
-        if (target?.url) {
+        if (target.url) {
             this.determinedTargetURL = target.url
 
             this.latestResponse = this.response = null
@@ -2953,9 +2954,9 @@ export class AgileForm<
                 if (
                     typeof this.inputConfigurations[name].target ===
                         'string' &&
-                    (this.inputConfigurations[name].target as string).length
+                    (this.inputConfigurations[name].target).length
                 )
-                    result[this.inputConfigurations[name].target as string] =
+                    result[this.inputConfigurations[name].target] =
                         value
             } else
                 result[name] = value
@@ -3450,9 +3451,9 @@ export class AgileForm<
                 domNode.selection &&
                 (
                     Array.isArray(domNode.selection) &&
-                    domNode.selection!.length > 1 ||
+                    domNode.selection.length > 1 ||
                     !Array.isArray(domNode.selection) &&
-                    Object.keys(domNode.selection!).length > 1
+                    Object.keys(domNode.selection).length > 1
                 )
             )
         )
@@ -3496,7 +3497,7 @@ export class AgileForm<
                 let useValue = false
                 if (this.isDeterminedStateValueNeeded(name)) {
                     serializedValue = configuration.serializer ?
-                        configuration.serializer!(
+                        configuration.serializer(
                             configuration.value
                         ) :
                         configuration.value
@@ -3667,8 +3668,8 @@ export class AgileForm<
             this.reCaptchaFallbackInput &&
             (
                 this.resolvedConfiguration.showAll ||
-                this.resolvedConfiguration.reCaptcha?.key?.v2 &&
-                (this.resolvedConfiguration.target as TargetConfiguration)?.url
+                this.resolvedConfiguration.reCaptcha.key.v2 &&
+                (this.resolvedConfiguration.target as TargetConfiguration).url
             )
         ) {
             this.reCaptchaPromise =
@@ -3680,7 +3681,7 @@ export class AgileForm<
             this.reCaptchaFallbackInput.setAttribute('invalid', '')
 
             if (this.reCaptchaFallbackRendered)
-                window.grecaptcha!.reset()
+                window.grecaptcha.reset()
             else {
                 this.reCaptchaFallbackInput.removeAttribute('dirty')
                 this.reCaptchaFallbackInput.setAttribute('pristine', '')
@@ -3691,7 +3692,7 @@ export class AgileForm<
                     since re-captcha 3 is always triggered first so we can
                     assume it is already there.
                 */
-                window.grecaptcha!.render(
+                window.grecaptcha.render(
                     this.reCaptchaFallbackInput,
                     {
                         callback: (token: string): void => {
@@ -3745,11 +3746,11 @@ export class AgileForm<
 
         if (
             window.grecaptcha &&
-            this.resolvedConfiguration.reCaptcha?.key?.v3 &&
-            (this.resolvedConfiguration.target as TargetConfiguration)?.url
+            this.resolvedConfiguration.reCaptcha.key.v3 &&
+            (this.resolvedConfiguration.target as TargetConfiguration).url
         )
             try {
-                window.grecaptcha!.ready((): void => {
+                window.grecaptcha.ready((): void => {
                     window.grecaptcha.execute(
                         this.resolvedConfiguration.reCaptcha.key.v3,
                         this.resolvedConfiguration.reCaptcha.action
