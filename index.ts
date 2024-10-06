@@ -2672,10 +2672,9 @@ export class AgileForm<
     handleValidSentData(data: Mapping<unknown>, newWindow = false): string {
         this.triggerEvent(
             'submitSuccessful',
-            {reference: {request: data, response: this.response!.data}}
+            {reference: {request: data, response: this.response?.data}}
         )
 
-        let redirected = false
         let fallbackTarget = ''
 
         this.runEvaluations()
@@ -2693,16 +2692,14 @@ export class AgileForm<
                     if (typeof target === 'string') {
                         if (newWindow)
                             window.open(target)
-                        else {
-                            redirected = true
+                        else
                             location.href = target
-                        }
 
                         return target
                     }
                 }
 
-        if (!redirected && fallbackTarget) {
+        if (fallbackTarget) {
             location.href = fallbackTarget
 
             return fallbackTarget
@@ -2776,13 +2773,7 @@ export class AgileForm<
         target: TargetConfiguration, rawData: null|PlainObject = null
     ): Promise<null|FormResponse> {
         // region convert headers configuration to header object
-        if (
-            Headers as unknown &&
-            Object.prototype.hasOwnProperty.call(target, 'options') &&
-            target.options !== null &&
-            Object.prototype.hasOwnProperty.call(target.options, 'headers') &&
-            target.options.headers !== null
-        ) {
+        if (Headers as unknown && target.options?.headers) {
             const headers: Headers = new Headers()
             if (!(target.options.headers instanceof Headers))
                 for (const [name, header] of Object.entries(
@@ -2800,7 +2791,7 @@ export class AgileForm<
         }
         // endregion
 
-        if (target.options.body && typeof target.options.body !== 'string')
+        if (target.options?.body && typeof target.options.body !== 'string')
             target.options.body = JSON.stringify(target.options.body)
 
         let response: FormResponse|null = null
@@ -2870,6 +2861,8 @@ export class AgileForm<
         }
 
         this.handleUnsuccessfulSentRequest(response, rawData)
+
+        return null
     }
     /**
      * Send given data to server und interpret response.
@@ -2973,11 +2966,11 @@ export class AgileForm<
             this.invalidConstraint = null
             this.valid = !this.invalid
 
-            const target: HTMLElement|null = this.submitButtons.length ?
+            const target: EventTarget|null = this.submitButtons.length ?
                 this.submitButtons[0] :
-                event.target as HTMLElement
+                event.target
             const newWindow: boolean = target ?
-                target.getAttribute('target') === '_blank' :
+                (target as HTMLElement).getAttribute('target') === '_blank' :
                 false
 
             this.setAttribute('submitted', '')
@@ -3000,13 +2993,11 @@ export class AgileForm<
                 this.handleInvalidSubmittedInput(data, invalidInputNames)
             } else if (
                 this.reCaptchaFallbackRendered &&
-                this.reCaptchaFallbackInput!.hasAttribute('invalid')
+                this.reCaptchaFallbackInput?.hasAttribute('invalid')
             ) {
                 this.updateMessageBox('Please do the re-captcha challenge.')
 
-                void this.scrollAndFocus(
-                    this.reCaptchaFallbackInput as AnnotatedDomNode
-                )
+                void this.scrollAndFocus(this.reCaptchaFallbackInput)
             } else {
                 this.resolvedConfiguration.reCaptcha.token =
                     (await this.reCaptchaPromise) || ''
@@ -3127,11 +3118,11 @@ export class AgileForm<
                         configuration.changedEventName as string :
                         'change'
 
-                const handler: EventListener = debounce<void>(
+                const handler: EventListener = debounce<undefined>(
                     (async (event: Event): Promise<void> => {
                         await this.digest()
 
-                        let lock: Lock
+                        let lock: Lock|null = null
 
                         // NOTE: We update input dom node if it has changed.
                         if (event.target)
@@ -3173,8 +3164,8 @@ export class AgileForm<
 
                         this.updateAllGroups()
 
-                        if (this.dependencyMapping[name].length)
-                            await lock!.release('digest')
+                        if (lock && this.dependencyMapping[name].length)
+                            await lock.release('digest')
                     }) as UnknownFunction,
                     400
                 ) as EventListener

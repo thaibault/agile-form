@@ -155,15 +155,16 @@ export interface StateURL {
 }
 
 export interface TargetConfiguration {
-    options: (
+    options?: (
         RequestInit &
         Partial<{
             cache: 'default'|'reload'|'no-cache'
             credentials: 'omit'|'same-origin'|'include'
-            headers: Headers|Mapping
+            headers: Headers|Mapping|null
             mode: 'cors'|'no-cors'|'same-origin'|'navigate'
         }>
-    )
+    ) |
+    null
     url: string
 }
 
