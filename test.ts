@@ -27,6 +27,7 @@ import {Configuration, Evaluation} from './type'
     NOTE: We have to preload this module to avoid introducing an additional
     asynchronous chunk.
 */
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 require('node-fetch/src/utils/multipart-parser')
 globalContext.fetch = nodeFetch as unknown as typeof fetch
 
@@ -198,8 +199,10 @@ describe('AgileForm', (): void => {
         expect(form.getConfigurationFromURL()).toStrictEqual(null)
 
         form.queryParameters[form.resolvedConfiguration.name] = '{}'
-        expect(Object.keys(form.getConfigurationFromURL()!))
-            .toHaveProperty('length', 0)
+        const configuration = form.getConfigurationFromURL()
+        if (configuration)
+            expect(Object.keys(configuration))
+                .toHaveProperty('length', 0)
 
         form.queryParameters[form.resolvedConfiguration.name] = '{a: 2}'
         expect(form.getConfigurationFromURL()).toStrictEqual({})

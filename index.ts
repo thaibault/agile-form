@@ -231,7 +231,7 @@ export class AgileForm<
             options: {
                 body: {__evaluate__: 'targetData'} as
                     unknown as
-                    TargetConfiguration['options']['body'],
+                    RequestInit['body'],
                 cache: 'no-cache',
                 /*
                     NOTE: Send user credentials (cookies, basic http
@@ -459,76 +459,74 @@ export class AgileForm<
      * @param reason - Description why rendering is necessary.
      * @returns A promise resolving to nothing.
      */
-    render(reason = 'unknown'): void {
+    async render(reason = 'unknown'): Promise<void> {
         if (!this.dispatchEvent(new CustomEvent('render', {detail: {reason}})))
             return
 
-        void (async () => {
-            /*
-                NOTE: We need a digest loop to allow the components to extend
-                given model object with their defaults.
-            */
-            await this.digest()
-            await this.configureContentProjectedElements()
+        /*
+            NOTE: We need a digest loop to allow the components to extend
+            given model object with their defaults.
+        */
+        await this.digest()
+        await this.configureContentProjectedElements()
 
-            this.reCaptchaFallbackInput = this.root.querySelector(
-                this.resolvedConfiguration.selector.reCaptchaFallbackInput
-            )
-            if (this.reCaptchaFallbackInput) {
-                if (this.resolvedConfiguration.showAll)
-                    this.show(this.reCaptchaFallbackInput)
-                else
-                    this.hide(this.reCaptchaFallbackInput)
+        this.reCaptchaFallbackInput = this.root.querySelector(
+            this.resolvedConfiguration.selector.reCaptchaFallbackInput
+        )
+        if (this.reCaptchaFallbackInput) {
+            if (this.resolvedConfiguration.showAll)
+                this.show(this.reCaptchaFallbackInput)
+            else
+                this.hide(this.reCaptchaFallbackInput)
 
-                if (this.resolvedConfiguration.debug)
-                    this.updateReCaptchaFallbackToken()
-            }
+            if (this.resolvedConfiguration.debug)
+                this.updateReCaptchaFallbackToken()
+        }
 
-            this.spinner = Array.from(this.root.querySelectorAll(
-                this.resolvedConfiguration.selector.spinner
-            ))
+        this.spinner = Array.from(this.root.querySelectorAll(
+            this.resolvedConfiguration.selector.spinner
+        ))
 
-            this.statusMessageBoxes = Array.from(this.root.querySelectorAll(
-                this.resolvedConfiguration.selector.statusMessageBoxes
-            ))
+        this.statusMessageBoxes = Array.from(this.root.querySelectorAll(
+            this.resolvedConfiguration.selector.statusMessageBoxes
+        ))
 
-            this.clearButtons = Array.from(this.root.querySelectorAll(
-                this.resolvedConfiguration.selector.clearButtons
-            ))
-            this.resetButtons = Array.from(this.root.querySelectorAll(
-                this.resolvedConfiguration.selector.resetButtons
-            ))
-            this.submitButtons = Array.from(this.root.querySelectorAll(
-                this.resolvedConfiguration.selector.submitButtons
-            ))
-            this.truncateButtons = Array.from(this.root.querySelectorAll(
-                this.resolvedConfiguration.selector.truncateButtons
-            ))
+        this.clearButtons = Array.from(this.root.querySelectorAll(
+            this.resolvedConfiguration.selector.clearButtons
+        ))
+        this.resetButtons = Array.from(this.root.querySelectorAll(
+            this.resolvedConfiguration.selector.resetButtons
+        ))
+        this.submitButtons = Array.from(this.root.querySelectorAll(
+            this.resolvedConfiguration.selector.submitButtons
+        ))
+        this.truncateButtons = Array.from(this.root.querySelectorAll(
+            this.resolvedConfiguration.selector.truncateButtons
+        ))
 
-            this.root.addEventListener(
-                'keydown', this.onKeyDown as EventListenerOrEventListenerObject
-            )
-            for (const domNode of this.clearButtons)
-                domNode.addEventListener('click', this.onClear)
-            for (const domNode of this.resetButtons)
-                domNode.addEventListener('click', this.onReset)
-            for (const domNode of this.submitButtons)
-                domNode.addEventListener('click', this.onSubmit)
-            for (const domNode of this.truncateButtons)
-                domNode.addEventListener('click', this.onTruncate)
+        this.root.addEventListener(
+            'keydown', this.onKeyDown as EventListenerOrEventListenerObject
+        )
+        for (const domNode of this.clearButtons)
+            domNode.addEventListener('click', this.onClear)
+        for (const domNode of this.resetButtons)
+            domNode.addEventListener('click', this.onReset)
+        for (const domNode of this.submitButtons)
+            domNode.addEventListener('click', this.onSubmit)
+        for (const domNode of this.truncateButtons)
+            domNode.addEventListener('click', this.onTruncate)
 
-            /*
-                Show potentially grabbed messages coming from the initialisation
-                phase.
-            */
-            this.updateMessageBox()
+        /*
+            Show potentially grabbed messages coming from the initialisation
+            phase.
+        */
+        this.updateMessageBox()
 
-            await this.stopBackgroundProcess(
-                new CustomEvent('rendered', {detail: {reason}})
-            )
+        await this.stopBackgroundProcess(
+            new CustomEvent('rendered', {detail: {reason}})
+        )
 
-            await this.initialize()
-        })()
+        await this.initialize()
     }
     // endregion
     // region handle visibility states
@@ -3299,7 +3297,7 @@ export class AgileForm<
             for (const domNode of this.inputConfigurations[name].domNodes) {
                 if (typeof domNode.changeTrigger === 'function') {
                     const result: unknown =
-                        (domNode.changeTrigger as () => void)()
+                        (domNode.changeTrigger as () => Promise<void>|void)()
 
                     if ('then' in (result as Promise<unknown>))
                         await result
@@ -3491,37 +3489,24 @@ export class AgileForm<
                             .urlConfigurationCharacterLimit
                 }
 
-                if (Object.prototype.hasOwnProperty.call(
-                    parameter.inputs, name
-                )) {
-                    if (!(
-                        parameter.inputs[name as keyof Model] &&
-                        Object.prototype.hasOwnProperty.call(
-                            parameter.inputs[name as keyof Model], 'properties'
-                        )
-                    ))
-                        parameter.inputs[name as keyof Model]!.properties = {}
+                if (parameter.inputs[name]) {
+                    const input = parameter.inputs[name]
+                    if (!input.properties)
+                        input.properties = {}
 
                     if (
                         this.inputConfigurations[name].value !==
-                        parameter.inputs[name as keyof Model]!.properties!
-                            .value
+                            input.properties.value
                     )
                         if (useValue)
-                            parameter.inputs[name]!.properties!.value =
-                                serializedValue
+                            input.properties.value = serializedValue
                         else {
-                            delete parameter.inputs[name]!.properties!.value
+                            delete input.properties.value
 
-                            if (Object.keys(
-                                parameter.inputs[name as keyof Model]!
-                                    .properties!
-                            ).length === 0)
-                                delete parameter.inputs[name]!.properties
+                            if (Object.keys(input.properties).length === 0)
+                                delete input.properties
 
-                            if (Object.keys(
-                                parameter.inputs[name as keyof Model]!
-                            ).length === 0)
+                            if (Object.keys(input).length === 0)
                                 delete parameter.inputs[name]
                         }
                 } else if (useValue && this.isDeterminedStateValueNeeded(name))
@@ -3640,7 +3625,9 @@ export class AgileForm<
     updateReCaptchaFallbackToken(): boolean {
         // NOTE: IE 11 sometimes does not load reCAPTCHA properly.
         if (
-            window.grecaptcha && !window.grecaptcha.render && window.location
+            window.grecaptcha as unknown &&
+            !(window.grecaptcha.render as unknown) &&
+            window.location as unknown
         ) {
             location.reload()
 
@@ -3648,7 +3635,7 @@ export class AgileForm<
         }
 
         if (
-            window.grecaptcha &&
+            window.grecaptcha as unknown &&
             this.reCaptchaFallbackInput &&
             (
                 this.resolvedConfiguration.showAll ||
@@ -3683,14 +3670,17 @@ export class AgileForm<
                             this.reCaptchaToken = token
                             this.reCaptchaPromiseResolver(this.reCaptchaToken)
 
-                            this.reCaptchaFallbackInput!
+                            if (!this.reCaptchaFallbackInput)
+                                return
+
+                            this.reCaptchaFallbackInput
                                 .removeAttribute('invalid')
-                            this.reCaptchaFallbackInput!
+                            this.reCaptchaFallbackInput
                                 .setAttribute('valid', '')
 
-                            this.reCaptchaFallbackInput!
+                            this.reCaptchaFallbackInput
                                 .removeAttribute('pristine')
-                            this.reCaptchaFallbackInput!
+                            this.reCaptchaFallbackInput
                                 .setAttribute('dirty', '')
                         },
                         sitekey: this.resolvedConfiguration.reCaptcha.key.v2
@@ -3729,7 +3719,7 @@ export class AgileForm<
         }
 
         if (
-            window.grecaptcha &&
+            window.grecaptcha as unknown &&
             this.resolvedConfiguration.reCaptcha.key.v3 &&
             (this.resolvedConfiguration.target as TargetConfiguration).url
         )
