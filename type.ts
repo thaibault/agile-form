@@ -39,7 +39,7 @@ declare global {
 export type IndicatorFunction = (...parameters: Array<unknown>) => boolean
 
 export type DynamicExtendExpression =
-    ((event: Event, scope: unknown) => unknown)|string
+    ((event: Event, scope: unknown) => unknown) | string
 
 export interface Model<T = unknown> extends BaseModel<T> {
     dynamicExtendExpressions?: Mapping<DynamicExtendExpression>
@@ -47,7 +47,7 @@ export interface Model<T = unknown> extends BaseModel<T> {
 export interface InputConfiguration<Type = unknown> {
     changedEventName?: string
 
-    dependsOn?: Array<string>|null
+    dependsOn?: Array<string> | null
 
     domNode?: AnnotatedInputDomNode
     domNodes: Array<AnnotatedInputDomNode>
@@ -67,12 +67,12 @@ export interface InputConfiguration<Type = unknown> {
 
     target?: string
 
-    dataMapping?: Mapping|string
+    dataMapping?: Mapping | string
     transformer?: (value: unknown) => unknown
     transformerExpression?: string
 
-    value?: null|Type
-    valuePersistence?: 'persistent'|'resetOnHide'
+    value?: null | Type
+    valuePersistence?: 'persistent' | 'resetOnHide'
 }
 
 export interface Annotation {
@@ -81,7 +81,7 @@ export interface Annotation {
     oldDisplay?: string
     oldOpacity?: number
 
-    reason: null|Array<string>|string
+    reason: null | Array<string> | string
 
     showIf?: IndicatorFunction
     showIfExpression?: string
@@ -119,7 +119,7 @@ export interface GroupSpecification {
 
     showIf?: IndicatorFunction
     showIfExpression?: string
-    showReason?: Array<AnnotatedDomNode>|null|string
+    showReason?: Array<AnnotatedDomNode> | null | string
 }
 
 export interface Action {
@@ -158,10 +158,10 @@ export interface TargetConfiguration {
     options?: (
         RequestInit &
         Partial<{
-            cache: 'default'|'reload'|'no-cache'
-            credentials: 'omit'|'same-origin'|'include'
-            headers: Headers|Mapping|null
-            mode: 'cors'|'no-cors'|'same-origin'|'navigate'
+            cache: 'default' | 'reload' | 'no-cache'
+            credentials: 'omit' | 'same-origin' | 'include'
+            headers: Headers | Mapping | null
+            mode: 'cors' | 'no-cors' | 'same-origin' | 'navigate'
         }>
     ) |
     null
@@ -169,9 +169,9 @@ export interface TargetConfiguration {
 }
 
 export type Evaluation = [string, unknown]
-export type GivenEvaluation = Evaluation|Mapping<unknown>
+export type GivenEvaluation = Evaluation | Mapping<unknown>
 export interface GivenNamedEvaluations {
-    evaluations: Array<GivenEvaluation>|GivenEvaluation
+    evaluations: Array<GivenEvaluation> | GivenEvaluation
     order: number
 }
 export type GivenEvaluations =
@@ -190,7 +190,7 @@ export interface Configuration {
 
     animation: boolean
 
-    data: null|Mapping<unknown>
+    data: null | Mapping<unknown>
 
     debug: boolean
 
@@ -232,12 +232,12 @@ export interface Configuration {
 
     tag: {
         secret: string
-        values: Array<string>|string
+        values: Array<string> | string
     }
-    tags?: Array<string>|string
+    tags?: Array<string> | string
 
     target: RecursiveEvaluateable<TargetConfiguration>
-    targetData: null|Mapping<unknown>
+    targetData: null | Mapping<unknown>
 
     urlConfigurationMask: ObjectMaskConfiguration
     urlConfigurationCharacterLimit: number
@@ -247,7 +247,7 @@ export interface Configuration {
 export type NormalizedConfiguration =
     Omit<
         RecursivePartial<Configuration>,
-        'evaluations'|'expressions'|'tag'|'tags'
+        'evaluations' | 'expressions' | 'tag' | 'tags'
     > &
     {
         evaluations: Array<Evaluation>
@@ -263,7 +263,7 @@ export interface PropertyTypes {
     dynamicConfiguration: ValueOf<typeof PropertyTypes>
 }
 
-export type FormResponse = Response & {data: null|PlainObject}
+export type FormResponse = Response & {data: null | PlainObject}
 export interface ResponseResult {
     data: Mapping<unknown>
     invalidInputNames: Array<string>
