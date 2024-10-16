@@ -235,7 +235,7 @@ export class AgileForm<
                 cache: 'no-cache',
                 /*
                     NOTE: Send user credentials (cookies, basic http
-                    authentication, etc..), even for cross-origin calls.
+                    authentication, etc.), even for cross-origin calls.
                 */
                 credentials: 'include',
                 headers: {
@@ -332,51 +332,51 @@ export class AgileForm<
 
     groups: Array<[AnnotatedDomNode, GroupSpecification]> = []
 
-    determinedTargetURL: null|string = null
+    determinedTargetURL: null | string = null
     initialData: Mapping<unknown> = {}
-    initialResponse: null|FormResponse = null
-    latestResponse: null|FormResponse = null
+    initialResponse: FormResponse | null = null
+    latestResponse: FormResponse | null = null
     message = ''
-    response: FormResponse|null = null
+    response: FormResponse | null = null
 
     inputEventBindings: Mapping<() => void> = {}
     inputConfigurations: Mapping<InputConfiguration> = {}
     inputNames: Array<string> = []
 
-    invalid: boolean|null = null
-    invalidConstraint: Constraint|null = null
+    invalid: boolean | null = null
+    invalidConstraint: Constraint | null = null
     onceSubmitted = false
     pending = true
     submitted = false
-    valid: boolean|null = null
+    valid: boolean | null = null
 
-    reCaptchaFallbackInput: AnnotatedDomNode|null = null
+    reCaptchaFallbackInput: AnnotatedDomNode | null = null
     reCaptchaFallbackRendered = false
     /*
         NOTE: Will be finally initialized when promise is created so do not
         change order here.
     */
-    reCaptchaPromiseResolver: (result: null|string) => void =
+    reCaptchaPromiseResolver: (result: null | string) => void =
         () => {
             // Does nothing yet.
         }
-    reCaptchaPromise = new Promise<null|string>(
-        (resolve: (result: null|string) => void) => {
+    reCaptchaPromise = new Promise<null | string>(
+        (resolve: (result: null | string) => void) => {
             this.reCaptchaPromiseResolver = resolve
         }
     )
-    reCaptchaToken: null|string = null
+    reCaptchaToken: null | string = null
 
     @property({type: object})
-        additionalConfiguration: RecursivePartial<Configuration>|undefined
+        additionalConfiguration: RecursivePartial<Configuration> | undefined
     @property({type: object})
-        baseConfiguration: RecursivePartial<Configuration>|undefined
+        baseConfiguration: RecursivePartial<Configuration> | undefined
     @property({type: object})
-        configuration: RecursivePartial<Configuration>|undefined
+        configuration: RecursivePartial<Configuration> | undefined
     @property({type: object})
-        dynamicConfiguration: RecursivePartial<Configuration>|undefined
+        dynamicConfiguration: RecursivePartial<Configuration> | undefined
     resolvedConfiguration: Configuration = {} as Configuration
-    urlConfiguration: null|RecursivePartial<Configuration> = null
+    urlConfiguration: null | RecursivePartial<Configuration> = null
     queryParameters: QueryParameters
 
     readonly self = AgileForm
@@ -546,7 +546,7 @@ export class AgileForm<
             return
 
         if (opacity === 0) {
-            const style: Mapping<number|string> = $(domNode).Tools('style')
+            const style: Mapping<number | string> = $(domNode).Tools('style')
 
             domNode.oldDisplay = style.display as string || 'initial'
             if (domNode.oldDisplay === 'none')
@@ -668,7 +668,7 @@ export class AgileForm<
         const inputConfiguration: InputConfiguration =
             this.inputConfigurations[name]
 
-        const oldState: boolean|undefined = inputConfiguration.shown
+        const oldState: boolean | undefined = inputConfiguration.shown
 
         inputConfiguration.shown =
             !inputConfiguration.showIf || Boolean(inputConfiguration.showIf())
@@ -720,7 +720,7 @@ export class AgileForm<
                 domNode.getAttribute('name') ??
                 domNode.getAttribute('data-name') ??
                 'unknown'
-            const oldState: boolean|null = domNode.shown
+            const oldState: boolean | null = domNode.shown
 
             const shownSubNodes: Array<AnnotatedDomNode> = (
                 specification.childs.filter((
@@ -849,7 +849,7 @@ export class AgileForm<
      * Updates current error message box state.
      * @param message - New message string to show.
      */
-    updateMessageBox(message?: null|string): void {
+    updateMessageBox(message?: null | string): void {
         if (typeof message === 'string')
             this.message = message
         else if (message === null)
@@ -885,7 +885,7 @@ export class AgileForm<
         // Consolidate aliases for "input" configuration item.
         const inputs: Mapping<RecursivePartial<InputConfiguration>> =
             currentConfiguration.inputs as
-                Mapping<RecursivePartial<InputConfiguration>>|undefined ||
+                Mapping<RecursivePartial<InputConfiguration>> | undefined ||
             {}
         if (currentConfiguration.model) {
             extend(
@@ -954,7 +954,7 @@ export class AgileForm<
      * @returns Normalized evaluations.
      */
     static normalizeEvaluations(
-        evaluations?: GivenEvaluations|null
+        evaluations?: GivenEvaluations | null
     ): Array<Evaluation> {
         const preEvaluations: Array<GivenNamedEvaluations> = []
         const postEvaluations: Array<GivenNamedEvaluations> = []
@@ -982,8 +982,8 @@ export class AgileForm<
             typeof evaluations === 'object' &&
             Object.keys(evaluations).length > 0
         ) {
-            const namedEvaluationsList =
-                Object.values(evaluations) as Array<GivenNamedEvaluations|null>
+            const namedEvaluationsList = Object.values(evaluations) as
+                Array<GivenNamedEvaluations | null>
 
             if (
                 namedEvaluationsList[0] !== null &&
@@ -1052,7 +1052,7 @@ export class AgileForm<
             copy(configuration)
 
         currentConfiguration.evaluations = AgileForm.normalizeEvaluations(
-            currentConfiguration.evaluations as GivenEvaluations|undefined
+            currentConfiguration.evaluations as GivenEvaluations | undefined
         )
 
         if (!currentConfiguration.tag)
@@ -1060,7 +1060,7 @@ export class AgileForm<
         if (!currentConfiguration.tag.values)
             currentConfiguration.tag.values = []
         currentConfiguration.tag.values = ([] as Array<string>).concat(
-            currentConfiguration.tag.values as Array<string>|string
+            currentConfiguration.tag.values as Array<string> | string
         )
 
         // NOTE: We migrate alternate tag option formats.
@@ -1139,8 +1139,8 @@ export class AgileForm<
      * Determines configuration by existing url parameter.
      * @returns Nothing.
      */
-    getConfigurationFromURL(): null|RecursivePartial<Configuration> {
-        const parameter: Array<string>|string|undefined =
+    getConfigurationFromURL(): null | RecursivePartial<Configuration> {
+        const parameter: Array<string> | string | undefined =
             this.queryParameters[this.resolvedConfiguration.name]
         if (typeof parameter === 'string') {
             const evaluated: EvaluationResult<PlainObject> = evaluate(parameter)
@@ -1296,7 +1296,7 @@ export class AgileForm<
                 name,
                 properties: {},
                 ...configuration as
-                    Omit<InputConfiguration, 'domNodes'|'name'|'properties'>
+                    Omit<InputConfiguration, 'domNodes' | 'name' | 'properties'>
             }
 
         const missingInputs: Mapping<InputConfiguration> =
@@ -1311,7 +1311,7 @@ export class AgileForm<
             not specified input into the specification (model configuration).
         */
         for (const domNode of inputs) {
-            const name: null|string = domNode.getAttribute('name')
+            const name: null | string = domNode.getAttribute('name')
             if (name) {
                 if (Object.prototype.hasOwnProperty.call(
                     this.inputConfigurations, name
@@ -1319,7 +1319,7 @@ export class AgileForm<
                     /*
                         Exclusive property for retrieving dom node when a
                         single value is needed. Can be used here (for e.g. via
-                        "Object.defineProperty" to control how to aggregate
+                        "Object.defineProperty") to control how to aggregate
                         when multiple dom nodes are available.
                     */
                     this.inputConfigurations[name].domNode = domNode
@@ -1433,7 +1433,7 @@ export class AgileForm<
                 }
 
                 /*
-                    Sort known properties by known inter-dependencies and
+                    Sort known properties by known interdependencies and
                     unknown to ensure deterministic behavior.
                 */
                 type Key = keyof Partial<InputAnnotation>
@@ -1886,7 +1886,7 @@ export class AgileForm<
         for (const [subName, expression] of Object.entries(
             configuration.dynamicExtendExpressions
         )) {
-            const code: ((event: Event, scope: unknown) => unknown)|string =
+            const code: ((event: Event, scope: unknown) => unknown) | string =
                 expression
 
             const originalScopeNames: Array<string> =
@@ -2283,7 +2283,7 @@ export class AgileForm<
                 before rendering initial target to have corresponding
                 environment available.
             */
-            const detail: {target: null|TargetConfiguration} = {target: null}
+            const detail: {target: null | TargetConfiguration} = {target: null}
 
             const event: Event = new CustomEvent('initialize', {detail})
 
@@ -2310,7 +2310,7 @@ export class AgileForm<
                 )) {
                     this.runEvaluations()
 
-                    const target: null|string = this.resolveTargetAction(
+                    const target: null | string = this.resolveTargetAction(
                         this.resolvedConfiguration.targetActions.initialize,
                         'initialize'
                     )
@@ -2339,7 +2339,7 @@ export class AgileForm<
      * @param name - Action description.
      * @returns A target action url result or undefined.
      */
-    resolveTargetAction(action: TargetAction, name: string): null|string {
+    resolveTargetAction(action: TargetAction, name: string): null | string {
         if (!action.indicator)
             return null
 
@@ -2388,9 +2388,9 @@ export class AgileForm<
     onKeyDown = (event: KeyboardEvent) => {
         if (
             KEYBOARD_CODES.ENTER === event.code &&
-            (event.target as HTMLElement|null)?.closest
+            (event.target as HTMLElement | null)?.closest
         ) {
-            const inputTarget: HTMLElement|null =
+            const inputTarget: HTMLElement | null =
                 (event.target as HTMLElement).closest(
                     this.resolvedConfiguration.selector.inputs
                 )
@@ -2409,7 +2409,7 @@ export class AgileForm<
      * Triggers form submit.
      * @param event - Triggered event object.
      */
-    onSubmit = (event: KeyboardEvent|MouseEvent) => {
+    onSubmit = (event: KeyboardEvent | MouseEvent) => {
         void this.doSubmit(event)
     }
     /**
@@ -2427,7 +2427,7 @@ export class AgileForm<
      * @returns A promise resolving to nothing.
      */
     doReset = async (
-        event: MouseEvent, useDefault: boolean|null = null
+        event: MouseEvent, useDefault: boolean | null = null
     ): Promise<void> => {
         event.preventDefault()
         event.stopPropagation()
@@ -2450,7 +2450,7 @@ export class AgileForm<
      * field name exists.
      */
     async resetInput(
-        name: string, useDefault: boolean|null = false
+        name: string, useDefault: boolean | null = false
     ): Promise<boolean> {
         if (Object.prototype.hasOwnProperty.call(
             this.inputConfigurations, name
@@ -2639,11 +2639,11 @@ export class AgileForm<
     }
     /**
      * Sets global validation message and scrolls to first invalid field.
-     * @param data - Data given by the form.
+     * @param _data - Data given by the form.
      * @param invalidInputNames - All currently invalid fields names.
      */
     handleInvalidSubmittedInput(
-        data: Mapping<unknown>, invalidInputNames: Array<string>
+        _data: Mapping<unknown>, invalidInputNames: Array<string>
     ) {
         this.updateMessageBox(
             'The following inputs are invalid "' +
@@ -2684,7 +2684,7 @@ export class AgileForm<
                 if (action.code === 'fallback')
                     fallbackTarget = action.target.trim()
                 else {
-                    const target: null|string =
+                    const target: null | string =
                         this.resolveTargetAction(action, name)
 
                     if (typeof target === 'string') {
@@ -2712,7 +2712,7 @@ export class AgileForm<
      * @param rawData - Data given by the form.
      */
     handleUnsuccessfulSentRequest(
-        response: FormResponse, rawData: null|PlainObject
+        response: FormResponse, rawData: null | PlainObject
     ): void {
         if (response.status === 406)
             // NOTE: We have an invalid e-mail address.
@@ -2768,8 +2768,8 @@ export class AgileForm<
      * @returns A promise wrapping the response.
      */
     async doRequest(
-        target: TargetConfiguration, rawData: null|PlainObject = null
-    ): Promise<null|FormResponse> {
+        target: TargetConfiguration, rawData: null | PlainObject = null
+    ): Promise<null | FormResponse> {
         // region convert headers configuration to header object
         if (Headers as unknown && target.options?.headers) {
             const headers: Headers = new Headers()
@@ -2792,7 +2792,7 @@ export class AgileForm<
         if (target.options?.body && typeof target.options.body !== 'string')
             target.options.body = JSON.stringify(target.options.body)
 
-        let response: FormResponse|null = null
+        let response: FormResponse | null = null
 
         void this.updateReCaptchaToken()
 
@@ -2879,7 +2879,7 @@ export class AgileForm<
 
         this.resolvedConfiguration.data = data
         this.resolvedConfiguration.targetData = this.mapTargetNames(data)
-        const target: null|TargetConfiguration = evaluateDynamicData(
+        const target: null | TargetConfiguration = evaluateDynamicData(
             copy(this.resolvedConfiguration.target),
             this.determineEvaluationScope()
         )
@@ -2952,7 +2952,7 @@ export class AgileForm<
      * overall validation state and sends data to configured target.
      * @param event - Triggered event object.
      */
-    doSubmit = async (event: KeyboardEvent|MouseEvent): Promise<void> => {
+    doSubmit = async (event: KeyboardEvent | MouseEvent): Promise<void> => {
         try {
             event.preventDefault()
             event.stopPropagation()
@@ -2964,7 +2964,7 @@ export class AgileForm<
             this.invalidConstraint = null
             this.valid = !this.invalid
 
-            const target: EventTarget|null = this.submitButtons.length ?
+            const target: EventTarget | null = this.submitButtons.length ?
                 this.submitButtons[0] :
                 event.target
             const newWindow: boolean = target ?
@@ -3120,7 +3120,7 @@ export class AgileForm<
                     (async (event: Event): Promise<void> => {
                         await this.digest()
 
-                        let lock: Lock|null = null
+                        let lock: Lock | null = null
 
                         // NOTE: We update input dom node if it has changed.
                         if (event.target)
@@ -3228,7 +3228,7 @@ export class AgileForm<
 
                 const index: number = mappedSelector.lastIndexOf('.')
 
-                const path: Array<string>|string =
+                const path: Array<string> | string =
                     index > 0 ? mappedSelector.substring(0, index) : []
                 const key: string = index > 0 ?
                     mappedSelector.substring(index + 1) :
@@ -3297,7 +3297,7 @@ export class AgileForm<
             for (const domNode of this.inputConfigurations[name].domNodes) {
                 if (typeof domNode.changeTrigger === 'function') {
                     const result: unknown =
-                        (domNode.changeTrigger as () => Promise<void>|void)()
+                        (domNode.changeTrigger as () => Promise<void> | void)()
 
                     if ('then' in (result as Promise<unknown>))
                         await result
@@ -3409,7 +3409,7 @@ export class AgileForm<
      * @returns A boolean indicating the neediness.
      */
     isDeterminedStateValueNeeded(name: string): boolean {
-        const domNode: AnnotatedInputDomNode|undefined =
+        const domNode: AnnotatedInputDomNode | undefined =
             this.inputConfigurations[name].domNode
 
         return !(
@@ -3644,7 +3644,7 @@ export class AgileForm<
             )
         ) {
             this.reCaptchaPromise =
-                new Promise((resolve: (result: null|string) => void) => {
+                new Promise((resolve: (result: null | string) => void) => {
                     this.reCaptchaPromiseResolver = resolve
                 })
 
@@ -3660,7 +3660,7 @@ export class AgileForm<
                 this.reCaptchaFallbackRendered = true
                 /*
                     NOTE: We do not have to wait for the re-captcha ready event
-                    since re-captcha 3 is always triggered first so we can
+                    since re-captcha 3 is always triggered first, so we can
                     assume it is already there.
                 */
                 window.grecaptcha.render(
@@ -3702,7 +3702,7 @@ export class AgileForm<
      * @returns Promise resolving to challenge token or null if initialisation
      * was unsuccessful.
      */
-    updateReCaptchaToken(): Promise<null|string> {
+    updateReCaptchaToken(): Promise<null | string> {
         if (this.reCaptchaFallbackRendered) {
             this.updateReCaptchaFallbackToken()
 
@@ -3713,7 +3713,7 @@ export class AgileForm<
             // NOTE: If called second time reset initializing promise.
             this.reCaptchaToken = null
             this.reCaptchaPromise =
-                new Promise((resolve: (result: null|string) => void) => {
+                new Promise((resolve: (result: null | string) => void) => {
                     this.reCaptchaPromiseResolver = resolve
                 })
         }
