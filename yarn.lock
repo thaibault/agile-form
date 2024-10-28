@@ -3792,6 +3792,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rmwc/ripple@patch:@rmwc/ripple@npm%3A14.3.5#~/.yarn/patches/@rmwc-ripple-npm-14.3.5-9657693602.patch":
+  version: 14.3.5
+  resolution: "@rmwc/ripple@patch:@rmwc/ripple@npm%3A14.3.5#~/.yarn/patches/@rmwc-ripple-npm-14.3.5-9657693602.patch::version=14.3.5&hash=08c188"
+  dependencies:
+    "@material/ripple": "npm:^14.0.0"
+    "@rmwc/base": "npm:14.3.5"
+    "@rmwc/provider": "npm:14.3.5"
+    "@rmwc/types": "npm:14.3.5"
+  peerDependencies:
+    react: ">=16.8.x"
+    react-dom: ">=16.8.x"
+  checksum: 10c0/01dc25d3d5a04f271bda5814e7ec7dc110f341c7795e4fc891b1a0a657547b79920f8a16c2694b40311579827672ae2778af9813a8a092657d08c051004d277f
+  languageName: node
+  linkType: hard
+
 "@rmwc/select@npm:^14.3.5":
   version: 14.3.5
   resolution: "@rmwc/select@npm:14.3.5"
@@ -5070,7 +5085,7 @@ __metadata:
     tslib: "npm:^2.8.0"
     typescript-eslint: "npm:^8.12.0"
     web-component-wrapper: "npm:^0.0.502"
-    web-input-material: "npm:^0.0.448"
+    web-input-material: "npm:^0.0.449"
     weboptimizer: "npm:^2.0.1532"
     webpack-dev-server: "npm:^5.1.0"
   peerDependencies:
@@ -12672,9 +12687,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-input-material@npm:^0.0.663":
-  version: 0.0.663
-  resolution: "react-input-material@npm:0.0.663"
+"react-input-material@npm:^0.0.665":
+  version: 0.0.665
+  resolution: "react-input-material@npm:0.0.665"
   peerDependencies:
     "@babel/runtime": "*"
     "@rmwc/card": "*"
@@ -12758,7 +12773,7 @@ __metadata:
       optional: true
     tinymce:
       optional: true
-  checksum: 10c0/fd38ef0d7a6dbf13a203c95812724925a474db319068378af5827620088e0ae8fd88e8ced205db70a5b9130b7391a0fc5a5606d00b7cf87d1e816664ee2b5dad
+  checksum: 10c0/a9478ef8b3373a87400e85bee64a4a2affb9d68f7c85fcf624707518f70718b74f2a08c8d573b2d5ef237e61138b5215ff19ea9ca76ada30875057c17e4ba1cf
   languageName: node
   linkType: hard
 
@@ -14439,14 +14454,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-input-material@npm:^0.0.448":
-  version: 0.0.448
-  resolution: "web-input-material@npm:0.0.448"
+"web-input-material@npm:^0.0.449":
+  version: 0.0.449
+  resolution: "web-input-material@npm:0.0.449"
   dependencies:
     prop-types: "npm:^15.8.1"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-input-material: "npm:^0.0.663"
+    react-input-material: "npm:^0.0.665"
     react-transition-group: "npm:^4.4.5"
     web-component-wrapper: "npm:^0.0.502"
   peerDependencies:
@@ -14455,7 +14470,7 @@ __metadata:
   peerDependenciesMeta:
     "@babel/runtime":
       optional: true
-  checksum: 10c0/c1702d248985f7c6615400d5cb1d87473f4335c4c55984758cf257ca38c8fc1b2c0e40262a48c9d93e75bab380434305c8cabf32a32d6af92bb6a4984f18f5c9
+  checksum: 10c0/fd144f8975b25808aec88953e305246ab73779bc10db5e84a4027da02f075c54eb00f65e52434e454fc29204fc49e4c45cae01dcd87e3c2033c1f54f3eff4a38
   languageName: node
   linkType: hard
 
