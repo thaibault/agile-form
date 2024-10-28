@@ -114,7 +114,7 @@
     "tslib": "^2.8.0",
     "typescript-eslint": "^8.12.0",
     "web-component-wrapper": "^0.0.502",
-    "web-input-material": "^0.0.448",
+    "web-input-material": "^0.0.449",
     "weboptimizer": "^2.0.1532",
     "webpack-dev-server": "^5.1.0"
   },
@@ -142,7 +142,8 @@
     "globals@npm:^14.0.0": "patch:globals@npm%3A11.12.0#~/.yarn/patches/globals-npm-11.12.0-1fa7f41a6c.patch",
     "globals@npm:^11.1.0": "patch:globals@npm%3A11.12.0#~/.yarn/patches/globals-npm-11.12.0-1fa7f41a6c.patch",
     "globals@npm:^9.18.0": "patch:globals@npm%3A11.12.0#~/.yarn/patches/globals-npm-11.12.0-1fa7f41a6c.patch",
-    "@rmwc/ripple@npm:14.3.4": "patch:@rmwc/ripple@npm%3A14.3.4#~/.yarn/patches/@rmwc-ripple-npm-14.3.4-27648eff11.patch"
+    "@rmwc/ripple@npm:14.3.4": "patch:@rmwc/ripple@npm%3A14.3.4#~/.yarn/patches/@rmwc-ripple-npm-14.3.4-27648eff11.patch",
+    "@rmwc/ripple@npm:14.3.5": "patch:@rmwc/ripple@npm%3A14.3.5#~/.yarn/patches/@rmwc-ripple-npm-14.3.5-9657693602.patch"
   },
   "sideEffects": false,
   "documentationWebsite": {
