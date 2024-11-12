@@ -32,6 +32,7 @@ import {
     getSubstructure,
     getURLParameter,
     isFunction,
+    isObject,
     isPlainObject,
     KEYBOARD_CODES,
     Lock,
@@ -966,9 +967,9 @@ export class AgileForm<
                     normalizedEvaluations.push([
                         evaluation[0] as string, evaluation[1] as unknown
                     ])
-                else if (evaluation !== null && typeof evaluation === 'object')
+                else if (isObject(evaluation))
                     normalizedEvaluations = normalizedEvaluations.concat(
-                        Object.entries(evaluation as Mapping<unknown>)
+                        Object.entries(evaluation)
                     )
                 else if (evaluations.length > 1) {
                     normalizedEvaluations = [
@@ -978,16 +979,13 @@ export class AgileForm<
                     break
                 }
         } else if (
-            evaluations !== null &&
-            typeof evaluations === 'object' &&
-            Object.keys(evaluations).length > 0
+            isObject(evaluations) && Object.keys(evaluations).length > 0
         ) {
             const namedEvaluationsList = Object.values(evaluations) as
                 Array<GivenNamedEvaluations | null>
 
             if (
-                namedEvaluationsList[0] !== null &&
-                typeof namedEvaluationsList[0] === 'object' &&
+                isObject(namedEvaluationsList[0]) &&
                 typeof namedEvaluationsList[0].order === 'number' &&
                 Object.prototype.hasOwnProperty.call(
                     namedEvaluationsList[0], 'evaluations'
@@ -1523,7 +1521,7 @@ export class AgileForm<
                             }
                         }
                     )
-                } catch (_error) {
+                } catch {
                     // Property seems to already been set.
                 }
 
@@ -2050,16 +2048,15 @@ export class AgileForm<
                     )
 
                     this.actionResults[name] =
-                        result !== null &&
-                        typeof result === 'object' &&
-                        'then' in (result as Promise<unknown>) ?
-                            await (result as Promise<unknown>) :
+                        isObject(result) &&
+                        'then' in (result as unknown as Promise<unknown>) ?
+                            await (result as unknown as Promise<unknown>) :
                             result
                 } catch (error) {
                     console.error(
-                        `Failed running action "${name}" expression "${code}` +
-                        `" with bound names "${scopeNames.join('", "')}": "` +
-                        `${represent(error)}".`
+                        `Failed running action "${name}" expression ` +
+                        `"${code}" with bound names ` +
+                        `"${scopeNames.join('", "')}": "${represent(error)}".`
                     )
                 }
             }
@@ -2621,8 +2618,7 @@ export class AgileForm<
                             }
                     } else if (Array.isArray(value))
                         if (value.every((item: unknown): boolean =>
-                            item !== null &&
-                            typeof item === 'object' &&
+                            isObject(item) &&
                             Object.prototype.hasOwnProperty.call(item, 'value')
                         ))
                             data[name] =
