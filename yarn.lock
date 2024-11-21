@@ -4891,12 +4891,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.9.0":
-  version: 22.9.0
-  resolution: "@types/node@npm:22.9.0"
+"@types/node@npm:^22.9.1":
+  version: 22.9.1
+  resolution: "@types/node@npm:22.9.1"
   dependencies:
     undici-types: "npm:~6.19.8"
-  checksum: 10c0/3f46cbe0a49bab4ba30494025e4c8a6e699b98ac922857aa1f0209ce11a1313ee46e6808b8f13fe5b8b960a9d7796b77c8d542ad4e9810e85ef897d5593b5d51
+  checksum: 10c0/ea489ae603aa8874e4e88980aab6f2dad09c755da779c88dd142983bfe9609803c89415ca7781f723072934066f63daf2b3339ef084a8ad1a8079cf3958be243
   languageName: node
   linkType: hard
 
@@ -5561,7 +5561,7 @@ __metadata:
     "@types/html-minifier": "npm:^4.0.5"
     "@types/jquery": "npm:^3.5.32"
     "@types/jsdom": "npm:^21.1.7"
-    "@types/node": "npm:^22.9.0"
+    "@types/node": "npm:^22.9.1"
     "@types/react": "npm:^18.3.12"
     "@types/react-dom": "npm:^18.3.1"
     "@types/react-transition-group": "npm:^4.4.11"
@@ -5597,7 +5597,7 @@ __metadata:
     tslib: "npm:^2.8.1"
     typescript-eslint: "npm:^8.15.0"
     web-component-wrapper: "npm:^0.0.505"
-    web-input-material: "npm:^0.0.451"
+    web-input-material: "npm:^0.0.453"
     weboptimizer: "npm:^2.0.1538"
     webpack-dev-server: "npm:^5.1.0"
   peerDependencies:
@@ -13458,11 +13458,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-input-material@npm:^0.0.671":
-  version: 0.0.671
-  resolution: "react-input-material@npm:0.0.671"
+"react-input-material@npm:^0.0.675":
+  version: 0.0.675
+  resolution: "react-input-material@npm:0.0.675"
   peerDependencies:
     "@babel/runtime": "*"
+    "@codemirror/commands": "*"
+    "@codemirror/lang-css": "*"
+    "@codemirror/lang-javascript": "*"
+    "@codemirror/state": "*"
+    "@codemirror/view": "*"
     "@rmwc/card": "*"
     "@rmwc/checkbox": "*"
     "@rmwc/circular-progress": "*"
@@ -13474,21 +13479,33 @@ __metadata:
     "@rmwc/tooltip": "*"
     "@rmwc/touch-target": "*"
     "@rmwc/typography": "*"
-    "@tinymce/tinymce-react": "*"
+    "@tiptap/core": "*"
+    "@tiptap/react": "*"
+    "@tiptap/starter-kit": "*"
     "@types/react": "*"
     "@types/react-dom": "*"
     "@types/spark-md5": "*"
     blob-util: "*"
     clientnode: "*"
+    codemirror: "*"
     material-components-web: "*"
     material-icons: "*"
     react: "*"
-    react-ace: "*"
     react-dom: "*"
     spark-md5: "*"
     tslib: "*"
   peerDependenciesMeta:
     "@babel/runtime":
+      optional: true
+    "@codemirror/commands":
+      optional: true
+    "@codemirror/lang-css":
+      optional: true
+    "@codemirror/lang-javascript":
+      optional: true
+    "@codemirror/state":
+      optional: true
+    "@codemirror/view":
       optional: true
     "@rmwc/card":
       optional: true
@@ -13512,7 +13529,11 @@ __metadata:
       optional: true
     "@rmwc/typography":
       optional: true
-    "@tinymce/tinymce-react":
+    "@tiptap/core":
+      optional: true
+    "@tiptap/react":
+      optional: true
+    "@tiptap/starter-kit":
       optional: true
     "@types/react":
       optional: true
@@ -13526,13 +13547,13 @@ __metadata:
       optional: true
     clientnode:
       optional: true
+    codemirror:
+      optional: true
     material-components-web:
       optional: true
     material-icons:
       optional: true
     react:
-      optional: true
-    react-ace:
       optional: true
     react-dom:
       optional: true
@@ -13542,9 +13563,7 @@ __metadata:
       optional: true
     spark-md5:
       optional: true
-    tinymce:
-      optional: true
-  checksum: 10c0/d9287c03d3b3758a32953f053a26187a8cf57f47df25cb1817404ddc86c55e2bd1eacd9d30f7604048f41b17516efce18ce225feb010bd1ba1eb096f92b8b236
+  checksum: 10c0/63e6250b37c233529a0873022b2618c02d981af4f07c6babd8eff2fd8874d5c7c807fc8b36f10e4b93a6574098341d19140eedfc356ac5714f9fa12fd3ae3b50
   languageName: node
   linkType: hard
 
@@ -15227,31 +15246,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-component-wrapper@npm:^0.0.504":
-  version: 0.0.504
-  resolution: "web-component-wrapper@npm:0.0.504"
-  peerDependencies:
-    "@babel/runtime": "*"
-    "@types/react": "*"
-    "@types/react-dom": "*"
-    clientnode: "*"
-    react: "*"
-    react-dom: "*"
-  peerDependenciesMeta:
-    "@babel/runtime":
-      optional: true
-    "@types/react":
-      optional: true
-    "@types/react-dom":
-      optional: true
-    react:
-      optional: true
-    react-dom:
-      optional: true
-  checksum: 10c0/46f66f1968efaec7228043d8113e0f0ffe71c78a3492498cbb7b5761e849335fb9c5c385b4895a832a66010be200a8a948594ab08a31ec0f03005d0502e33431
-  languageName: node
-  linkType: hard
-
 "web-component-wrapper@npm:^0.0.505":
   version: 0.0.505
   resolution: "web-component-wrapper@npm:0.0.505"
@@ -15277,23 +15271,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-input-material@npm:^0.0.451":
-  version: 0.0.451
-  resolution: "web-input-material@npm:0.0.451"
+"web-input-material@npm:^0.0.453":
+  version: 0.0.453
+  resolution: "web-input-material@npm:0.0.453"
   dependencies:
     prop-types: "npm:^15.8.1"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-input-material: "npm:^0.0.671"
+    react-input-material: "npm:^0.0.675"
     react-transition-group: "npm:^4.4.5"
-    web-component-wrapper: "npm:^0.0.504"
+    web-component-wrapper: "npm:^0.0.505"
   peerDependencies:
     "@babel/runtime": "*"
     clientnode: "*"
   peerDependenciesMeta:
     "@babel/runtime":
       optional: true
-  checksum: 10c0/36571eb5ece564aa1a7134f820a180089d77ab76d34c8b5e24f75c8e55991f6087c44ea9053e9ab92df2e2a51f06b37d6faf4af6f728d424622d9f3ff32f2480
+  checksum: 10c0/d6cbf15b0ea4721b48e498a90be7dc1a7a12f6789048c76faa37ff49ccf2581bf807fc45042e7d769ae9ed106d3120dc0677aa664ff949b02b6d4f63d86112ea
   languageName: node
   linkType: hard
 
