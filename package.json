@@ -58,11 +58,14 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.25.9",
     "@babel/runtime": "^7.26.0",
+    "@codemirror/autocomplete": "^6.18.3",
     "@codemirror/commands": "^6.7.1",
     "@codemirror/lang-css": "^6.3.0",
     "@codemirror/lang-javascript": "^6.2.2",
+    "@codemirror/language": "^6.10.3",
+    "@codemirror/lint": "^6.8.3",
+    "@codemirror/search": "^6.5.8",
     "@codemirror/state": "^6.4.1",
-    "@codemirror/view": "^6.34.3",
     "@rmwc/card": "^14.3.5",
     "@rmwc/checkbox": "^14.3.5",
     "@rmwc/circular-progress": "^14.3.5",
@@ -78,15 +81,15 @@
     "@rmwc/touch-target": "^14.3.5",
     "@rmwc/typography": "^14.3.5",
     "@stylistic/eslint-plugin-ts": "^2.11.0",
-    "@tiptap/core": "^2.10.0",
-    "@tiptap/react": "^2.10.0",
-    "@tiptap/starter-kit": "^2.10.0",
+    "@tiptap/core": "^2.10.2",
+    "@tiptap/react": "^2.10.2",
+    "@tiptap/starter-kit": "^2.10.2",
     "@types/ejs": "^3.1.5",
     "@types/grecaptcha": "^3.0.9",
     "@types/html-minifier": "^4.0.5",
     "@types/jquery": "^3.5.32",
     "@types/jsdom": "^21.1.7",
-    "@types/node": "^22.9.1",
+    "@types/node": "^22.9.3",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@types/react-transition-group": "^4.4.11",
@@ -96,7 +99,6 @@
     "@webcomponents/webcomponentsjs": "^2.8.0",
     "blob-util": "^2.0.2",
     "clientnode": "^3.0.1229",
-    "codemirror": "^6.0.1",
     "css-loader": "^7.1.2",
     "cssnano": "^7.0.6",
     "documentation-website": "^1.0.339",
@@ -122,7 +124,7 @@
     "tslib": "^2.8.1",
     "typescript-eslint": "^8.15.0",
     "web-component-wrapper": "^0.0.505",
-    "web-input-material": "^0.0.453",
+    "web-input-material": "^0.0.454",
     "weboptimizer": "^2.0.1538",
     "webpack-dev-server": "^5.1.0"
   },
@@ -166,6 +168,11 @@
         ]
       }
     },
+    "development": {
+      "server": {
+        "port": 8082
+      }
+    },
     "generic": {
       "supportedBrowsers": [
         "IE >= 11",
@@ -181,16 +188,19 @@
     "module": {
       "aliases": {
         "#": "Remove unneeded optional dependencies.",
+        "@codemirror/autocomplete": "react-generic-dummy",
         "@codemirror/commands": "react-generic-dummy",
+        "@codemirror/language": "react-generic-dummy",
         "@codemirror/lang-css": "react-generic-dummy",
         "@codemirror/lang-javascript": "react-generic-dummy",
+        "@codemirror/lint": "react-generic-dummy",
+        "@codemirror/search": "react-generic-dummy",
         "@codemirror/state": "react-generic-dummy",
         "@codemirror/view": "react-generic-dummy",
         "@rmwc/tooltip": "react-generic-dummy",
         "@tiptap/core$": "react-generic-dummy",
         "@tiptap/react": "react-generic-dummy",
         "@tiptap/starter-kit$": "react-generic-dummy",
-        "codemirror": "react-generic-dummy",
         "formdata-polyfill/esm.min.js$": "formdata-polyfill",
         "jquery$": false,
         "react-useanimations$": "react-generic-dummy",
