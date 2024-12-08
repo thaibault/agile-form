@@ -22,11 +22,11 @@ import {
     PlainObject,
     Primitive,
     ProcedureFunction,
-    PropertyTypes,
     RecursiveEvaluateable,
     RecursivePartial,
     ValueOf
 } from 'clientnode'
+import PropertyTypes from 'clientnode/property-types'
 import 'grecaptcha'
 import {BaseModel} from 'web-input-material/type'
 // endregion

@@ -36,11 +36,10 @@ import {
     isPlainObject,
     KEYBOARD_CODES,
     Lock,
-    Offset,
     Mapping,
     mask,
     MAXIMAL_SUPPORTED_INTERNET_EXPLORER_VERSION,
-    object,
+    Offset,
     PlainObject,
     QueryParameters,
     RecursiveEvaluateable,
@@ -53,6 +52,7 @@ import {
     UTILITY_SCOPE_NAMES,
     UTILITY_SCOPE_VALUES
 } from 'clientnode'
+import {object} from 'clientnode/property-types'
 import property from 'web-component-wrapper/decorator'
 import Web from 'web-component-wrapper/Web'
 import {WebComponentAPI, StaticWebComponent} from 'web-component-wrapper/type'
