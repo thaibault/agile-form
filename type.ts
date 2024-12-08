@@ -26,7 +26,7 @@ import {
     RecursivePartial,
     ValueOf
 } from 'clientnode'
-import PropertyTypes from 'clientnode/dist/property-types'
+import PropertyTypes from 'clientnode/property-types'
 import 'grecaptcha'
 import {BaseModel} from 'web-input-material/type'
 // endregion
