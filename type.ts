@@ -42,6 +42,7 @@ export type DynamicExtendExpression =
     ((event: Event, scope: unknown) => unknown) | string
 
 export interface Model<T = unknown> extends BaseModel<T> {
+    default?: T
     dynamicExtendExpressions?: Mapping<DynamicExtendExpression>
 }
 export interface InputConfiguration<Type = unknown> {
