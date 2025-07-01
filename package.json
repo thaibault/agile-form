@@ -123,7 +123,7 @@
     "tslib": "^2.8.1",
     "typescript-eslint": "^8.35.1",
     "web-component-wrapper": "^0.0.519",
-    "web-input-material": "^0.0.468",
+    "web-input-material": "^0.0.469",
     "weboptimizer": "^2.0.1593",
     "webpack-dev-server": "^5.2.2"
   },
