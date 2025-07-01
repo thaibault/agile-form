@@ -3112,7 +3112,7 @@ export class AgileForm<
                         configuration.changedEventName as string :
                         'change'
 
-                const handler: EventListener = debounce<undefined>(
+                const handler: EventListener = debounce(
                     (async (event: Event): Promise<void> => {
                         await this.digest()
 
