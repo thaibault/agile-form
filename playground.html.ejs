@@ -27,7 +27,7 @@
                 file-input,
                 text-input,
                 generic-inputs,
-                generic-interval,
+                interval-input,
                 slider-input {
                     display: block;
                     width: 400px;
@@ -383,16 +383,16 @@
                 Slider is more than 30 (${pensum.value})
             </div>
 
-            <requireable-checkbox
+            <checkbox-input
                 description="Check it!" name="legalNotesChecked"
-            ></requireable-checkbox>
-            <requireable-checkbox
+            ></checkbox-input>
+            <checkbox-input
                 name="reCaptchaV3Challenge"
                 description="Re-CAPTCHA v3 challenge works."
-            ></requireable-checkbox>
-            <requireable-checkbox
+            ></checkbox-input>
+            <checkbox-input
                 description="Useless Check" name="uselessCheck"
-            ></requireable-checkbox>
+            ></checkbox-input>
 
             <div class="agile-form__re-captcha-fallback"></div>
 

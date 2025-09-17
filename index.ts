@@ -212,7 +212,7 @@ export class AgileForm<
                 button[name],
 
                 file-input, text-input, generic-inputs,
-                requireable-checkbox, slider-input, input,
+                checkbox-input, slider-input, input,
 
                 select, textarea
             `.replace(/\n+/g, ' ').replace(/  +/g, ' '),
