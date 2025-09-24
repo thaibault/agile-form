@@ -672,7 +672,8 @@ export class AgileForm<
         const oldState: boolean | undefined = inputConfiguration.shown
 
         inputConfiguration.shown =
-            !inputConfiguration.showIf || Boolean(inputConfiguration.showIf())
+            !inputConfiguration.showIf ||
+            Boolean(inputConfiguration.showIf() as unknown)
         for (const domNode of this.inputConfigurations[name].domNodes)
             domNode.shown = inputConfiguration.shown
 
@@ -754,7 +755,7 @@ export class AgileForm<
             }
 
             if (this.resolvedConfiguration.debug)
-                if (Boolean(oldState) === oldState)
+                if (Boolean(oldState as unknown) === oldState)
                     console.debug(
                         `Update group "${name}" visibility state from "` +
                         `${oldState ? 'show' : 'hide'}" to "` +
