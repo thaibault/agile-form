@@ -6135,7 +6135,7 @@ __metadata:
     tslib: "npm:^2.8.1"
     typescript-eslint: "npm:^8.44.1"
     web-component-wrapper: "npm:^0.0.527"
-    web-input-material: "npm:^0.0.473"
+    web-input-material: "npm:^0.0.474"
     weboptimizer: "npm:^2.0.1609"
     webpack-dev-server: "npm:^5.2.2"
   peerDependencies:
@@ -13780,9 +13780,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-input-material@npm:^0.0.714":
-  version: 0.0.714
-  resolution: "react-input-material@npm:0.0.714"
+"react-input-material@npm:^0.0.728":
+  version: 0.0.728
+  resolution: "react-input-material@npm:0.0.728"
   peerDependencies:
     "@babel/runtime": "*"
     "@codemirror/autocomplete": "*"
@@ -13894,7 +13894,7 @@ __metadata:
       optional: true
     spark-md5:
       optional: true
-  checksum: 10c0/8d9e34bca38d4ea73789f1fde13730cbb759fc102c030a2f850352cbe17147b5c09000b87efe27784b8f94a3b00165cb0a619a9682c7e381462de1a93dbdd891
+  checksum: 10c0/ace688238c48e3ee03c615ef7eb1be7ade5a9a85720d978084255a8b6505b22d1beacb113e8c53a54602d216a975fda7290fd533d35968e6f9c830364ce63e73
   languageName: node
   linkType: hard
 
@@ -15608,31 +15608,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-component-wrapper@npm:^0.0.520":
-  version: 0.0.520
-  resolution: "web-component-wrapper@npm:0.0.520"
-  peerDependencies:
-    "@babel/runtime": "*"
-    "@types/react": "*"
-    "@types/react-dom": "*"
-    clientnode: "*"
-    react: "*"
-    react-dom: "*"
-  peerDependenciesMeta:
-    "@babel/runtime":
-      optional: true
-    "@types/react":
-      optional: true
-    "@types/react-dom":
-      optional: true
-    react:
-      optional: true
-    react-dom:
-      optional: true
-  checksum: 10c0/5fc3dd1024eb539432bc385e23f643afd78d09bf084ba7258a174a3a241af031245239216d98eafd2e456cb24f0e99ee5815b3d836d088622f446b2b731d0112
-  languageName: node
-  linkType: hard
-
 "web-component-wrapper@npm:^0.0.527":
   version: 0.0.527
   resolution: "web-component-wrapper@npm:0.0.527"
@@ -15658,23 +15633,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-input-material@npm:^0.0.473":
-  version: 0.0.473
-  resolution: "web-input-material@npm:0.0.473"
+"web-input-material@npm:^0.0.474":
+  version: 0.0.474
+  resolution: "web-input-material@npm:0.0.474"
   dependencies:
     prop-types: "npm:^15.8.1"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-input-material: "npm:^0.0.714"
+    react-input-material: "npm:^0.0.728"
     react-transition-group: "npm:^4.4.5"
-    web-component-wrapper: "npm:^0.0.520"
+    web-component-wrapper: "npm:^0.0.527"
   peerDependencies:
     "@babel/runtime": "*"
     clientnode: "*"
   peerDependenciesMeta:
     "@babel/runtime":
       optional: true
-  checksum: 10c0/5b8bc7b2abd3c6f377dd6a1f45b3cecbdacfd31117366a3236a9eda225ef469d3683922e50bbeb34c41d92255ea3b89de0bab8fff5c65d56c3b245e42eeb5276
+  checksum: 10c0/8b44986720745e7eb4bae97489ccb3f42ebaa6ed61efc12394ec41aa1824ebd94a868a3218f60a8194d86fc688556093b3319550790d98ca0628ca836969f01e
   languageName: node
   linkType: hard
 
