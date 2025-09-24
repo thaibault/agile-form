@@ -830,19 +830,23 @@ export class AgileForm<
             scope,
             {
                 applyBindings: false,
-                filter: (domNode: HTMLElement): boolean =>
-                    /*
-                        NOTE: Avoid updating nested grouped nodes which are
-                        managed by their group component.
-                    */
-                    !(
-                        domNode.matches(
-                            this.resolvedConfiguration.selector.groups
-                        ) ||
-                        domNode.matches(
-                            this.resolvedConfiguration.selector.inputs
+                filter: (domNode: Node): boolean => {
+                    if ((domNode as Partial<Element>).matches)
+                        /*
+                            NOTE: Avoid updating nested grouped nodes which are
+                            managed by their group component.
+                        */
+                        return !(
+                            (domNode as Element).matches(
+                                this.resolvedConfiguration.selector.groups
+                            ) ||
+                            (domNode as Element).matches(
+                                this.resolvedConfiguration.selector.inputs
+                            )
                         )
-                    ),
+
+                    return false
+                },
                 ignoreComponents: false
             }
         )
@@ -2778,7 +2782,7 @@ export class AgileForm<
                         ['boolean', 'number', 'string'].includes(
                             typeof header
                         ) &&
-                        header.trim()
+                        (typeof header !== 'string' || header.trim())
                     )
                         headers.set(name, header)
 
