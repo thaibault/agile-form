@@ -286,8 +286,8 @@
                 name="response-report"
                 show-if="latestResponse"
             >
-                Initial Response (Status: ${initialResponse.status}):
-                <pre>${object.represent(initialResponse.data)}</pre>
+                Initial Response (Status: ${initialResponse?.status}):
+                <pre>${object.represent(initialResponse?.data)}</pre>
                 <br />
                 Response (Status: ${latestResponse.status}):
                 <pre>${object.represent(latestResponse.data)}</pre>
@@ -406,13 +406,13 @@
             <hr/>
 
             <div class="agile-form__group" data-name="url">
-                TestEvaluationValue: "${true && testEvaluation}"
+                TestEvaluationValue: "${false || testEvaluation}"
                 <br />
                 TestExpressionValue: "${testExpression}"
                 <br />
 
                 Current-State-URL:
-                <a href="${determineStateURL().encoded}">
+                <a data-bind-attribute-href="self.determineStateURL().encoded">
                     ${determineStateURL().plain}
                 </a>
 
@@ -422,7 +422,9 @@
                     id="state-url-input"
                     name="determineStateURL().plain"
                     style="width: 100%"
+                    rows="10"
                 ></textarea>
+
                 <div
                     class="agile-form__group"
                     data-name="new-url"

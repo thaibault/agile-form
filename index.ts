@@ -464,6 +464,8 @@ export class AgileForm<
         if (!this.dispatchEvent(new CustomEvent('render', {detail: {reason}})))
             return
 
+        this.determineRenderScope()
+
         /*
             NOTE: We need a digest loop to allow the components to extend
             given model object with their defaults.
@@ -845,7 +847,7 @@ export class AgileForm<
                             )
                         )
 
-                    return false
+                    return true
                 },
                 ignoreComponents: false
             }
@@ -3093,12 +3095,10 @@ export class AgileForm<
      */
     applyInputBindings(): void {
         const scope: (
+            Mapping<unknown> &
             typeof UTILITY_SCOPE &
-            {
-                instance: AgileForm
-                name: string
-            }
-        ) = {...UTILITY_SCOPE, instance: this, name: 'UNKNOWN_NAME'}
+            {name: string}
+        ) = {...UTILITY_SCOPE, ...this.scope, name: 'UNKNOWN_NAME'}
 
         for (const [name, configuration] of Object.entries(
             this.inputConfigurations
