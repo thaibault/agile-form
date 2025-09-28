@@ -212,7 +212,7 @@ export class AgileForm<
                 button[name],
 
                 file-input, text-input, generic-inputs,
-                requireable-checkbox, slider-input, input,
+                checkbox-input, slider-input, input,
 
                 select, textarea
             `.replace(/\n+/g, ' ').replace(/  +/g, ' '),
@@ -464,6 +464,8 @@ export class AgileForm<
         if (!this.dispatchEvent(new CustomEvent('render', {detail: {reason}})))
             return
 
+        this.determineRenderScope()
+
         /*
             NOTE: We need a digest loop to allow the components to extend
             given model object with their defaults.
@@ -672,7 +674,8 @@ export class AgileForm<
         const oldState: boolean | undefined = inputConfiguration.shown
 
         inputConfiguration.shown =
-            !inputConfiguration.showIf || Boolean(inputConfiguration.showIf())
+            !inputConfiguration.showIf ||
+            Boolean(inputConfiguration.showIf() as unknown)
         for (const domNode of this.inputConfigurations[name].domNodes)
             domNode.shown = inputConfiguration.shown
 
@@ -754,7 +757,7 @@ export class AgileForm<
             }
 
             if (this.resolvedConfiguration.debug)
-                if (Boolean(oldState) === oldState)
+                if (Boolean(oldState as unknown) === oldState)
                     console.debug(
                         `Update group "${name}" visibility state from "` +
                         `${oldState ? 'show' : 'hide'}" to "` +
@@ -829,19 +832,23 @@ export class AgileForm<
             scope,
             {
                 applyBindings: false,
-                filter: (domNode: HTMLElement): boolean =>
-                    /*
-                        NOTE: Avoid updating nested grouped nodes which are
-                        managed by their group component.
-                    */
-                    !(
-                        domNode.matches(
-                            this.resolvedConfiguration.selector.groups
-                        ) ||
-                        domNode.matches(
-                            this.resolvedConfiguration.selector.inputs
+                filter: (domNode: Node): boolean => {
+                    if ((domNode as Partial<Element>).matches)
+                        /*
+                            NOTE: Avoid updating nested grouped nodes which are
+                            managed by their group component.
+                        */
+                        return !(
+                            (domNode as Element).matches(
+                                this.resolvedConfiguration.selector.groups
+                            ) ||
+                            (domNode as Element).matches(
+                                this.resolvedConfiguration.selector.inputs
+                            )
                         )
-                    ),
+
+                    return true
+                },
                 ignoreComponents: false
             }
         )
@@ -2777,7 +2784,7 @@ export class AgileForm<
                         ['boolean', 'number', 'string'].includes(
                             typeof header
                         ) &&
-                        header.trim()
+                        (typeof header !== 'string' || header.trim())
                     )
                         headers.set(name, header)
 
@@ -3088,12 +3095,10 @@ export class AgileForm<
      */
     applyInputBindings(): void {
         const scope: (
+            Mapping<unknown> &
             typeof UTILITY_SCOPE &
-            {
-                instance: AgileForm
-                name: string
-            }
-        ) = {...UTILITY_SCOPE, instance: this, name: 'UNKNOWN_NAME'}
+            {name: string}
+        ) = {...UTILITY_SCOPE, ...this.scope, name: 'UNKNOWN_NAME'}
 
         for (const [name, configuration] of Object.entries(
             this.inputConfigurations
