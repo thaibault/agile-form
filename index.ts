@@ -3414,17 +3414,24 @@ export class AgileForm<
             this.inputConfigurations[name].domNode
 
         return !(
+            // NOTE: Value is not dependent on any interactive item.
             !domNode ||
+            // NOTE: Initial value is same as current value.
             domNode.initialValue &&
             domNode.initialValue === domNode.value ||
+            // NOTE: Default value is same as current value.
             domNode.initialValue === undefined &&
             domNode.value === domNode.default ||
             /*
                 NOTE: If only a boolean value we do not have to save an
                 explicit or implicit default.
             */
-            !domNode.default &&
-            !domNode.value &&
+            (
+                domNode.default === false &&
+                domNode.value === false ||
+                [null, undefined].includes(domNode.default as null) &&
+                [null, undefined].includes(domNode.value as null)
+            ) &&
             domNode.type === 'boolean' &&
             /*
                 NOTE: If only one possible state exists we do not have to save
@@ -3478,6 +3485,14 @@ export class AgileForm<
                 */
                 let serializedValue: unknown = null
                 let useValue = false
+
+                if (name === 'feelsGood')
+                    console.log(
+                        name,
+                        configuration.value,
+                        this.isDeterminedStateValueNeeded(name)
+                    )
+
                 if (this.isDeterminedStateValueNeeded(name)) {
                     serializedValue = configuration.serializer ?
                         configuration.serializer(

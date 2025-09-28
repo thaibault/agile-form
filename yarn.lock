@@ -6176,7 +6176,7 @@ __metadata:
     tslib: "npm:^2.8.1"
     typescript-eslint: "npm:^8.44.1"
     web-component-wrapper: "npm:^0.0.531"
-    web-input-material: "npm:^0.0.478"
+    web-input-material: "npm:^0.0.479"
     weboptimizer: "npm:^2.0.1609"
     webpack-dev-server: "npm:^5.2.2"
   peerDependencies:
@@ -13880,9 +13880,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-input-material@npm:^0.0.732":
-  version: 0.0.732
-  resolution: "react-input-material@npm:0.0.732"
+"react-input-material@npm:^0.0.733":
+  version: 0.0.733
+  resolution: "react-input-material@npm:0.0.733"
   peerDependencies:
     "@babel/runtime": "*"
     "@codemirror/autocomplete": "*"
@@ -13994,7 +13994,7 @@ __metadata:
       optional: true
     spark-md5:
       optional: true
-  checksum: 10c0/769a5217a47541633d7925e286a9a677dbaf8a5cd60e8092992e921c5ca817e3a1055ee168ac84d757e87a62deae180d5dbee9034e6e7f9562d5ac17978105ee
+  checksum: 10c0/333f809c37112fafc9e82705f56a22f64fc126dd46ef9f0d99e10cdef115bf5b14cf875cba5dc44337fd75be23287638d2b78d262c56f0b8eb7715abb1dc0ece
   languageName: node
   linkType: hard
 
@@ -15733,14 +15733,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-input-material@npm:^0.0.478":
-  version: 0.0.478
-  resolution: "web-input-material@npm:0.0.478"
+"web-input-material@npm:^0.0.479":
+  version: 0.0.479
+  resolution: "web-input-material@npm:0.0.479"
   dependencies:
     prop-types: "npm:^15.8.1"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-input-material: "npm:^0.0.732"
+    react-input-material: "npm:^0.0.733"
     react-transition-group: "npm:^4.4.5"
     web-component-wrapper: "npm:^0.0.531"
   peerDependencies:
@@ -15749,7 +15749,7 @@ __metadata:
   peerDependenciesMeta:
     "@babel/runtime":
       optional: true
-  checksum: 10c0/ddfc352e9584226102474369953c00a066d301429dc2ab13307fdf5c8fce27721bb1e26906fe92aadc7e5952537a97b9871e6dc5d617422fc05546780352ae61
+  checksum: 10c0/e2533bd213edc096a29b3489b1322d01bffc2ae63561b453afeb6c171755ed67a6915e35c4b172f26c0f19ee483b28cdd82500419ea6306d3b3deddc97d4bcc5
   languageName: node
   linkType: hard
 
