@@ -786,52 +786,13 @@ export class AgileForm<
      * @param domNode - Dom node to render its content.
      */
     updateGroupContent(domNode: AnnotatedDomNode): void {
-        const scope: Mapping<unknown> = {}
-        const keys: Array<string> = this.self.baseScopeNames.concat(
-            this.evaluations.map(
-                (evaluation: Evaluation): string => evaluation[0]
-            ),
-            this.inputNames
-        )
-
-        const values: Array<unknown> = [
-            this.actionResults,
-
-            this.determineStateURL,
-            this.determinedTargetURL,
-
-            this.getData,
-
-            this.initialResponse,
-            this.latestResponse,
-            this.response,
-
-            this.onceSubmitted,
-            this.pending,
-            this.invalid,
-            this.valid,
-            this.invalidConstraint,
-
-            this.queryParameters,
-
-            this.message,
-
-            ...UTILITY_SCOPE_VALUES,
-
-            ...this._evaluationResults,
-            ...this.inputNames.map((name: string): InputConfiguration =>
-                this.inputConfigurations[name]
-            )
-        ]
-
-        for (let index = 0; index < keys.length; index += 1)
-            scope[keys[index]] = values[index]
+        const scope: Mapping<unknown> = this.determineTemplateEvaluationScope()
 
         this.evaluateDomNodeTemplate<AnnotatedDomNode>(
             domNode,
             scope,
             {
-                applyBindings: false,
+                applyBindings: true,
                 filter: (domNode: Node): boolean => {
                     if ((domNode as Partial<Element>).matches)
                         /*
@@ -2247,7 +2208,7 @@ export class AgileForm<
      * Determines simple scope for partial configuration evaluations.
      * @returns Scope.
      */
-    determineEvaluationScope(): Mapping<unknown> {
+    determineConfigurationEvaluationScope(): Mapping<unknown> {
         return {
             ...UTILITY_SCOPE,
             determineStateURL: this.determineStateURL,
@@ -2268,6 +2229,50 @@ export class AgileForm<
 
             ...this.resolvedConfiguration
         }
+    }
+    determineTemplateEvaluationScope(): Mapping<unknown> {
+        const scope: Mapping<unknown> = {}
+        const keys: Array<string> = this.self.baseScopeNames.concat(
+            this.evaluations.map(
+                (evaluation: Evaluation): string => evaluation[0]
+            ),
+            this.inputNames
+        )
+
+        const values: Array<unknown> = [
+            this.actionResults,
+
+            this.determineStateURL,
+            this.determinedTargetURL,
+
+            this.getData,
+
+            this.initialResponse,
+            this.latestResponse,
+            this.response,
+
+            this.onceSubmitted,
+            this.pending,
+            this.invalid,
+            this.valid,
+            this.invalidConstraint,
+
+            this.queryParameters,
+
+            this.message,
+
+            ...UTILITY_SCOPE_VALUES,
+
+            ...this._evaluationResults,
+            ...this.inputNames.map((name: string): InputConfiguration =>
+                this.inputConfigurations[name]
+            )
+        ]
+
+        for (let index = 0; index < keys.length; index += 1)
+            scope[keys[index]] = values[index]
+
+        return scope
     }
     /**
      * Can be triggered vie provided action condition. Can for example retrieve
@@ -2295,7 +2300,7 @@ export class AgileForm<
 
             detail.target = evaluateDynamicData(
                 copy(this.resolvedConfiguration.initializeTarget),
-                this.determineEvaluationScope()
+                this.determineConfigurationEvaluationScope()
             )
 
             if (detail.target.url) {
@@ -2884,7 +2889,7 @@ export class AgileForm<
         this.resolvedConfiguration.targetData = this.mapTargetNames(data)
         const target: null | TargetConfiguration = evaluateDynamicData(
             copy(this.resolvedConfiguration.target),
-            this.determineEvaluationScope()
+            this.determineConfigurationEvaluationScope()
         )
         // endregion
         if (target.url) {
@@ -3094,11 +3099,8 @@ export class AgileForm<
      * dependent field change cascade.
      */
     applyInputBindings(): void {
-        const scope: (
-            Mapping<unknown> &
-            typeof UTILITY_SCOPE &
-            {name: string}
-        ) = {...UTILITY_SCOPE, ...this.scope, name: 'UNKNOWN_NAME'}
+        const scope: Mapping<unknown> = this.determineTemplateEvaluationScope()
+        scope.name = 'UNKNOWN_NAME'
 
         for (const [name, configuration] of Object.entries(
             this.inputConfigurations
