@@ -5761,12 +5761,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^25.1.0":
-  version: 25.1.0
-  resolution: "@types/node@npm:25.1.0"
+"@types/node@npm:^25.2.0":
+  version: 25.2.0
+  resolution: "@types/node@npm:25.2.0"
   dependencies:
     undici-types: "npm:~7.16.0"
-  checksum: 10c0/5f393a127dc9565e2e152514a271455d580c7095afc51302e73ffe8aac3526b64ebacc3c10dd40c93cef81a95436ef2c6a8b522930df567a3f6b189c0eef649a
+  checksum: 10c0/89559ea0de5c8c2da051b384f2cd3161012446816e05d18841838f814e57eb1865f000622e903f08d14f5242736063ed4003a4a359730fdd367e35e2122a8fce
   languageName: node
   linkType: hard
 
@@ -6548,7 +6548,7 @@ __metadata:
     "@types/html-minifier": "npm:^4.0.6"
     "@types/jquery": "npm:^3.5.33"
     "@types/jsdom": "npm:^27.0.0"
-    "@types/node": "npm:^25.1.0"
+    "@types/node": "npm:^25.2.0"
     "@types/react": "npm:^18.3.27"
     "@types/react-dom": "npm:^18.3.7"
     "@types/react-transition-group": "npm:^4.4.12"
@@ -6583,7 +6583,7 @@ __metadata:
     tslib: "npm:^2.8.1"
     typescript-eslint: "npm:^8.54.0"
     web-component-wrapper: "npm:^0.0.542"
-    web-input-material: "npm:^0.0.490"
+    web-input-material: "npm:^0.0.492"
     weboptimizer: "npm:^2.0.1642"
     webpack-dev-server: "npm:^5.2.3"
   peerDependencies:
@@ -14287,9 +14287,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-input-material@npm:^0.0.780":
-  version: 0.0.780
-  resolution: "react-input-material@npm:0.0.780"
+"react-input-material@npm:^0.0.783":
+  version: 0.0.783
+  resolution: "react-input-material@npm:0.0.783"
   peerDependencies:
     "@babel/runtime": "*"
     "@codemirror/autocomplete": "*"
@@ -14313,6 +14313,7 @@ __metadata:
     "@rmwc/touch-target": "*"
     "@rmwc/typography": "*"
     "@tiptap/core": "*"
+    "@tiptap/extensions": "*"
     "@tiptap/react": "*"
     "@tiptap/starter-kit": "*"
     "@types/react": "*"
@@ -14371,6 +14372,8 @@ __metadata:
       optional: true
     "@tiptap/core":
       optional: true
+    "@tiptap/extensions":
+      optional: true
     "@tiptap/react":
       optional: true
     "@tiptap/starter-kit":
@@ -14401,7 +14404,7 @@ __metadata:
       optional: true
     spark-md5:
       optional: true
-  checksum: 10c0/46c698998dfc2d176d9e62f8f8e9cd391df5a0c6d4bc15e1cc87801589a8eda76f4f8f52a5537e4654a5e412ef5d22dc2ac9d59fd40423b36fa9bea7daeca898
+  checksum: 10c0/b437b489a8720bf875b7d981cb4e33b4e7f0926dabd03f6bd70e539045284df3d101f829ebcd5e3b9d9353b4034a0bcf3061221297b69031c4114e27063392c3
   languageName: node
   linkType: hard
 
@@ -16252,14 +16255,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-input-material@npm:^0.0.490":
-  version: 0.0.490
-  resolution: "web-input-material@npm:0.0.490"
+"web-input-material@npm:^0.0.492":
+  version: 0.0.492
+  resolution: "web-input-material@npm:0.0.492"
   dependencies:
     prop-types: "npm:^15.8.1"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-input-material: "npm:^0.0.780"
+    react-input-material: "npm:^0.0.783"
     react-transition-group: "npm:^4.4.5"
     web-component-wrapper: "npm:^0.0.542"
   peerDependencies:
@@ -16268,7 +16271,7 @@ __metadata:
   peerDependenciesMeta:
     "@babel/runtime":
       optional: true
-  checksum: 10c0/83d464a6588069630a6134b783051e9bc8be53bc0a3ce0d5fc2ec90b1edc4e94aac5458a599a52cbd3ab7540a7c115845bcfd4d9b94a1145352d951711854332
+  checksum: 10c0/5cf3f34e55216c08825f0eff1f91c3b6501a24fcfdfed2aa36b88dee48b5c13db51fdd04e95b07562b6870c478a59b13f80825f2a8fb3802b6d262a54b633569
   languageName: node
   linkType: hard
 
