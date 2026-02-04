@@ -146,6 +146,7 @@ export class AgileForm<
     TElement = HTMLElement,
     ExternalProperties extends Mapping<unknown> = Mapping<unknown>,
     InternalProperties extends Mapping<unknown> = Mapping<unknown>,
+    EvaluationScope extends Mapping<unknown> = Mapping<unknown>
 > extends Web<TElement, ExternalProperties, InternalProperties> {
     // region properties
     static baseScopeNames = [
@@ -170,6 +171,8 @@ export class AgileForm<
 
         'stateMessage',
 
+        'scope',
+
         ...UTILITY_SCOPE_NAMES
     ]
     static content = '<form novalidate><slot></slot></form>'
@@ -178,6 +181,10 @@ export class AgileForm<
         targetActions: {},
 
         animation: true,
+        changedEventNameMapping: {
+            button: 'click',
+            default: 'change'
+        },
         constraints: [],
         data: null,
         debug: false,
@@ -207,11 +214,9 @@ export class AgileForm<
         },
         securityResponsePrefix: `)]}',`,
         selector: {
-            clearButtons: 'button[clear]',
             groups: '.agile-form__group',
-            // TODO support buttons (with two states).
             inputs: `
-                button[name],
+                button[name], button[data-name],
 
                 file-input, text-input, generic-inputs,
                 checkbox-input, slider-input, input,
@@ -219,11 +224,15 @@ export class AgileForm<
                 select, textarea
             `.replace(/\n+/g, ' ').replace(/  +/g, ' '),
             reCaptchaFallbackInput: '.agile-form__re-captcha-fallback',
-            resetButtons: 'button[reset], [type=reset]',
+
             spinner: 'circular-spinner',
             statusMessageBoxes: '.agile-form__status-message',
-            submitButtons: 'button[submit], [type=submit]',
-            truncateButtons: 'button[truncate]'
+
+            submitButtons:
+                'button[submit], button[data-submit], [type=submit]',
+            clearButtons: 'button[clear], button[data-clear]',
+            resetButtons: 'button[reset], button[data-reset], [type=reset]',
+            truncateButtons: 'button[truncate], button[data-truncate]'
         },
         showAll: false,
         tag: {
@@ -319,6 +328,8 @@ export class AgileForm<
         'initialValue'
     ]
     static _name = 'AgileForm'
+
+    scope: EvaluationScope = {} as EvaluationScope
 
     actionResults: Mapping<unknown> = {}
 
@@ -1279,7 +1290,10 @@ export class AgileForm<
             not specified input into the specification (model configuration).
         */
         for (const domNode of inputs) {
-            const name: null | string = domNode.getAttribute('name')
+            const name: null | string =
+                domNode.getAttribute('name') ??
+                domNode.getAttribute('data-name')
+
             if (name) {
                 if (Object.prototype.hasOwnProperty.call(
                     this.inputConfigurations, name
@@ -1472,7 +1486,16 @@ export class AgileForm<
                         configuration,
                         'value',
                         {
-                            get: (): unknown => configuration.domNode?.value,
+                            get: (): unknown =>
+                                Object.prototype.hasOwnProperty.call(
+                                    configuration.domNode, 'data-value'
+                                ) ?
+                                    (
+                                        configuration.domNode as
+                                            unknown as
+                                            Mapping<unknown>
+                                    )['data-value'] :
+                                    configuration.domNode?.value,
                             set: (value: unknown): void => {
                                 const tagName: string =
                                     domNode.nodeName.toLowerCase()
@@ -1487,7 +1510,15 @@ export class AgileForm<
                                 configuration.properties.value = value
 
                                 for (const domNode of configuration.domNodes)
-                                    domNode.value = value
+                                    if (Object.prototype.hasOwnProperty.call(
+                                        configuration.domNode, 'data-value'
+                                    ))
+                                        (domNode as
+                                            unknown as
+                                            Mapping<unknown>
+                                        )['data-value'] = value
+                                    else
+                                        domNode.value = value
                             }
                         }
                     )
@@ -1695,6 +1726,8 @@ export class AgileForm<
 
                                 this.message,
 
+                                this.scope,
+
                                 ...UTILITY_SCOPE_VALUES,
 
                                 shownSubNodes,
@@ -1818,6 +1851,8 @@ export class AgileForm<
 
                         this.message,
 
+                        this.scope,
+
                         ...UTILITY_SCOPE_VALUES,
 
                         configuration,
@@ -1914,6 +1949,8 @@ export class AgileForm<
 
                     this.message,
 
+                    this.scope,
+
                     ...UTILITY_SCOPE_VALUES,
 
                     event,
@@ -2006,6 +2043,8 @@ export class AgileForm<
 
                         this.message,
 
+                        this.scope,
+
                         ...UTILITY_SCOPE_VALUES,
 
                         event,
@@ -2086,6 +2125,8 @@ export class AgileForm<
 
                         this.message,
 
+                        this.scope,
+
                         ...UTILITY_SCOPE_VALUES,
 
                         ...this._evaluationResults,
@@ -2164,6 +2205,8 @@ export class AgileForm<
                         this.queryParameters,
 
                         this.message,
+
+                        this.scope,
 
                         ...UTILITY_SCOPE_VALUES,
 
@@ -2262,6 +2305,8 @@ export class AgileForm<
             this.queryParameters,
 
             this.message,
+
+            this.scope,
 
             ...UTILITY_SCOPE_VALUES,
 
@@ -3040,6 +3085,8 @@ export class AgileForm<
 
                     this.message,
 
+                    this.scope,
+
                     ...UTILITY_SCOPE_VALUES,
 
                     ...fieldValues
@@ -3107,18 +3154,33 @@ export class AgileForm<
             this.inputConfigurations
         )) {
             scope.name = name
+
             for (const domNode of configuration.domNodes)
                 this.applyBindings(domNode, scope)
 
             if (!Object.prototype.hasOwnProperty.call(
                 this.inputEventBindings, name
             )) {
-                const eventName: string =
+                let eventName =
+                    this.resolvedConfiguration.changedEventNameMapping.default
+                if (
                     Object.prototype.hasOwnProperty.call(
                         configuration, 'changedEventName'
-                    ) ?
-                        configuration.changedEventName as string :
-                        'change'
+                    ) &&
+                    typeof configuration.changedEventName === 'string'
+                )
+                    eventName = configuration.changedEventName
+                else
+                    for (const [
+                        selector, eventNameCandidate
+                    ] of Object.entries(
+                            this.resolvedConfiguration.changedEventNameMapping
+                        ))
+                        for (const domNode of configuration.domNodes)
+                            if (domNode.matches(selector)) {
+                                eventName = eventNameCandidate
+                                break
+                            }
 
                 const handler: EventListener = debounce(
                     (async (event: Event): Promise<void> => {
@@ -3421,19 +3483,21 @@ export class AgileForm<
             !domNode ||
             // NOTE: Initial value is same as current value.
             domNode.initialValue &&
-            domNode.initialValue === domNode.value ||
+            domNode.initialValue === this.inputConfigurations[name].value ||
             // NOTE: Default value is same as current value.
             domNode.initialValue === undefined &&
-            domNode.value === domNode.default ||
+            this.inputConfigurations[name].value === domNode.default ||
             /*
                 NOTE: If only a boolean value we do not have to save an
                 explicit or implicit default.
             */
             (
                 domNode.default === false &&
-                domNode.value === false ||
+                this.inputConfigurations[name].value === false ||
                 [null, undefined].includes(domNode.default as null) &&
-                [null, undefined].includes(domNode.value as null)
+                [null, undefined].includes(
+                    this.inputConfigurations[name].value as null
+                )
             ) &&
             domNode.type === 'boolean' &&
             /*

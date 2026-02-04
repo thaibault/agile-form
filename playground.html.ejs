@@ -94,14 +94,6 @@
         <script src="https://www.google.com/recaptcha/api.js?render=6LdvN-sZAAAAAHv2Ko2_g_8EHrIRbNffZoGHseSS"></script>
         <script src="/web-input-material/index.bundle.js"></script>
         <script>
-            window.testAction = function(action, actionResults) {
-                var run = actionResults.test || 1
-
-                console.info(run + '. tests actions triggered:', action)
-
-                return run + 1
-            }
-
             window.onload = function() {
                 /* region fetch mock */
                 window.fetch = function(url, options) {
@@ -138,6 +130,25 @@
                 /* endregion */
                 webInputMaterial.register()
                 agileForm.index.api.register()
+
+                document.querySelector('button[data-name]')['data-value'] = false
+                console.log(document.querySelector('button[data-name]'))
+                document.querySelector('button[data-name]').addEventListener(
+                    'click', function(event) {
+                        event.target['data-value'] =
+                            !event.target['data-value']
+                    })
+
+                document.querySelector('agile-form').scope.testAction =
+                    function(action, actionResults) {
+                        var run = actionResults.test || 1
+
+                        console.info(
+                            run + '. tests actions triggered:', action
+                        )
+
+                        return run + 1
+                    }
             }
         </script>
         <!--endregion-->
@@ -146,7 +157,9 @@
     <body>
         <agile-form
             base-configuration="{
-                actions: {test: {code: 'testAction(action, actionResults)'}},
+                actions: {test: {
+                    code: 'scope.testAction(action, actionResults)'
+                }},
 
                 debug: true,
 
@@ -239,6 +252,14 @@
                                 maximum: 100,
                                 minimum: 5,
                                 nullable: false
+                            }
+                        }
+                    },
+                    buttonState: {
+                        properties: {
+                            model: {
+                                nullable: false,
+                                type: 'boolean'
                             }
                         }
                     }
@@ -396,8 +417,10 @@
 
             <div class="agile-form__re-captcha-fallback"></div>
 
-            <button truncate>Truncate</button>
-            <button clear>Clear</button>
+            <button data-name="buttonState">State button</button>
+
+            <button data-truncate>Truncate</button>
+            <button data-clear>Clear</button>
             <button type="reset">Reset</button>
             <button type="submit">OK</button>
 
