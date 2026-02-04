@@ -95,7 +95,26 @@ describe('AgileForm', (): void => {
         expect(form.self.normalizeURLConfiguration({a: 2}))
             .toStrictEqual({a: 2})
 
-        // TODO
+        expect(form.self.normalizeURLConfiguration({a: 2, model: {b: {}}}))
+            .toStrictEqual({a: 2, inputs: {b: {properties: {}}}})
+
+        expect(form.self.normalizeURLConfiguration({
+            a: 2, model: {b: {
+                mutable: false,
+                writable: false,
+                selection: [],
+                value: 3,
+                nullable: false
+            }}
+        }))
+            .toStrictEqual({
+                a: 2, inputs: {b: {properties: {
+                    disabled: true,
+                    required: true,
+                    selection: [],
+                    value: 3
+                }}}
+            })
     })
     test('normalizeConfiguration', (): void => {
         const form = document.createElement(name) as AgileForm

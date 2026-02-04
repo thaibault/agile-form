@@ -186,6 +186,8 @@ export interface Configuration {
     actions: Mapping<Action>
     targetActions: Mapping<TargetAction>
 
+    changedEventNameMapping: Mapping & {default: string},
+
     constraints: Array<Constraint>
     evaluations: GivenEvaluations
 
