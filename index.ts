@@ -2846,7 +2846,7 @@ export class AgileForm<
         if (target.options?.body && typeof target.options.body !== 'string')
             target.options.body = JSON.stringify(target.options.body)
 
-        let response: FormResponse | null = null
+        let response: FormResponse
 
         void this.updateReCaptchaToken()
 
