@@ -559,9 +559,9 @@ export class AgileForm<
             return
 
         if (opacity === 0) {
-            const style: Mapping<number | string> = $(domNode).Tools('style')
+            const style = domNode.style
 
-            domNode.oldDisplay = style.display as string || 'initial'
+            domNode.oldDisplay = style.display || 'initial'
             if (domNode.oldDisplay === 'none')
                 delete domNode.oldDisplay
 
@@ -580,7 +580,7 @@ export class AgileForm<
 
             let currentOpacity: number =
                 domNode.oldOpacity =
-                parseFloat(style.opacity as string)
+                parseFloat(style.opacity)
             const timer = setInterval(
                 () => {
                     if (currentOpacity <= opacity + .1) {
