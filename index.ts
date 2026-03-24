@@ -18,7 +18,6 @@
 */
 // region imports
 import {
-    $,
     camelCaseToDelimited,
     compile,
     CompilationResult,
@@ -39,7 +38,6 @@ import {
     Logger,
     Mapping,
     mask,
-    MAXIMAL_SUPPORTED_INTERNET_EXPLORER_VERSION,
     Offset,
     PlainObject,
     QueryParameters,
@@ -72,7 +70,6 @@ import {
     IndicatorFunction,
     InputAnnotation,
     InputConfiguration,
-    Model,
     NormalizedConfiguration,
     ResponseResult,
     StateURL,
@@ -801,7 +798,7 @@ export class AgileForm<
     updateGroupContent(domNode: AnnotatedDomNode): void {
         const scope: Mapping<unknown> = this.determineTemplateEvaluationScope()
 
-        this.evaluateDomNodeTemplate<AnnotatedDomNode>(
+        this.evaluateDomNodeTemplate(
             domNode,
             scope,
             {
@@ -1101,11 +1098,9 @@ export class AgileForm<
             this.mergeConfiguration(this.urlConfiguration)
 
         this.resolvedConfiguration.initializeTarget =
-            extend<TargetConfiguration>(
+            extend(
                 true,
-                copy<TargetConfiguration>(
-                    this.resolvedConfiguration.target as TargetConfiguration
-                ),
+                copy(this.resolvedConfiguration.target as TargetConfiguration),
                 this.resolvedConfiguration.initializeTarget
             )
 
@@ -1134,7 +1129,7 @@ export class AgileForm<
             }
 
             if (typeof evaluated.result === 'object')
-                return mask<RecursivePartial<Configuration>>(
+                return mask(
                     this.self.normalizeURLConfiguration(evaluated.result),
                     this.resolvedConfiguration.urlConfigurationMask
                 ) as RecursivePartial<Configuration>
@@ -1389,7 +1384,7 @@ export class AgileForm<
                         if (!configuration.dynamicExtendExpressions)
                             configuration.dynamicExtendExpressions = {}
 
-                        extend<RecursivePartial<Model>>(
+                        extend(
                             true,
                             configuration.dynamicExtendExpressions,
                             domNode.externalProperties
@@ -1407,7 +1402,7 @@ export class AgileForm<
 
                     if (domNode.externalProperties?.model)
                         // Merge dom node and form model configurations.
-                        extend<RecursivePartial<Model>>(
+                        extend(
                             true,
                             configuration.properties.model,
                             domNode.externalProperties.model
@@ -2585,10 +2580,7 @@ export class AgileForm<
 
             onScroll()
 
-            if (
-                MAXIMAL_SUPPORTED_INTERNET_EXPLORER_VERSION.value === 0 &&
-                smooth
-            )
+            if (smooth)
                 window.scrollTo(
                     {
                         behavior: 'smooth',
@@ -3602,9 +3594,7 @@ export class AgileForm<
 
         // Use only allowed configuration fields.
         const maskedParameter: RecursivePartial<NormalizedConfiguration> =
-            mask<NormalizedConfiguration>(
-                parameter, this.resolvedConfiguration.urlConfigurationMask
-            )
+            mask(parameter, this.resolvedConfiguration.urlConfigurationMask)
 
         if (
             maskedParameter.inputs &&
