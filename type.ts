@@ -214,7 +214,7 @@ export interface Configuration {
     }
 
     responseDataWrapperSelector: {
-        optional: boolean
+        skipMissingLevel: boolean
         path: string
     }
     securityResponsePrefix: string
