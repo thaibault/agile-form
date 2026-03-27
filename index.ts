@@ -2877,12 +2877,9 @@ export class AgileForm<
             response.data = JSON.parse(responseString) as PlainObject
             response.data = evaluateSelector(
                 this.resolvedConfiguration.responseDataWrapperSelector.path,
-                response.data
-                /*
-                    ,
-                    this.resolvedConfiguration.responseDataWrapperSelector
-                        .skipMissingLevel
-                */
+                response.data,
+                this.resolvedConfiguration.responseDataWrapperSelector
+                    .skipMissingLevel
             )
         } catch (error) {
             log.warn(
@@ -3297,7 +3294,7 @@ export class AgileForm<
                     mappedSelector
 
                 const target: Mapping<unknown> =
-                    evaluateSelector(path, configuration.properties)
+                    evaluateSelector(path, configuration.properties, true)
 
                 const oldValue: unknown = target[key]
 
@@ -3317,13 +3314,21 @@ export class AgileForm<
                         `"${oldValue as string}" to "${newValue as string}".`
                     )
 
+                    /*
+                        eslint-disable
+                        @typescript-eslint/no-unnecessary-type-arguments
+                    */
                     evaluateSelector<
-                        Partial<InputAnnotation>, Mapping<unknown>
-                    >(path, configuration.properties)[key] = newValue
+                        Mapping<unknown>, Partial<InputAnnotation>
+                    >(path, configuration.properties, true)[key] = newValue
                     for (const domNode of configuration.domNodes)
                         evaluateSelector<
-                            AnnotatedInputDomNode, Mapping<unknown>
-                        >(path, domNode)[key] = newValue
+                            Mapping<unknown>, AnnotatedInputDomNode
+                        >(path, domNode, true)[key] = newValue
+                    /*
+                        eslint-enable
+                        @typescript-eslint/no-unnecessary-type-arguments
+                    */
 
                     await this.digest()
                 }
