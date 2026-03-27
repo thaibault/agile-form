@@ -25,10 +25,10 @@ import {
     copy,
     debounce,
     evaluate,
+    evaluateSelector,
     evaluateDynamicData,
     EvaluationResult,
     extend,
-    getSubstructure,
     getURLParameter,
     isFunction,
     isObject,
@@ -206,7 +206,7 @@ export class AgileForm<
             token: ''
         },
         responseDataWrapperSelector: {
-            optional: true,
+            skipMissingLevel: true,
             path: 'data'
         },
         securityResponsePrefix: `)]}',`,
@@ -2875,10 +2875,11 @@ export class AgileForm<
                 )
 
             response.data = JSON.parse(responseString) as PlainObject
-            response.data = getSubstructure(
-                (response).data,
+            response.data = evaluateSelector(
                 this.resolvedConfiguration.responseDataWrapperSelector.path,
-                this.resolvedConfiguration.responseDataWrapperSelector.optional
+                response.data,
+                this.resolvedConfiguration.responseDataWrapperSelector
+                    .skipMissingLevel
             )
         } catch (error) {
             log.warn(
@@ -3293,7 +3294,7 @@ export class AgileForm<
                     mappedSelector
 
                 const target: Mapping<unknown> =
-                    getSubstructure(configuration.properties, path)
+                    evaluateSelector(path, configuration.properties, true)
 
                 const oldValue: unknown = target[key]
 
@@ -3313,13 +3314,21 @@ export class AgileForm<
                         `"${oldValue as string}" to "${newValue as string}".`
                     )
 
-                    getSubstructure<
-                        Partial<InputAnnotation>, Mapping<unknown>
-                    >(configuration.properties, path)[key] = newValue
+                    /*
+                        eslint-disable
+                        @typescript-eslint/no-unnecessary-type-arguments
+                    */
+                    evaluateSelector<
+                        Mapping<unknown>, Partial<InputAnnotation>
+                    >(path, configuration.properties, true)[key] = newValue
                     for (const domNode of configuration.domNodes)
-                        getSubstructure<
-                            AnnotatedInputDomNode, Mapping<unknown>
-                        >(domNode, path)[key] = newValue
+                        evaluateSelector<
+                            Mapping<unknown>, AnnotatedInputDomNode
+                        >(path, domNode, true)[key] = newValue
+                    /*
+                        eslint-enable
+                        @typescript-eslint/no-unnecessary-type-arguments
+                    */
 
                     await this.digest()
                 }
