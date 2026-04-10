@@ -2878,8 +2878,12 @@ export class AgileForm<
             response.data = evaluateSelector(
                 this.resolvedConfiguration.responseDataWrapperSelector.path,
                 response.data,
-                this.resolvedConfiguration.responseDataWrapperSelector
-                    .skipMissingLevel
+                {
+                    skipMissingLevel:
+                        this.resolvedConfiguration
+                            .responseDataWrapperSelector
+                            .skipMissingLevel
+                }
             )
         } catch (error) {
             log.warn(
@@ -3293,8 +3297,9 @@ export class AgileForm<
                     mappedSelector.substring(index + 1) :
                     mappedSelector
 
-                const target: Mapping<unknown> =
-                    evaluateSelector(path, configuration.properties, true)
+                const target: Mapping<unknown> = evaluateSelector(
+                    path, configuration.properties, {skipMissingLevel: true}
+                )
 
                 const oldValue: unknown = target[key]
 
@@ -3320,11 +3325,16 @@ export class AgileForm<
                     */
                     evaluateSelector<
                         Mapping<unknown>, Partial<InputAnnotation>
-                    >(path, configuration.properties, true)[key] = newValue
+                    >(
+                        path,
+                        configuration.properties,
+                        {skipMissingLevel: true}
+                    )[key] = newValue
                     for (const domNode of configuration.domNodes)
                         evaluateSelector<
                             Mapping<unknown>, AnnotatedInputDomNode
-                        >(path, domNode, true)[key] = newValue
+                        >(path, domNode, {skipMissingLevel: true})[key] =
+                            newValue
                     /*
                         eslint-enable
                         @typescript-eslint/no-unnecessary-type-arguments
