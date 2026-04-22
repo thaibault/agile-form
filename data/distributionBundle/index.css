@@ -7,11 +7,11 @@ License
 This library written by Torben Sickert stand under a creative commons naming
 3.0 unported license. See https://creativecommons.org/licenses/by/3.0/deed.de
 endregion */
-@import 'react-input-material/dist/index.css';
+@import 'react-input-material/index.css';
 
 .agile-form__group,
 .agile-form__re-captcha-fallback,
-requireable-checkbox,
+checkbox-input,
 text-input {
     display: none;
 }
