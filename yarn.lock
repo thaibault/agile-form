@@ -5698,13 +5698,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jquery@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "@types/jquery@npm:4.0.0"
-  checksum: 10c0/3e453accf2786e6ea5a5fb4b7f8c2298f42d3bc22253cc5a14f4d4a1a5ccc461db7af5a5df92a0b0c03c75a1968d2deda06597b63f8118613f88f27452911275
-  languageName: node
-  linkType: hard
-
 "@types/jsdom@npm:^21.1.7":
   version: 21.1.7
   resolution: "@types/jsdom@npm:21.1.7"
@@ -6537,7 +6530,6 @@ __metadata:
     "@types/ejs": "npm:^3.1.5"
     "@types/grecaptcha": "npm:^3.0.9"
     "@types/html-minifier": "npm:^4.0.6"
-    "@types/jquery": "npm:^4.0.0"
     "@types/jsdom": "npm:^28.0.1"
     "@types/node": "npm:^25.5.2"
     "@types/react": "npm:^18.3.28"
