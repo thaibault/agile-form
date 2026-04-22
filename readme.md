@@ -26,7 +26,7 @@ Project status
 [![code coverage](https://img.shields.io/coverallsCoverage/github/thaibault/agile-form?label=code%20coverage&style=for-the-badge)](https://coveralls.io/github/thaibault/agile-form)
 
 [![deploy web documentation](https://img.shields.io/github/actions/workflow/status/thaibault/agile-form/deploy-web-documentation.yaml?label=deploy%20web%20documentation&style=for-the-badge)](https://github.com/thaibault/agile-form/actions/workflows/deploy-web-documentation.yaml)
-[![documentation website](https://img.shields.io/website-up-down-green-red/https/torben.website/agile-form.svg?label=documentation-website&style=for-the-badge)](https://torben.website/agile-form)
+[![documentation website](https://img.shields.io/website-up-down-green-red/https/torben.website/agile-form.svg?label=web-documentation&style=for-the-badge)](https://torben.website/agile-form)
 
 [![Open in CodeSandbox](https://img.shields.io/badge/Open%20in-CodeSandbox-blue?style=for-the-badge&logo=codesandbox)](https://githubbox.com/thaibault/agile-form)
 
