@@ -925,7 +925,7 @@ export class AgileForm<
                 {inputs: Mapping<RecursivePartial<InputConfiguration>>}
             ).inputs = inputs
 
-        return currentConfiguration as RecursivePartial<Configuration>
+        return currentConfiguration
     }
     /**
      * Normalizes given evaluations.
@@ -1460,7 +1460,7 @@ export class AgileForm<
                             `"${represent(configuration.properties[key])}".`
                         )
 
-                        ;(domNode[key as keyof InputAnnotation]) =
+                        domNode[key] =
                             configuration.properties[key] as undefined
                     } else
                         log.debug(
@@ -2053,8 +2053,10 @@ export class AgileForm<
 
                     this.actionResults[name] =
                         isObject(result) &&
-                        'then' in (result as unknown as Promise<unknown>) ?
-                            await (result as unknown as Promise<unknown>) :
+                        ((v: object): v is Promise<unknown> => 'then' in v)(
+                            result
+                        ) ?
+                            await result :
                             result
                 } catch (error) {
                     log.error(
@@ -3179,7 +3181,7 @@ export class AgileForm<
                                 break
                             }
 
-                const handler: EventListener = debounce(
+                const handler = debounce(
                     (async (event: Event): Promise<void> => {
                         await this.digest()
 
@@ -3319,10 +3321,6 @@ export class AgileForm<
                         `"${oldValue as string}" to "${newValue as string}".`
                     )
 
-                    /*
-                        eslint-disable
-                        @typescript-eslint/no-unnecessary-type-arguments
-                    */
                     evaluateSelector<
                         Mapping<unknown>, Partial<InputAnnotation>
                     >(
@@ -3335,10 +3333,6 @@ export class AgileForm<
                             Mapping<unknown>, AnnotatedInputDomNode
                         >(path, domNode, {skipMissingLevel: true})[key] =
                             newValue
-                    /*
-                        eslint-enable
-                        @typescript-eslint/no-unnecessary-type-arguments
-                    */
 
                     await this.digest()
                 }
