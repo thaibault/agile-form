@@ -25,7 +25,7 @@ Project status
 
 [![code coverage](https://img.shields.io/coverallsCoverage/github/thaibault/agile-form?label=code%20coverage&style=for-the-badge)](https://coveralls.io/github/thaibault/agile-form)
 
-[![deploy documentation website](https://img.shields.io/github/actions/workflow/status/thaibault/agile-form/deploy-documentation-website.yaml?label=deploy%20documentation%20website&style=for-the-badge)](https://github.com/thaibault/agile-form/actions/workflows/deploy-documentation-website.yaml)
+[![deploy web documentation](https://img.shields.io/github/actions/workflow/status/thaibault/agile-form/deploy-web-documentation.yaml?label=deploy%20web%20documentation&style=for-the-badge)](https://github.com/thaibault/agile-form/actions/workflows/deploy-web-documentation.yaml)
 [![documentation website](https://img.shields.io/website-up-down-green-red/https/torben.website/agile-form.svg?label=documentation-website&style=for-the-badge)](https://torben.website/agile-form)
 
 [![Try out](https://img.shields.io/badge/Try%20it%20on%20runkit-%2345cc11?style=for-the-badge)](https://npm.runkit.com/agile-form)
