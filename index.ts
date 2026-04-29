@@ -443,7 +443,7 @@ export class AgileForm<
     disconnectedCallback(): void {
         super.disconnectedCallback()
 
-        this.root.removeEventListener(
+        this.rootDomNode.removeEventListener(
             'keydown', this.onKeyDown as EventListenerOrEventListenerObject
         )
         for (const domNode of this.clearButtons)
@@ -468,9 +468,14 @@ export class AgileForm<
      * Triggered when content projected and nested dom nodes are ready to be
      * traversed. Selects all needed dom nodes.
      * @param reason - Description why rendering is necessary.
-     * @returns A promise resolving to nothing.
+     * @param resolveRendering - Indicates whether rendering should be resolved
+     * finally. Should be set to "false" via super calls in inherited render
+     * methods which do further dom manipulations afterwards and resolve the
+     * rendering process by their own.
+     * @returns A promise resolving when rendering has finished. A promise may
+     * be needed for classes inheriting from this class.
      */
-    async render(reason = 'unknown'): Promise<void> {
+    async render(reason = 'unknown', resolveRendering = true): Promise<void> {
         if (!this.dispatchEvent(new CustomEvent('render', {detail: {reason}})))
             return
 
@@ -483,7 +488,9 @@ export class AgileForm<
         await this.digest()
         await this.configureContentProjectedElements()
 
-        this.reCaptchaFallbackInput = this.root.querySelector(
+        await this.waitForNestedComponentRendering()
+
+        this.reCaptchaFallbackInput = this.rootDomNode.querySelector(
             this.resolvedConfiguration.selector.reCaptchaFallbackInput
         )
         if (this.reCaptchaFallbackInput) {
@@ -496,28 +503,28 @@ export class AgileForm<
                 this.updateReCaptchaFallbackToken()
         }
 
-        this.spinner = Array.from(this.root.querySelectorAll(
+        this.spinner = Array.from(this.rootDomNode.querySelectorAll(
             this.resolvedConfiguration.selector.spinner
         ))
 
-        this.statusMessageBoxes = Array.from(this.root.querySelectorAll(
+        this.statusMessageBoxes = Array.from(this.rootDomNode.querySelectorAll(
             this.resolvedConfiguration.selector.statusMessageBoxes
         ))
 
-        this.clearButtons = Array.from(this.root.querySelectorAll(
+        this.clearButtons = Array.from(this.rootDomNode.querySelectorAll(
             this.resolvedConfiguration.selector.clearButtons
         ))
-        this.resetButtons = Array.from(this.root.querySelectorAll(
+        this.resetButtons = Array.from(this.rootDomNode.querySelectorAll(
             this.resolvedConfiguration.selector.resetButtons
         ))
-        this.submitButtons = Array.from(this.root.querySelectorAll(
+        this.submitButtons = Array.from(this.rootDomNode.querySelectorAll(
             this.resolvedConfiguration.selector.submitButtons
         ))
-        this.truncateButtons = Array.from(this.root.querySelectorAll(
+        this.truncateButtons = Array.from(this.rootDomNode.querySelectorAll(
             this.resolvedConfiguration.selector.truncateButtons
         ))
 
-        this.root.addEventListener(
+        this.rootDomNode.addEventListener(
             'keydown', this.onKeyDown as EventListenerOrEventListenerObject
         )
         for (const domNode of this.clearButtons)
@@ -540,6 +547,8 @@ export class AgileForm<
         )
 
         await this.initialize()
+
+        await this.resolveRenderingPromiseIfSet(reason, resolveRendering)
     }
     // endregion
     // region handle visibility states
@@ -1158,12 +1167,12 @@ export class AgileForm<
                 for (const selector of action.localSelectors)
                     action.determinedDomNodes =
                         action.determinedDomNodes.concat(Array.from(
-                            this.root.querySelectorAll(selector)
+                            this.rootDomNode.querySelectorAll(selector)
                         ))
             else
                 action.determinedDomNodes =
                     action.determinedDomNodes.concat(Array.from(
-                        this.root.querySelectorAll(`[action="${name}"]`)
+                        this.rootDomNode.querySelectorAll(`[action="${name}"]`)
                     ))
 
             action.handler = (event: Event) => {
@@ -1239,7 +1248,7 @@ export class AgileForm<
         InputConfiguration
     >> {
         const inputCandidates: Array<AnnotatedInputDomNode> =
-            Array.from(this.root.querySelectorAll(
+            Array.from(this.rootDomNode.querySelectorAll(
                 this.resolvedConfiguration.selector.inputs
             ))
 
@@ -1616,7 +1625,7 @@ export class AgileForm<
         this.groups = []
 
         const groups: Array<AnnotatedDomNode> = Array.from(
-            this.root.querySelectorAll(
+            this.rootDomNode.querySelectorAll(
                 this.resolvedConfiguration.selector.groups
             )
         )
@@ -2447,7 +2456,7 @@ export class AgileForm<
                 (event.target as HTMLElement).closest(
                     this.resolvedConfiguration.selector.inputs
                 )
-            if (inputTarget && this.root.contains(inputTarget))
+            if (inputTarget && this.rootDomNode.contains(inputTarget))
                 this.onSubmit(event)
         }
     }
@@ -2699,7 +2708,7 @@ export class AgileForm<
         )
 
         const invalidInputs: Array<AnnotatedInputDomNode> = Array.from(
-            this.root.querySelectorAll(
+            this.rootDomNode.querySelectorAll(
                 `[name="${invalidInputNames.join('"], [name="')}"]`
             )
         )
