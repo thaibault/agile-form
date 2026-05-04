@@ -404,9 +404,9 @@ export class AgileForm<
     constructor() {
         super()
         /*
-            Babels property declaration transformation overwrites defined
+            Babel's property declaration transformation overwrites defined
             properties at the end of an implicit constructor. So we have to
-            redefined them as long as we want to declare expected component
+            redefine them as long as we want to declare expected component
             interface properties to enable static type checks.
         */
         this.defineGetterAndSetterInterface()
@@ -443,24 +443,6 @@ export class AgileForm<
     disconnectedCallback(): void {
         super.disconnectedCallback()
 
-        this.rootDomNode.removeEventListener(
-            'keydown', this.onKeyDown as EventListenerOrEventListenerObject
-        )
-        for (const domNode of this.clearButtons)
-            domNode.removeEventListener('click', this.onClear)
-        for (const domNode of this.resetButtons)
-            domNode.removeEventListener('click', this.onReset)
-        for (const domNode of this.submitButtons)
-            domNode.removeEventListener('click', this.onSubmit)
-        for (const domNode of this.truncateButtons)
-            domNode.removeEventListener('click', this.onTruncate)
-
-        for (const action of Object.values(this.resolvedConfiguration.actions))
-            for (const domNode of action.determinedDomNodes)
-                domNode.removeEventListener(
-                    action.event || 'click', action.handler
-                )
-
         for (const callback of Object.values(this.inputEventBindings))
             callback()
     }
@@ -490,7 +472,7 @@ export class AgileForm<
 
         await this.waitForNestedComponentRendering()
 
-        this.reCaptchaFallbackInput = this.rootDomNode.querySelector(
+        this.reCaptchaFallbackInput = this.hostDomNode.querySelector(
             this.resolvedConfiguration.selector.reCaptchaFallbackInput
         )
         if (this.reCaptchaFallbackInput) {
@@ -503,38 +485,40 @@ export class AgileForm<
                 this.updateReCaptchaFallbackToken()
         }
 
-        this.spinner = Array.from(this.rootDomNode.querySelectorAll(
+        this.spinner = Array.from(this.hostDomNode.querySelectorAll(
             this.resolvedConfiguration.selector.spinner
         ))
 
-        this.statusMessageBoxes = Array.from(this.rootDomNode.querySelectorAll(
+        this.statusMessageBoxes = Array.from(this.hostDomNode.querySelectorAll(
             this.resolvedConfiguration.selector.statusMessageBoxes
         ))
 
-        this.clearButtons = Array.from(this.rootDomNode.querySelectorAll(
+        this.clearButtons = Array.from(this.hostDomNode.querySelectorAll(
             this.resolvedConfiguration.selector.clearButtons
         ))
-        this.resetButtons = Array.from(this.rootDomNode.querySelectorAll(
+        this.resetButtons = Array.from(this.hostDomNode.querySelectorAll(
             this.resolvedConfiguration.selector.resetButtons
         ))
-        this.submitButtons = Array.from(this.rootDomNode.querySelectorAll(
+        this.submitButtons = Array.from(this.hostDomNode.querySelectorAll(
             this.resolvedConfiguration.selector.submitButtons
         ))
-        this.truncateButtons = Array.from(this.rootDomNode.querySelectorAll(
+        this.truncateButtons = Array.from(this.hostDomNode.querySelectorAll(
             this.resolvedConfiguration.selector.truncateButtons
         ))
 
-        this.rootDomNode.addEventListener(
-            'keydown', this.onKeyDown as EventListenerOrEventListenerObject
+        this.addSecureEventListener(
+            this.hostDomNode,
+            'keydown',
+            this.onKeyDown as EventListenerOrEventListenerObject
         )
         for (const domNode of this.clearButtons)
-            domNode.addEventListener('click', this.onClear)
+            this.addSecureEventListener(domNode,'click', this.onClear)
         for (const domNode of this.resetButtons)
-            domNode.addEventListener('click', this.onReset)
+            this.addSecureEventListener(domNode,'click', this.onReset)
         for (const domNode of this.submitButtons)
-            domNode.addEventListener('click', this.onSubmit)
+            this.addSecureEventListener(domNode,'click', this.onSubmit)
         for (const domNode of this.truncateButtons)
-            domNode.addEventListener('click', this.onTruncate)
+            this.addSecureEventListener(domNode,'click', this.onTruncate)
 
         /*
             Show potentially grabbed messages coming from the initialisation
@@ -1167,12 +1151,12 @@ export class AgileForm<
                 for (const selector of action.localSelectors)
                     action.determinedDomNodes =
                         action.determinedDomNodes.concat(Array.from(
-                            this.rootDomNode.querySelectorAll(selector)
+                            this.hostDomNode.querySelectorAll(selector)
                         ))
             else
                 action.determinedDomNodes =
                     action.determinedDomNodes.concat(Array.from(
-                        this.rootDomNode.querySelectorAll(`[action="${name}"]`)
+                        this.hostDomNode.querySelectorAll(`[action="${name}"]`)
                     ))
 
             action.handler = (event: Event) => {
@@ -1186,8 +1170,8 @@ export class AgileForm<
             }
 
             for (const domNode of action.determinedDomNodes)
-                domNode.addEventListener(
-                    action.event || 'click', action.handler
+                this.addSecureEventListener(
+                    domNode, action.event || 'click', action.handler
                 )
         }
     }
@@ -1248,7 +1232,7 @@ export class AgileForm<
         InputConfiguration
     >> {
         const inputCandidates: Array<AnnotatedInputDomNode> =
-            Array.from(this.rootDomNode.querySelectorAll(
+            Array.from(this.hostDomNode.querySelectorAll(
                 this.resolvedConfiguration.selector.inputs
             ))
 
@@ -1625,7 +1609,7 @@ export class AgileForm<
         this.groups = []
 
         const groups: Array<AnnotatedDomNode> = Array.from(
-            this.rootDomNode.querySelectorAll(
+            this.hostDomNode.querySelectorAll(
                 this.resolvedConfiguration.selector.groups
             )
         )
@@ -2456,7 +2440,7 @@ export class AgileForm<
                 (event.target as HTMLElement).closest(
                     this.resolvedConfiguration.selector.inputs
                 )
-            if (inputTarget && this.rootDomNode.contains(inputTarget))
+            if (inputTarget && this.hostDomNode.contains(inputTarget))
                 this.onSubmit(event)
         }
     }
@@ -2587,7 +2571,7 @@ export class AgileForm<
                 }
             }
 
-            window.addEventListener('scroll', onScroll)
+            this.addSecureEventListener(window,'scroll', onScroll)
 
             onScroll()
 
@@ -2708,7 +2692,7 @@ export class AgileForm<
         )
 
         const invalidInputs: Array<AnnotatedInputDomNode> = Array.from(
-            this.rootDomNode.querySelectorAll(
+            this.hostDomNode.querySelectorAll(
                 `[name="${invalidInputNames.join('"], [name="')}"]`
             )
         )
@@ -3243,7 +3227,7 @@ export class AgileForm<
                 ) as EventListener
 
                 for (const domNode of this.inputConfigurations[name].domNodes)
-                    domNode.addEventListener(eventName, handler)
+                    this.addSecureEventListener(domNode, eventName, handler)
 
                 this.inputEventBindings[name] = () => {
                     for (
