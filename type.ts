@@ -45,8 +45,11 @@ export interface Model<T = unknown> extends BaseModel<T> {
     default?: T
     dynamicExtendExpressions?: Mapping<DynamicExtendExpression>
 }
-export interface InputConfiguration<Type = unknown> {
-    changedEventName?: string
+export interface InputConfiguration<
+    Type = unknown,
+    ChangedEventName extends keyof WindowEventMap = keyof WindowEventMap
+> {
+    changedEventName?: ChangedEventName
 
     dependsOn?: Array<string> | null
 
@@ -123,11 +126,13 @@ export interface GroupSpecification {
     showReason?: Array<AnnotatedDomNode> | null | string
 }
 
-export interface Action {
+export interface Action<
+    EventName extends keyof WindowEventMap = keyof WindowEventMap
+> {
     name: string
 
-    event?: string
-    handler: (event: Event) => void
+    event?: EventName
+    handler: (event: WindowEventMap[EventName]) => void
 
     domNodes?: Array<HTMLElement>
     determinedDomNodes: Array<HTMLElement>
@@ -186,7 +191,9 @@ export interface Configuration {
     actions: Mapping<Action>
     targetActions: Mapping<TargetAction>
 
-    changedEventNameMapping: Mapping & {default: string},
+    changedEventNameMapping: (
+        Mapping<keyof WindowEventMap> & {default: keyof WindowEventMap}
+    ),
 
     constraints: Array<Constraint>
     evaluations: GivenEvaluations

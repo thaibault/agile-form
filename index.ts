@@ -11,7 +11,7 @@
     License
     -------
 
-    This library written by Torben Sickert stand under a creative commons
+    This library written by Torben Sickert stands under a creative commons
     naming 3.0 unported license.
     See https://creativecommons.org/licenses/by/3.0/deed.de
     endregion
@@ -29,6 +29,8 @@ import {
     evaluateDynamicData,
     EvaluationResult,
     extend,
+    fadeIn,
+    fadeOut,
     getURLParameter,
     isFunction,
     isObject,
@@ -83,7 +85,7 @@ export const log = new Logger({name: 'agile-form'})
  * Form handler which accepts a various number of content projected dom nodes
  * to interact with them following a given specification object.
  * @property baseScopeNames - List of generic scope names available in all
- * evaluations environments.
+ * evaluation environments.
  * @property defaultConfiguration - Holds default extendable configuration
  * object.
  * @property specificationToPropertyMapping - Mapping model specification keys
@@ -103,13 +105,13 @@ export const log = new Logger({name: 'agile-form'})
  * and conditional show if expression.
  * @property determinedTargetURL - Last determined target url.
  * @property initialData - Initialed form input values.
- * @property initialResponse - Initialisation server response.
+ * @property initialResponse - Initialization server response.
  * @property latestResponse - Last seen server response.
  * @property message - Current error message about unsatisfied given
  * specification.
  * @property response - Current parsed response from send form data.
  * @property inputEventBindings - Holds a mapping from nodes with registered
- * event handlers mapped to their de-registration function.
+ * event handlers mapped to their deregistration function.
  * @property inputConfigurations - Mapping from field name to corresponding
  * configuration.
  * @property inputNames - Specified transformer environment variable names.
@@ -126,8 +128,8 @@ export const log = new Logger({name: 'agile-form'})
  * into.
  * @property reCaptchaFallbackRendered - Indicates whether a fallback
  * re-captcha inputs was already rendered.
- * @property reCaptchaPromise - Reference to re-captcha initialisation promise.
- * @property reCaptchaPromiseResolver - Reference to re-captcha initialisation.
+ * @property reCaptchaPromise - Reference to re-captcha initialization promise.
+ * @property reCaptchaPromiseResolver - Reference to re-captcha initialization.
  * @property reCaptchaToken - Last challenge result token promise resolver.
  * @property additionalConfiguration - Holds given configuration object.
  * @property baseConfiguration - Holds given configuration object.
@@ -136,7 +138,7 @@ export const log = new Logger({name: 'agile-form'})
  * @property resolvedConfiguration - Holds given configuration object.
  * @property urlConfiguration - URL given configurations object.
  * @property queryParameters - All determined query parameters.
- * @property lock - Holds lock instance for saving instance specific locks.
+ * @property lock - Holds lock instance for saving instance-specific locks.
  * @property _evaluationResults - Last known evaluation result cache.
  */
 export class AgileForm<
@@ -283,6 +285,7 @@ export class AgileForm<
         urlConfigurationCharacterLimit: 800,
         version: 1
     }
+    static doRender = false
     static inputValueMapping: Mapping<(value: unknown) => unknown> = {
         'slider-input': (value: unknown): number =>
             typeof value === 'number' ? value : 0
@@ -364,7 +367,7 @@ export class AgileForm<
     reCaptchaFallbackInput: AnnotatedDomNode | null = null
     reCaptchaFallbackRendered = false
     /*
-        NOTE: Will be finally initialized when promise is created so do not
+        NOTE: Will be finally initialized when promise is created, so do not
         change order here.
     */
     reCaptchaPromiseResolver: (result: null | string) => void =
@@ -398,7 +401,7 @@ export class AgileForm<
     // endregion
     // region live cycle hooks
     /**
-     * Defines dynamic getter and setter interface and resolves configuration
+     * Defines dynamic getter and setter interface and resolves a configuration
      * object.
      */
     constructor() {
@@ -416,7 +419,7 @@ export class AgileForm<
         this.resolveConfiguration()
     }
     /**
-     * Parses given configuration object and delegates to forward them to
+     * Parses a given configuration object and delegates to forward them to
      * nested input nodes.
      * @param name - Attribute name which was updates.
      * @param oldValue - Old attribute value.
@@ -438,7 +441,7 @@ export class AgileForm<
         void this.updateReCaptchaToken()
     }
     /**
-     * De-registers all needed event listener.
+     * De-registers all necessary event listener.
      */
     disconnectedCallback(): void {
         super.disconnectedCallback()
@@ -448,11 +451,11 @@ export class AgileForm<
     }
     /**
      * Triggered when content projected and nested dom nodes are ready to be
-     * traversed. Selects all needed dom nodes.
+     * traversed. Selects all necessary dom nodes.
      * @param reason - Description why rendering is necessary.
      * @param resolveRendering - Indicates whether rendering should be resolved
      * finally. Should be set to "false" via super calls in inherited render
-     * methods which do further dom manipulations afterwards and resolve the
+     * methods which do further dom manipulations afterward and resolve the
      * rendering process by their own.
      * @returns A promise resolving when rendering has finished. A promise may
      * be needed for classes inheriting from this class.
@@ -477,9 +480,9 @@ export class AgileForm<
         )
         if (this.reCaptchaFallbackInput) {
             if (this.resolvedConfiguration.showAll)
-                this.show(this.reCaptchaFallbackInput)
+                void this.show(this.reCaptchaFallbackInput)
             else
-                this.hide(this.reCaptchaFallbackInput)
+                void this.hide(this.reCaptchaFallbackInput)
 
             if (this.resolvedConfiguration.debug)
                 this.updateReCaptchaFallbackToken()
@@ -507,21 +510,19 @@ export class AgileForm<
         ))
 
         this.addSecureEventListener(
-            this.hostDomNode,
-            'keydown',
-            this.onKeyDown as EventListenerOrEventListenerObject
+            this.hostDomNode, 'keydown', this.onKeyDown
         )
         for (const domNode of this.clearButtons)
-            this.addSecureEventListener(domNode,'click', this.onClear)
+            this.addSecureEventListener(domNode, 'click', this.onClear)
         for (const domNode of this.resetButtons)
-            this.addSecureEventListener(domNode,'click', this.onReset)
+            this.addSecureEventListener(domNode, 'click', this.onReset)
         for (const domNode of this.submitButtons)
-            this.addSecureEventListener(domNode,'click', this.onSubmit)
+            this.addSecureEventListener(domNode, 'click', this.onSubmit)
         for (const domNode of this.truncateButtons)
-            this.addSecureEventListener(domNode,'click', this.onTruncate)
+            this.addSecureEventListener(domNode, 'click', this.onTruncate)
 
         /*
-            Show potentially grabbed messages coming from the initialisation
+            Show potentially grabbed messages coming from the initialization
             phase.
         */
         this.updateMessageBox()
@@ -537,103 +538,60 @@ export class AgileForm<
     // endregion
     // region handle visibility states
     /**
-     * Fades given dom node to given opacity.
+     * Fades out given dom node.
      * @param domNode - Node to fade.
-     * @param opacity - Opacity value between 0 and 1.
      * @param durationInMilliseconds - Duration of animation.
      */
-    fade(
-        domNode: AnnotatedDomNode, opacity = 1, durationInMilliseconds = 100
-    ): void {
-        if (domNode.clearFading)
-            void domNode.clearFading()
+    async fadeOut(
+        domNode: AnnotatedDomNode, durationInMilliseconds = 100
+    ): Promise<void> {
+        const style = domNode.style
 
-        if (parseFloat(domNode.style.opacity) === opacity)
+        domNode.oldDisplay = style.display || 'initial'
+        if (domNode.oldDisplay === 'none')
+            delete domNode.oldDisplay
+
+        if (!this.resolvedConfiguration.animation) {
+            domNode.style.display = 'none'
+
             return
-
-        if (opacity === 0) {
-            const style = domNode.style
-
-            domNode.oldDisplay = style.display || 'initial'
-            if (domNode.oldDisplay === 'none')
-                delete domNode.oldDisplay
-
-            if (!this.resolvedConfiguration.animation) {
-                domNode.style.display = 'none'
-
-                return
-            }
-
-            const oldPosition: string = domNode.style.position
-            /*
-                Make this element absolute at current position to potentially
-                fade other elements in at overlapping position.
-            */
-            domNode.style.position = 'absolute'
-
-            let currentOpacity: number =
-                domNode.oldOpacity =
-                parseFloat(style.opacity)
-            const timer = setInterval(
-                () => {
-                    if (currentOpacity <= opacity + .1) {
-                        if (domNode.clearFading)
-                            void domNode.clearFading()
-                        return
-                    }
-
-                    currentOpacity -= currentOpacity * .1
-                    domNode.style.opacity = String(currentOpacity)
-                },
-                durationInMilliseconds * .1
-            )
-
-            domNode.clearFading = () => {
-                clearInterval(timer)
-                domNode.style.opacity = String(opacity)
-                domNode.style.display = 'none'
-                domNode.style.position = oldPosition
-                delete domNode.clearFading
-            }
-        } else {
-            domNode.style.display = domNode.oldDisplay || 'block'
-
-            if (!this.resolvedConfiguration.animation) {
-                domNode.style.opacity = '1'
-                return
-            }
-
-            let currentOpacity = .1
-            const timer = setInterval(
-                () => {
-                    if (currentOpacity >= (domNode.oldOpacity || 1) - .1) {
-                        if (domNode.clearFading)
-                            void domNode.clearFading()
-
-                        return
-                    }
-
-                    currentOpacity *= 1.1
-                    domNode.style.opacity = String(currentOpacity)
-                },
-                durationInMilliseconds * .1
-            )
-
-            domNode.clearFading = () => {
-                clearInterval(timer)
-
-                domNode.style.opacity = String(domNode.oldOpacity || 1)
-
-                delete domNode.clearFading
-            }
         }
+
+        const oldPosition: string = domNode.style.position
+        /*
+            Make this element absolute at current position to potentially
+            fade other elements in at overlapping position.
+        */
+        domNode.style.position = 'absolute'
+
+        await fadeOut(domNode, durationInMilliseconds)
+
+        domNode.style.display = 'none'
+        domNode.style.position = oldPosition
+    }
+    /**
+     * Fades out given dom node.
+     * @param domNode - Node to fade.
+     * @param durationInMilliseconds - Duration of animation.
+     */
+    async fadeIn(
+        domNode: AnnotatedDomNode, durationInMilliseconds = 100
+    ): Promise<void> {
+        domNode.style.display = domNode.oldDisplay || 'block'
+
+        if (!this.resolvedConfiguration.animation) {
+            domNode.style.opacity = '1'
+            return
+        }
+
+        await fadeIn(domNode, durationInMilliseconds)
     }
     /**
      * Adds given dom nodes visual representation.
      * @param domNode - Node to show.
      */
-    show(domNode: AnnotatedDomNode) {
-        this.fade(domNode)
+    async show(domNode: AnnotatedDomNode): Promise<void> {
+        await this.fadeIn(domNode)
 
         domNode.removeAttribute('aria-hidden')
     }
@@ -641,8 +599,8 @@ export class AgileForm<
      * Removes given dom nodes visual representation.
      * @param domNode - Node to hide.
      */
-    hide(domNode: AnnotatedDomNode) {
-        this.fade(domNode, 0)
+    async hide(domNode: AnnotatedDomNode): Promise<void> {
+        await this.fadeOut(domNode)
 
         domNode.setAttribute('aria-hidden', 'true')
     }
@@ -652,7 +610,7 @@ export class AgileForm<
     showSpinner() {
         if (this.spinner.length) {
             for (const domNode of this.spinner)
-                this.show(domNode)
+                void this.show(domNode)
 
             void this.scrollAndFocus(this.spinner[0])
         }
@@ -662,7 +620,7 @@ export class AgileForm<
      */
     hideSpinner() {
         for (const domNode of this.spinner)
-            this.hide(domNode)
+            void this.hide(domNode)
     }
     /**
      * Updates given field (by name) visibility state.
@@ -698,13 +656,13 @@ export class AgileForm<
 
             if (inputConfiguration.shown || this.resolvedConfiguration.showAll)
                 for (const domNode of this.inputConfigurations[name].domNodes)
-                    this.show(domNode)
+                    void this.show(domNode)
             else {
                 if (inputConfiguration.valuePersistence === 'resetOnHide')
                     await this.resetInput(name)
 
                 for (const domNode of this.inputConfigurations[name].domNodes)
-                    this.hide(domNode)
+                    void this.hide(domNode)
             }
 
             return true
@@ -779,9 +737,9 @@ export class AgileForm<
                 if (domNode.shown)
                     this.updateGroupContent(domNode)
 
-                this.fade(domNode)
+                void this.fadeIn(domNode)
             } else
-                this.fade(domNode, 0)
+                void this.fadeOut(domNode)
         }
     }
     /**
@@ -840,8 +798,8 @@ export class AgileForm<
     /**
      * Normalizes given url configuration to support deprecated formats.
      * 1. Alias top level configuration key "model" to "inputs".
-     * 2. Respect top level property configuration (not having nested
-     *    "properties" key in input configuration).
+     * 2. Respect top level property configuration (not having a nested
+     *    "properties" key in the input configuration).
      * 3. Alias top level input property configuration "mutable" and "writable"
      *    into properties top level inverted "disabled" configuration.
      * 4. Alias top level input property configuration "nullable" into
@@ -871,7 +829,7 @@ export class AgileForm<
         }
 
         /*
-            Normalize deprecated top level input configurations into
+            Normalize deprecated top-level input configurations into
             "properties" configuration.
         */
         for (const input of Object.values(inputs)) {
@@ -1047,7 +1005,7 @@ export class AgileForm<
         return currentConfiguration as NormalizedConfiguration
     }
     /**
-     * Merge given configuration into resolved configuration object.
+     * Merge a given configuration into a resolved configuration object.
      * @param configuration - Configuration to merge.
      */
     mergeConfiguration(configuration: RecursivePartial<Configuration>) {
@@ -1066,7 +1024,7 @@ export class AgileForm<
         )
     }
     /**
-     * Resolve and merges configuration sources into final object.
+     * Resolve and merges configuration sources into a final object.
      */
     resolveConfiguration(): void {
         this.resolvedConfiguration = this.self.normalizeConfiguration(
@@ -1246,13 +1204,13 @@ export class AgileForm<
             )
         )
 
-        // If no input is specified simply consider all provided inputs.
+        // If no input is specified, simply consider all provided inputs.
         const dummyMode: boolean =
             Object.keys(this.resolvedConfiguration.inputs).length === 0
         // Show all inputs in dummy mode.
         if (dummyMode)
             for (const domNode of inputs)
-                this.show(domNode)
+                void this.show(domNode)
 
         this.inputConfigurations = {}
         for (const [name, configuration] of Object.entries(
@@ -1288,7 +1246,7 @@ export class AgileForm<
                 )) {
                     /*
                         Exclusive property for retrieving dom node when a
-                        single value is needed. Can be used here (for e.g. via
+                        single value is needed. Can be used here (for e.g., via
                         "Object.defineProperty") to control how to aggregate
                         when multiple dom nodes are available.
                     */
@@ -1358,7 +1316,7 @@ export class AgileForm<
                     /*
                         Interpret configured values as initial values only to
                         be able to respect dom specific configurations also.
-                        We will derive initial value for each input after
+                        We will derive the initial value for each input after
                         again when each input has been configured.
                     */
                     configuration.properties.initialValue =
@@ -1444,7 +1402,7 @@ export class AgileForm<
                         )
                     ) {
                         /*
-                            NOTE: Explicit input specific model configuration
+                            NOTE: Explicit input-specific model configuration
                             has higher priority than form specifications.
                         */
                         log.debug(
@@ -1518,13 +1476,13 @@ export class AgileForm<
                 await this.digest()
 
                 /*
-                    NOTE: We have to determine initial value again since the
-                    component usually has initialized itself now. So we have to
-                    respect changed default or initial value configuration
-                    again.
+                    NOTE: We have to determine the initial value again since
+                    the component usually has initialized itself now. So we
+                    have to respect changed default or initial value
+                    configuration again.
                 */
                 if (
-                    // Value not initialized or untouched.
+                    // Value isn't initialized or untouched.
                     (
                         [null, undefined].includes(domNode.value as null) ||
                         domNode.pristine
@@ -1590,7 +1548,7 @@ export class AgileForm<
         return missingInputs
     }
     /**
-     * Whenever a component is re-configured a digest is needed to ensure that
+     * Whenever a component is re-configured, a digest is needed to ensure that
      * its internal state has been reflected.
      * @param numberOfCycles - Number of digest cycles to wait until resolve
      * resulting promise.
@@ -1625,7 +1583,7 @@ export class AgileForm<
                 this.inputNames
             )
 
-        // Determine all first level nested groups or input nodes.
+        // Determine all first-level nested groups or input nodes.
         for (const domNode of groups) {
             const candidates: Array<AnnotatedDomNode> = groups.filter((
                 otherDomNode: AnnotatedDomNode
@@ -1747,7 +1705,7 @@ export class AgileForm<
 
         /*
             NOTE: We have to reverse order to update visibility states on
-            bottom up order since parents visibility states depends on nested
+            bottom-up order since parents visibility states depends on nested
             ones.
         */
         this.groups.reverse()
@@ -1785,7 +1743,7 @@ export class AgileForm<
     /// endregion
     /// region expression compiler
     /**
-     * Pre-compiles specified given expression for given field.
+     * Pre-compiles a specified given expression for a given field.
      * @param name - Field name to pre-compile their expression.
      * @param type - Indicates which expression type should be compiled.
      */
@@ -1864,7 +1822,8 @@ export class AgileForm<
         }
     }
     /**
-     * Pre-compiles specified given dynamic extend expressions for given field.
+     * Pre-compiles specified given dynamic extend expressions for a given
+     * field.
      * @param name - Field name to pre-compile their expression.
      */
     preCompileDynamicExtendStructure(name: string): void {
@@ -2240,7 +2199,7 @@ export class AgileForm<
     /// endregion
     /// region initialize/submit/reset actions
     /**
-     * Determines simple scope for partial configuration evaluations.
+     * Determines a simple scope for partial configuration evaluations.
      * @returns Scope.
      */
     determineConfigurationEvaluationScope(): Mapping<unknown> {
@@ -2313,7 +2272,7 @@ export class AgileForm<
     }
     /**
      * Can be triggered vie provided action condition. Can for example retrieve
-     * initial user specific state depending on remote response.
+     * initial user-specific state depending on remote response.
      * @returns Promise resolving to nothing when initial request has been
      * done.
      */
@@ -2428,7 +2387,7 @@ export class AgileForm<
     }
     /**
      * Callback triggered when any keyboard events occur.
-     * Enter key down events in input fields trigger a form submit.
+     * Enter key down events in input fields trigger a form submitted.
      * @param event - Keyboard event object.
      */
     onKeyDown = (event: KeyboardEvent) => {
@@ -2546,7 +2505,7 @@ export class AgileForm<
         }
     }
     /**
-     * Scrolls to given element and focuses it.
+     * Scrolls to the given element and focuses it.
      * @param targetDomNode - Dom node to scroll to.
      * @param smooth - Indicates whether to animate scrolling.
      * @returns A promise resolving when focusing has finished.
@@ -2571,7 +2530,7 @@ export class AgileForm<
                 }
             }
 
-            this.addSecureEventListener(window,'scroll', onScroll)
+            this.addSecureEventListener(window, 'scroll', onScroll)
 
             onScroll()
 
@@ -2679,7 +2638,7 @@ export class AgileForm<
         return {data, invalidInputNames}
     }
     /**
-     * Sets global validation message and scrolls to first invalid field.
+     * Sets a global validation message and scrolls to the first invalid field.
      * @param _data - Data given by the form.
      * @param invalidInputNames - All currently invalid fields names.
      */
@@ -2701,8 +2660,8 @@ export class AgileForm<
             void this.scrollAndFocus(invalidInputs[0])
     }
     /**
-     * Handle valid sent data and redirects to corresponding specified target
-     * page.
+     * Handle valid sent data and redirects to the corresponding specified
+     * target page.
      * @param data - Data given by the form.
      * @param newWindow - Indicates whether action targets should be opened in
      * a new window.
@@ -2802,16 +2761,16 @@ export class AgileForm<
     }
     /**
      * Sends a request to provided target configuration and triggers different
-     * response dependent events.
+     * response-dependent events.
      * @param target - Configuration how to request.
-     * @param rawData - Initial data to sent, needed for tracking additional
+     * @param rawData - Initial data to send, needed for tracking additional
      * information for triggered request.
      * @returns A promise wrapping the response.
      */
     async doRequest(
         target: TargetConfiguration, rawData: null | PlainObject = null
     ): Promise<null | FormResponse> {
-        // region convert headers configuration to header object
+        // region convert header configuration to header object
         if (Headers as unknown && target.options?.headers) {
             const headers: Headers = new Headers()
             if (!(target.options.headers instanceof Headers))
@@ -2944,7 +2903,7 @@ export class AgileForm<
             if (this.response && this.response.ok && this.response.data)
                 /*
                     NOTE: When redirecting to new page on the current active
-                    window we can ignore html representation updates.
+                    window we can ignore HTML representation updates.
                 */
                 if (this.handleValidSentData(data, newWindow) && !newWindow)
                     /*
@@ -2994,8 +2953,8 @@ export class AgileForm<
         return result
     }
     /**
-     * Check validation state of all content projected inputs, represents
-     * overall validation state and sends data to configured target.
+     * Check the validation state of all content-projected inputs, represents
+     * overall validation state, and sends data to the configured target.
      * @param event - Triggered event object.
      */
     doSubmit = async (event: KeyboardEvent | MouseEvent): Promise<void> => {
@@ -3133,10 +3092,10 @@ export class AgileForm<
         }
     }
     /// endregion
-    /// region inter component interaction
+    /// region inter-component interaction
     /**
-     * Add all needed field event listener to trigger needed checks and start
-     * dependent field change cascade.
+     * Add all necessary field event listeners to trigger necessary checks and
+     * start a dependent field change cascade.
      */
     applyInputBindings(): void {
         const scope: Mapping<unknown> = this.determineTemplateEvaluationScope()
@@ -3251,7 +3210,7 @@ export class AgileForm<
             await this.updateInput(name, event)
     }
     /**
-     * Updates given input (by name) dynamic expression and its visibility
+     * Updates the given input (by name) dynamic expression and its visibility
      * state.
      * @param name - Field name to update.
      * @param event - Triggering event object.
@@ -3261,7 +3220,8 @@ export class AgileForm<
     async updateInput(name: string, event: Event): Promise<boolean> {
         this.runEvaluations()
 
-        const configuration: InputConfiguration = this.inputConfigurations[name]
+        const configuration: InputConfiguration =
+            this.inputConfigurations[name]
         // We have to check for real state changes to avoid endless loops.
         let changed = false
         if (Object.prototype.hasOwnProperty.call(
@@ -3297,7 +3257,6 @@ export class AgileForm<
                 )
 
                 const oldValue: unknown = target[key]
-
                 let newValue: unknown = evaluator(event)
 
                 if (invert)
@@ -3340,7 +3299,7 @@ export class AgileForm<
         return changed
     }
     /**
-     * Updates all related fields for given field name.
+     * Updates all related fields for the given field name.
      * @param name - Field to check their dependent fields.
      * @param event - Triggering event.
      * @returns Promise holding nothing.
@@ -3382,7 +3341,7 @@ export class AgileForm<
     /// endregion
     /// region utility
     /**
-     * Derives event name from given event.
+     * Derives event name from a given event.
      * @param event - Event to derive name from.
      * @returns Derived name.
      */
@@ -3431,7 +3390,7 @@ export class AgileForm<
             )
     }
     /**
-     * Indicates a background running process. Sets "pending" property and
+     * Indicates a background-running process. Sets "pending" property and
      * triggers a loading spinner.
      * @param event - Triggering event object.
      * @returns A Promise resolving when all items render updates has been
@@ -3449,7 +3408,7 @@ export class AgileForm<
         this.updateAllGroups()
     }
     /**
-     * Stops indicating a background running process. Sets "pending" property
+     * Stops indicating a background-running process. Sets "pending" property
      * and stop showing a loading spinner.
      * @param event - Triggering event object.
      * @returns A Promise resolving when all items render updates has been
@@ -3467,7 +3426,7 @@ export class AgileForm<
         this.hideSpinner()
     }
     /**
-     * Determines whether the current value state can be derived by given
+     * Determines whether the current value state can be derived by a given
      * configuration or has to be saved.
      * @param name - Model name to derive from.
      * @returns A boolean indicating the neediness.
@@ -3486,7 +3445,7 @@ export class AgileForm<
             domNode.initialValue === undefined &&
             this.inputConfigurations[name].value === domNode.default ||
             /*
-                NOTE: If only a boolean value we do not have to save an
+                NOTE: If only a boolean value, we do not have to save an
                 explicit or implicit default.
             */
             (
@@ -3499,7 +3458,7 @@ export class AgileForm<
             ) &&
             domNode.type === 'boolean' &&
             /*
-                NOTE: If only one possible state exists we do not have to save
+                NOTE: If only one possible state exists, we do not have to save
                 that state.
             */
             !(
@@ -3632,7 +3591,7 @@ export class AgileForm<
             // Ensure normalized urls via recursive property sorting.
             const allKeys: Array<string> = []
             const seenKeys: Mapping<null> = {}
-            // First just determine all available keys.
+            // First, just determine all available keys.
             JSON.stringify(
                 maskedParameter,
                 (key: string, value: unknown): unknown => {
@@ -3672,7 +3631,7 @@ export class AgileForm<
         return result
     }
     /**
-     * Tracks given data if tracking environment exists.
+     * Tracks given data if the tracking environment exists.
      * @param name - Event name to trigger.
      * @param data - Data to track.
      * @returns "false" if event is cancelable, and at least one of the event
@@ -3690,8 +3649,8 @@ export class AgileForm<
         return this.dispatchEvent(new CustomEvent(name, {detail: data}))
     }
     /**
-     * Renders user interaction re-captcha version if corresponding placeholder
-     * is available.
+     * Renders user interaction re-captcha version if the corresponding
+     * placeholder is available.
      * @returns A boolean indicating if a fallback node was found to render.
      */
     updateReCaptchaFallbackToken(): boolean {
@@ -3759,7 +3718,7 @@ export class AgileForm<
                     }
                 )
 
-                this.show(this.reCaptchaFallbackInput)
+                void this.show(this.reCaptchaFallbackInput)
             }
 
             return true
@@ -3771,7 +3730,7 @@ export class AgileForm<
     }
     /**
      * Updates internal saved re-captcha token.
-     * @returns Promise resolving to challenge token or null if initialisation
+     * @returns Promise resolving to challenge token or null if initialization
      * was unsuccessful.
      */
     updateReCaptchaToken(): Promise<null | string> {
