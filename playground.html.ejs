@@ -92,7 +92,6 @@
         <!--endregion-->
         <!--region script-->
         <script src="https://www.google.com/recaptcha/api.js?render=6LdvN-sZAAAAAHv2Ko2_g_8EHrIRbNffZoGHseSS"></script>
-        <script src="/web-input-material/index.bundle.js"></script>
         <script>
             window.onload = function() {
                 /* region fetch mock */
@@ -130,7 +129,7 @@
                 /* endregion */
 
                 agileForm.index.api.register()
-                webInputMaterial.register()
+                agileForm.webInputMaterial.register()
 
                 document.querySelector('button[data-name]')['data-value'] = false
                 document.querySelector('button[data-name]').addEventListener(
@@ -471,7 +470,6 @@
                         })
                 </script>
             </div>
-
         </agile-form>
     </body>
 <html>

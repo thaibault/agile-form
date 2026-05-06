@@ -285,7 +285,7 @@ export class AgileForm<
         urlConfigurationCharacterLimit: 800,
         version: 1
     }
-    static doRender = false
+    static doRender = true
     static inputValueMapping: Mapping<(value: unknown) => unknown> = {
         'slider-input': (value: unknown): number =>
             typeof value === 'number' ? value : 0
@@ -461,8 +461,16 @@ export class AgileForm<
      * be needed for classes inheriting from this class.
      */
     async render(reason = 'unknown', resolveRendering = true): Promise<void> {
-        if (!this.dispatchEvent(new CustomEvent('render', {detail: {reason}})))
+        if (!(
+            this.self.doRender &&
+            this.dispatchEvent(new CustomEvent(
+                'render', {detail: {reason, scope: this.scope}}
+            ))
+        )) {
+            await this.resolveRenderingPromiseIfSet(reason, resolveRendering)
+
             return
+        }
 
         this.determineRenderScope()
 
@@ -470,6 +478,7 @@ export class AgileForm<
             NOTE: We need a digest loop to allow the components to extend
             given model object with their defaults.
         */
+
         await this.digest()
         await this.configureContentProjectedElements()
 
@@ -543,7 +552,7 @@ export class AgileForm<
      * @param durationInMilliseconds - Duration of animation.
      */
     async fadeOut(
-        domNode: AnnotatedDomNode, durationInMilliseconds = 100
+        domNode: AnnotatedDomNode, durationInMilliseconds?: number
     ): Promise<void> {
         const style = domNode.style
 
@@ -575,7 +584,7 @@ export class AgileForm<
      * @param durationInMilliseconds - Duration of animation.
      */
     async fadeIn(
-        domNode: AnnotatedDomNode, durationInMilliseconds = 100
+        domNode: AnnotatedDomNode, durationInMilliseconds?: number
     ): Promise<void> {
         domNode.style.display = domNode.oldDisplay || 'block'
 
@@ -583,6 +592,13 @@ export class AgileForm<
             domNode.style.opacity = '1'
             return
         }
+
+        /*
+            NOTE: It is necessary to flush display changes to DOM before
+            starting the transition. Otherwise, we would visually skip the
+            transition.
+        */
+        await timeout()
 
         await fadeIn(domNode, durationInMilliseconds)
     }
@@ -688,17 +704,19 @@ export class AgileForm<
             const oldState: boolean | null = domNode.shown
 
             const shownSubNodes: Array<AnnotatedDomNode> = (
-                specification.childs.filter((
+                specification.children.filter((
                     node: AnnotatedDomNode
                 ): boolean => node.shown)
             )
 
             specification.showReason = null
             if (specification.showIf) {
-                if (specification.showIf(shownSubNodes, specification.childs))
+                if (specification.showIf(
+                    shownSubNodes, specification.children
+                ))
                     specification.showReason = specification.showIfExpression
             } else if (
-                shownSubNodes.length || specification.childs.length === 0
+                shownSubNodes.length || specification.children.length === 0
             )
                 specification.showReason = shownSubNodes
 
@@ -1592,7 +1610,7 @@ export class AgileForm<
             )
 
             const specification: GroupSpecification = {
-                childs: candidates.filter((
+                children: candidates.filter((
                     domNode: AnnotatedDomNode
                 ): boolean =>
                     !candidates.some(
@@ -1604,13 +1622,13 @@ export class AgileForm<
                 showReason: null
             }
 
-            specification.childs = specification.childs.concat(
+            specification.children = specification.children.concat(
                 Object.values(this.inputConfigurations)
                     .map(({domNodes}): Array<AnnotatedInputDomNode> => domNodes)
                     .flat()
                     .filter((inputDomNode: AnnotatedInputDomNode): boolean =>
                         domNode.contains(inputDomNode) &&
-                        !specification.childs.some(
+                        !specification.children.some(
                             (domNode: AnnotatedDomNode): boolean =>
                                 domNode.contains(inputDomNode)
                         )
