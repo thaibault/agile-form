@@ -10,7 +10,7 @@
     License
     -------
 
-    This library written by Torben Sickert stand under a creative commons
+    This library written by Torben Sickert stands under a creative commons
     naming 3.0 unported license.
     See https://creativecommons.org/licenses/by/3.0/deed.de
     endregion
@@ -45,8 +45,11 @@ export interface Model<T = unknown> extends BaseModel<T> {
     default?: T
     dynamicExtendExpressions?: Mapping<DynamicExtendExpression>
 }
-export interface InputConfiguration<Type = unknown> {
-    changedEventName?: string
+export interface InputConfiguration<
+    Type = unknown,
+    ChangedEventName extends keyof WindowEventMap = keyof WindowEventMap
+> {
+    changedEventName?: ChangedEventName
 
     dependsOn?: Array<string> | null
 
@@ -116,18 +119,20 @@ export type AnnotatedDomNode = HTMLElement & Annotation
 export type AnnotatedInputDomNode<Type = unknown> =
     AnnotatedDomNode & Partial<InputAnnotation<Type>>
 export interface GroupSpecification {
-    childs: Array<AnnotatedInputDomNode>
+    children: Array<AnnotatedInputDomNode>
 
     showIf?: IndicatorFunction
     showIfExpression?: string
     showReason?: Array<AnnotatedDomNode> | null | string
 }
 
-export interface Action {
+export interface Action<
+    EventName extends keyof WindowEventMap = keyof WindowEventMap
+> {
     name: string
 
-    event?: string
-    handler: (event: Event) => void
+    event?: EventName
+    handler: (event: WindowEventMap[EventName]) => void
 
     domNodes?: Array<HTMLElement>
     determinedDomNodes: Array<HTMLElement>
@@ -186,7 +191,9 @@ export interface Configuration {
     actions: Mapping<Action>
     targetActions: Mapping<TargetAction>
 
-    changedEventNameMapping: Mapping & {default: string},
+    changedEventNameMapping: (
+        Mapping<keyof WindowEventMap> & {default: keyof WindowEventMap}
+    ),
 
     constraints: Array<Constraint>
     evaluations: GivenEvaluations
