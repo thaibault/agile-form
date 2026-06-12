@@ -159,7 +159,7 @@
     "@rmwc/ripple@npm:14.3.5": "patch:@rmwc/ripple@npm%3A14.3.5#~/.yarn/patches/@rmwc-ripple-npm-14.3.5-9657693602.patch"
   },
   "sideEffects": false,
-  "documentationWebsite": {
+  "webDocumentation": {
     "tagline": "Build flexible agnostic forms.",
     "trackingCode": "TODO"
   },
