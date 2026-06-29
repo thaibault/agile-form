@@ -2314,7 +2314,7 @@ export class AgileForm<
 
             detail.target = evaluateDynamicData(
                 copy(this.resolvedConfiguration.initializeTarget),
-                this.determineConfigurationEvaluationScope()
+                {scope: this.determineConfigurationEvaluationScope()}
             )
 
             if (detail.target.url) {
@@ -2904,7 +2904,7 @@ export class AgileForm<
         this.resolvedConfiguration.targetData = this.mapTargetNames(data)
         const target: null | TargetConfiguration = evaluateDynamicData(
             copy(this.resolvedConfiguration.target),
-            this.determineConfigurationEvaluationScope()
+            {scope: this.determineConfigurationEvaluationScope()}
         )
         // endregion
         if (target.url) {
