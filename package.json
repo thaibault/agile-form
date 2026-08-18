@@ -17,9 +17,13 @@
   },
   "license": "CC-BY-3.0",
   "author": {
-    "name": "Torben Sickert",
     "email": "info@torben.website",
+    "name": "Torben Sickert",
     "url": "https://torben.website"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thaibault/agile-form"
   },
   "files": [
     "index.bundle.js",
@@ -29,10 +33,7 @@
     "styles.bundle.css",
     "type.d.ts"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/thaibault/agile-form"
-  },
+  "sideEffects": false,
   "scripts": {
     "build": "yarn build:types; yarn build:plain && yarn build:bundle:plain",
     "build:bundle:plain": "weboptimizer build '{__reference__: \"target:bundle\"}'",
@@ -144,21 +145,20 @@
       "optional": true
     }
   },
+  "resolutions": {
+    "@rmwc/ripple@npm:14.0.11": "patch:@rmwc/ripple@npm%3A14.0.11#~/.yarn/patches/@rmwc-ripple-npm-14.0.11-22d1530040.patch",
+    "@rmwc/ripple@npm:14.3.4": "patch:@rmwc/ripple@npm%3A14.3.4#~/.yarn/patches/@rmwc-ripple-npm-14.3.4-27648eff11.patch",
+    "@rmwc/ripple@npm:14.3.5": "patch:@rmwc/ripple@npm%3A14.3.5#~/.yarn/patches/@rmwc-ripple-npm-14.3.5-9657693602.patch",
+    "colors": "1.4.0",
+    "globals@npm:^11.1.0": "patch:globals@npm%3A11.12.0#~/.yarn/patches/globals-npm-11.12.0-1fa7f41a6c.patch",
+    "globals@npm:^14.0.0": "patch:globals@npm%3A11.12.0#~/.yarn/patches/globals-npm-11.12.0-1fa7f41a6c.patch",
+    "globals@npm:^9.18.0": "patch:globals@npm%3A11.12.0#~/.yarn/patches/globals-npm-11.12.0-1fa7f41a6c.patch"
+  },
   "engines": {
     "node": ">=24",
     "npm": ">=11",
     "yarn": ">=4"
   },
-  "resolutions": {
-    "colors": "1.4.0",
-    "@rmwc/ripple@npm:14.0.11": "patch:@rmwc/ripple@npm%3A14.0.11#~/.yarn/patches/@rmwc-ripple-npm-14.0.11-22d1530040.patch",
-    "globals@npm:^14.0.0": "patch:globals@npm%3A11.12.0#~/.yarn/patches/globals-npm-11.12.0-1fa7f41a6c.patch",
-    "globals@npm:^11.1.0": "patch:globals@npm%3A11.12.0#~/.yarn/patches/globals-npm-11.12.0-1fa7f41a6c.patch",
-    "globals@npm:^9.18.0": "patch:globals@npm%3A11.12.0#~/.yarn/patches/globals-npm-11.12.0-1fa7f41a6c.patch",
-    "@rmwc/ripple@npm:14.3.4": "patch:@rmwc/ripple@npm%3A14.3.4#~/.yarn/patches/@rmwc-ripple-npm-14.3.4-27648eff11.patch",
-    "@rmwc/ripple@npm:14.3.5": "patch:@rmwc/ripple@npm%3A14.3.5#~/.yarn/patches/@rmwc-ripple-npm-14.3.5-9657693602.patch"
-  },
-  "sideEffects": false,
   "webDocumentation": {
     "tagline": "Build flexible agnostic forms.",
     "trackingCode": "TODO"
@@ -193,9 +193,9 @@
         "#": "Remove unneeded optional dependencies.",
         "@codemirror/autocomplete": "react-generic-dummy",
         "@codemirror/commands": "react-generic-dummy",
-        "@codemirror/language": "react-generic-dummy",
         "@codemirror/lang-css": "react-generic-dummy",
         "@codemirror/lang-javascript": "react-generic-dummy",
+        "@codemirror/language": "react-generic-dummy",
         "@codemirror/lint": "react-generic-dummy",
         "@codemirror/search": "react-generic-dummy",
         "@codemirror/state": "react-generic-dummy",
