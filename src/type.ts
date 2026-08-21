@@ -16,7 +16,7 @@
     endregion
 */
 // region imports
-import {
+import type {
     Mapping,
     ObjectMaskConfiguration,
     PlainObject,
@@ -26,9 +26,10 @@ import {
     RecursivePartial,
     ValueOf
 } from 'clientnode'
+import type {BaseModel} from 'web-input-material/type'
+
 import PropertyTypes from 'clientnode/property-types'
 import 'grecaptcha'
-import {BaseModel} from 'web-input-material/type'
 // endregion
 declare global {
     interface Window {
