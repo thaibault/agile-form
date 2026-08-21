@@ -25,14 +25,8 @@
     "type": "git",
     "url": "https://github.com/thaibault/agile-form"
   },
-  "files": [
-    "index.bundle.js",
-    "index.css",
-    "index.d.ts",
-    "index.js",
-    "styles.bundle.css",
-    "type.d.ts"
-  ],
+  "type": "module",
+  "files": ["dist"],
   "sideEffects": false,
   "scripts": {
     "build": "yarn build:types; yarn build:plain && yarn build:bundle:plain",
@@ -55,16 +49,15 @@
     "watch": "weboptimizer build --watch"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.28.6",
-    "@babel/runtime": "^7.29.2",
-    "@codemirror/autocomplete": "^6.20.2",
-    "@codemirror/commands": "^6.10.3",
+    "@babel/eslint-parser": "^8.0.1",
+    "@codemirror/autocomplete": "^6.20.3",
+    "@codemirror/commands": "^6.11.0",
     "@codemirror/lang-css": "^6.3.1",
     "@codemirror/lang-javascript": "^6.2.5",
-    "@codemirror/language": "^6.12.3",
-    "@codemirror/lint": "^6.9.6",
-    "@codemirror/search": "^6.7.0",
-    "@codemirror/state": "^6.6.0",
+    "@codemirror/language": "^6.12.4",
+    "@codemirror/lint": "^6.9.7",
+    "@codemirror/search": "^6.7.1",
+    "@codemirror/state": "^6.7.1",
     "@eslint/js": "^10.0.1",
     "@rmwc/card": "^14.3.5",
     "@rmwc/checkbox": "^14.3.5",
@@ -81,66 +74,61 @@
     "@rmwc/touch-target": "^14.3.5",
     "@rmwc/typography": "^14.3.5",
     "@stylistic/eslint-plugin": "^5.10.0",
-    "@tiptap/core": "^3.22.5",
-    "@tiptap/extensions": "^3.22.5",
-    "@tiptap/react": "^3.22.5",
-    "@tiptap/starter-kit": "^3.22.5",
+    "@tiptap/core": "^3.30.2",
+    "@tiptap/extensions": "^3.30.2",
+    "@tiptap/react": "^3.30.2",
+    "@tiptap/starter-kit": "^3.30.2",
     "@types/ejs": "^3.1.5",
     "@types/grecaptcha": "^3.0.9",
     "@types/html-minifier": "^4.0.6",
-    "@types/jsdom": "^28.0.1",
-    "@types/node": "^25.6.0",
-    "@types/react": "^18.3.28",
+    "@types/jsdom": "^30.0.0",
+    "@types/node": "^26.2.0",
+    "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
     "@types/react-transition-group": "^4.4.12",
     "@types/webpack-env": "^1.18.8",
-    "@typescript-eslint/eslint-plugin": "^8.59.2",
-    "@typescript-eslint/parser": "^8.59.2",
+    "@typescript-eslint/eslint-plugin": "^8.67.0",
+    "@typescript-eslint/parser": "^8.67.0",
     "@webcomponents/webcomponentsjs": "^2.8.0",
     "blob-util": "^2.0.2",
-    "clientnode": "^4.0.1394",
+    "clientnode": "^4.0.1484",
     "css-loader": "^7.1.4",
-    "cssnano": "^8.0.0",
-    "eslint": "^10.3.0",
+    "cssnano": "^8.0.7",
+    "eslint": "^10.9.0",
     "eslint-config-google": "^0.14.0",
-    "eslint-plugin-jsdoc": "^62.9.0",
+    "eslint-plugin-jsdoc": "^64.2.1",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "^30.3.0",
-    "jest-canvas-mock": "^2.5.2",
+    "jest": "^30.4.2",
+    "jest-canvas-mock": "^2.5.8",
     "jsdoc": "^4.0.5",
     "material-components-web": "^14.0.0",
     "material-icons": "^1.13.14",
     "mini-css-extract-plugin": "^2.10.2",
     "node-fetch": "^3.3.2",
-    "postcss": "^8.5.14",
+    "postcss": "^8.5.26",
     "postcss-loader": "^8.2.1",
-    "postcss-preset-env": "^11.2.1",
+    "postcss-preset-env": "^11.4.0",
     "prop-types": "^15.8.1",
-    "react-ace": "^14.0.1",
-    "react-generic-animate": "^0.0.123",
-    "react-generic-dummy": "^0.0.128",
-    "react-generic-tools": "^0.0.117",
+    "react-generic-animate": "^0.0.130",
+    "react-generic-dummy": "^0.0.134",
+    "react-generic-tools": "^0.0.124",
     "react-useanimations": "^2.10.0",
     "rimraf": "^6.1.3",
     "spark-md5": "^3.0.2",
     "style-loader": "^4.0.0",
     "tslib": "^2.8.1",
-    "typescript-eslint": "^8.59.2",
-    "web-component-wrapper": "^0.0.586",
-    "web-documentation": "^1.0.7",
-    "web-input-material": "^0.0.508",
-    "weboptimizer": "^3.0.22",
-    "webpack-dev-server": "^5.2.3"
+    "typescript-eslint": "^8.67.0",
+    "web-component-wrapper": "^0.0.611",
+    "web-documentation": "^1.0.49",
+    "web-input-material": "^0.0.509",
+    "weboptimizer": "^4.0.55",
+    "webpack-dev-server": "^6.0.0"
   },
   "peerDependencies": {
-    "@babel/runtime": "*",
     "clientnode": "*",
     "node-fetch": "*"
   },
   "peerDependenciesMeta": {
-    "@babel/runtime": {
-      "optional": true
-    },
     "node-fetch": {
       "optional": true
     }
@@ -185,25 +173,25 @@
     },
     "injection": {
       "entry": {
-        "__evaluate__": "2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2].startsWith('test') ? {testBundle: './test.ts'} : 2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2] === 'serve' ? {index: './index', styles: './index.css', webInputMaterial: 'web-input-material'} : './index'"
+        "__evaluate__": "2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2] === 'serve' ? {index: './index', styles: './index.css', webInputMaterial: 'web-input-material'} : 2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2].startsWith('test') ? {testBundle: './test.ts'} : './index'"
       }
     },
     "module": {
       "aliases": {
         "#": "Remove unneeded optional dependencies.",
-        "@codemirror/autocomplete": "react-generic-dummy",
-        "@codemirror/commands": "react-generic-dummy",
-        "@codemirror/lang-css": "react-generic-dummy",
-        "@codemirror/lang-javascript": "react-generic-dummy",
-        "@codemirror/language": "react-generic-dummy",
-        "@codemirror/lint": "react-generic-dummy",
-        "@codemirror/search": "react-generic-dummy",
-        "@codemirror/state": "react-generic-dummy",
-        "@codemirror/view": "react-generic-dummy",
-        "@rmwc/tooltip": "react-generic-dummy",
-        "@tiptap/core$": "react-generic-dummy",
-        "@tiptap/extensions$": "react-generic-dummy",
-        "@tiptap/react": "react-generic-dummy",
+        "@codemirror/autocomplete": "react-input-material/shims/optionals",
+        "@codemirror/commands": "react-input-material/shims/optionals",
+        "@codemirror/lang-css": "react-input-material/shims/optionals",
+        "@codemirror/lang-javascript": "react-input-material/shims/optionals",
+        "@codemirror/language": "react-input-material/shims/optionals",
+        "@codemirror/lint": "react-input-material/shims/optionals",
+        "@codemirror/search": "react-input-material/shims/optionals",
+        "@codemirror/state": "react-input-material/shims/optionals",
+        "@codemirror/view": "react-input-material/shims/optionals",
+        "@rmwc/tooltip": "react-input-material/shims/optionals",
+        "@tiptap/core$": "react-input-material/shims/optionals",
+        "@tiptap/extensions$": "react-input-material/shims/optionals",
+        "@tiptap/react$": "react-input-material/shims/optionals",
         "@tiptap/starter-kit$": "react-generic-dummy",
         "formdata-polyfill/esm.min.js$": "formdata-polyfill",
         "react-useanimations$": "react-generic-dummy",
@@ -215,6 +203,7 @@
         "options": {
           "sources": {
             "urlFilter": {
+              "#": "Do not process any referenced resource in HTML.",
               "__evaluate__": "() => false"
             }
           }
@@ -234,6 +223,14 @@
             }
           }
         }
+      }
+    },
+    "path": {
+      "source": {
+        "base": "src/"
+      },
+      "target": {
+        "base": "dist/"
       }
     },
     "target:bundle": {
@@ -256,17 +253,6 @@
         "externalLibrary": {
           "dynamic": true,
           "normal": true
-        }
-      },
-      "module": {
-        "preprocessor": {
-          "javaScript": {
-            "options": {
-              "plugins": {
-                "__remove__": "@babel/plugin-transform-runtime"
-              }
-            }
-          }
         }
       }
     },
