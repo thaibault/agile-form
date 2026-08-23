@@ -17,48 +17,23 @@
     endregion
 */
 // region imports
-import {
-    camelCaseToDelimited,
-    compile,
+import type {
     CompilationResult,
-    convertToValidVariableName,
-    copy,
-    debounce,
-    evaluate,
-    evaluateSelector,
-    evaluateDynamicData,
     EvaluationResult,
-    extend,
-    fadeIn,
-    fadeOut,
-    getURLParameter,
-    isFunction,
-    isObject,
-    isPlainObject,
-    KEYBOARD_CODES,
-    Lock,
-    Logger,
     Mapping,
-    mask,
     Offset,
     PlainObject,
     QueryParameters,
     RecursiveEvaluateable,
     RecursivePartial,
-    represent,
     TemplateFunction,
-    timeout,
-    UnknownFunction,
-    UTILITY_SCOPE,
-    UTILITY_SCOPE_NAMES,
-    UTILITY_SCOPE_VALUES
+    UnknownFunction
 } from 'clientnode'
-import {object} from 'clientnode/property-types'
-import property from 'web-component-wrapper/decorator'
-import Web from 'web-component-wrapper/Web'
-import {WebComponentAPI, StaticWebComponent} from 'web-component-wrapper/type'
+import type {
+    WebComponentAPI, StaticWebComponent
+} from 'web-component-wrapper/type'
 
-import {
+import type {
     Action,
     AnnotatedDomNode,
     AnnotatedInputDomNode,
@@ -78,6 +53,36 @@ import {
     TargetAction,
     TargetConfiguration
 } from './type'
+
+import {
+    camelCaseToDelimited,
+    compile,
+    convertToValidVariableName,
+    copy,
+    debounce,
+    evaluate,
+    evaluateSelector,
+    evaluateDynamicData,
+    extend,
+    fadeIn,
+    fadeOut,
+    getURLParameter,
+    isFunction,
+    isObject,
+    isPlainObject,
+    KEYBOARD_CODES,
+    Lock,
+    Logger,
+    mask,
+    represent,
+    timeout,
+    UTILITY_SCOPE,
+    UTILITY_SCOPE_NAMES,
+    UTILITY_SCOPE_VALUES
+} from 'clientnode'
+import {object} from 'clientnode/property-types'
+import property from 'web-component-wrapper/decorator'
+import Web from 'web-component-wrapper/Web'
 // endregion
 export const log = new Logger({name: 'agile-form'})
 // region components
@@ -422,15 +427,19 @@ export class AgileForm<
      * Parses a given configuration object and delegates to forward them to
      * nested input nodes.
      * @param name - Attribute name which was updates.
-     * @param oldValue - Old attribute value.
      * @param newValue - New updated value.
      */
-    attributeChangedCallback(
-        name: string, oldValue: string, newValue: string
-    ) {
-        super.attributeChangedCallback(name, oldValue, newValue)
+    async onUpdateAttribute(name: string, newValue: string) {
+        await super.onUpdateAttribute(name, newValue)
 
-        this.resolveConfiguration()
+        if ([
+            'baseConfiguration',
+            'configuration',
+            'dynamicConfiguration',
+            'additionalConfiguration'
+        ].includes(name)) {
+            this.resolveConfiguration()
+        }
     }
     /**
      * Registers new re-captcha token.
