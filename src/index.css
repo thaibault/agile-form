@@ -4,7 +4,7 @@ Copyright Torben Sickert 16.12.2012
 License
 -------
 
-This library written by Torben Sickert stand under a creative commons naming
+This library written by Torben Sickert stands under a creative commons naming
 3.0 unported license. See https://creativecommons.org/licenses/by/3.0/deed.de
 endregion */
 @import 'react-input-material/index.css';
@@ -28,8 +28,8 @@ text-input {
     width: 302px;
 }
 
-[submitted][re-captcha-fallback-rendered] [invalid].agile-form__re-captcha-fallback > div > div,
-[dirty][invalid].agile-form__re-captcha-fallback > div > div {
+[dirty][invalid].agile-form__re-captcha-fallback > div > div,
+[submitted][re-captcha-fallback-rendered] [invalid].agile-form__re-captcha-fallback > div > div {
     border-color: #b00020 !important;
     border-color: var(--mdc-theme-error, #b00020) !important;
 }

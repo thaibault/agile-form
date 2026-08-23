@@ -14,14 +14,16 @@
     endregion
 */
 // region imports
-import {describe, expect, test} from '@jest/globals'
-import '@webcomponents/webcomponentsjs/custom-elements-es5-adapter'
-import {copy, globalContext} from 'clientnode'
+import type {Configuration, Evaluation} from './type'
+
+import {copy, globalContext, timeout} from 'clientnode'
 import nodeFetch from 'node-fetch'
 import TextInput from 'web-input-material/components/TextInput'
 
+import {describe, expect, test} from '@jest/globals'
+import '@webcomponents/webcomponentsjs/custom-elements-es5-adapter'
+
 import api, {AgileForm} from './index'
-import {Configuration, Evaluation} from './type'
 // endregion
 /*
     NOTE: We have to preload this module to avoid introducing an additional
@@ -52,11 +54,12 @@ describe('AgileForm', (): void => {
 
         expect(form).toBeDefined()
     })
-    test('attribute configuration', () => {
+    test('attribute configuration', async () => {
         const form = document.createElement(name) as AgileForm
         document.body.appendChild(form)
 
         form.setAttribute('configuration', '{value: 2}')
+        await timeout()
 
         expect(form).toHaveProperty('configuration.value', 2)
         expect(form).toHaveProperty('resolvedConfiguration.value', 2)
