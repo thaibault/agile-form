@@ -61,6 +61,7 @@ import {
     copy,
     debounce,
     evaluate,
+    evaluateAsyncDynamicData,
     evaluateSelector,
     evaluateDynamicData,
     extend,
@@ -437,9 +438,8 @@ export class AgileForm<
             'configuration',
             'dynamicConfiguration',
             'additionalConfiguration'
-        ].includes(name)) {
+        ].includes(name))
             this.resolveConfiguration()
-        }
     }
     /**
      * Registers new re-captcha token.
@@ -1664,7 +1664,7 @@ export class AgileForm<
                 specification.showIfExpression = code
 
                 const {error, scopeNames, templateFunction} =
-                    compile(code, originalScopeNames)
+                    compile(code, {scope: originalScopeNames})
 
                 if (error)
                     log.error(
@@ -1783,14 +1783,14 @@ export class AgileForm<
             const code = configuration[typeName]
             const {error, scopeNames, templateFunction} = compile(
                 code,
-                this.self.baseScopeNames.concat(
+                {scope: this.self.baseScopeNames.concat(
                     'self',
                     'value',
                     this.evaluations.map(
                         (evaluation: Evaluation): string => evaluation[0]
                     ),
                     configuration.dependsOn || []
-                )
+                )}
             )
 
             if (error)
@@ -1883,7 +1883,7 @@ export class AgileForm<
 
             if (typeof code === 'string') {
                 const result: CompilationResult<unknown> =
-                    compile<unknown>(code, originalScopeNames)
+                    compile<unknown>(code, {scope: originalScopeNames})
 
                 scopeNames = result.scopeNames
                 templateFunction = result.templateFunction
@@ -1985,7 +1985,7 @@ export class AgileForm<
                 continue
 
             const {error, scopeNames, templateFunction} =
-                compile(code, originalScopeNames)
+                compile(code, {scope: originalScopeNames})
             if (error)
                 log.error(
                     `Failed to compile action expression "${name}": ${error}`
@@ -2070,7 +2070,7 @@ export class AgileForm<
                 continue
 
             const {error, scopeNames, templateFunction} =
-                compile(code, originalScopeNames)
+                compile(code, {scope: originalScopeNames})
             if (error)
                 log.error(
                     `Failed to compile target action expression "${name}":`,
@@ -2145,7 +2145,10 @@ export class AgileForm<
             }
 
             const {error, scopeNames, templateFunction} = compile(
-                code, this.self.baseScopeNames.concat(names, this.inputNames)
+                code,
+                {scope: this.self.baseScopeNames.concat(
+                    names, this.inputNames
+                )}
             )
             if (error)
                 log.error(
@@ -2321,9 +2324,14 @@ export class AgileForm<
 
             await this.startBackgroundProcess(event)
 
-            detail.target = evaluateDynamicData(
-                copy(this.resolvedConfiguration.initializeTarget),
+            const evaluationOptions =
                 {scope: this.determineConfigurationEvaluationScope()}
+            detail.target = await evaluateAsyncDynamicData(
+                evaluateDynamicData(
+                    copy(this.resolvedConfiguration.initializeTarget),
+                    evaluationOptions
+                ),
+                evaluationOptions
             )
 
             if (detail.target.url) {
@@ -2911,10 +2919,16 @@ export class AgileForm<
 
         this.resolvedConfiguration.data = data
         this.resolvedConfiguration.targetData = this.mapTargetNames(data)
-        const target: null | TargetConfiguration = evaluateDynamicData(
-            copy(this.resolvedConfiguration.target),
+
+        const evaluationOptions =
             {scope: this.determineConfigurationEvaluationScope()}
-        )
+        const target: null | TargetConfiguration =
+            await evaluateAsyncDynamicData(
+                evaluateDynamicData(
+                    copy(this.resolvedConfiguration.target), evaluationOptions
+                ),
+                evaluationOptions
+            )
         // endregion
         if (target.url) {
             this.determinedTargetURL = target.url
