@@ -59,6 +59,52 @@ Features included:
 - Statically type checked and interface specification via Typescript.
 - Interactive form build support designed for content management systems.
 
+<div class="wd-table-of-contents">
+    <h2 id="content">Content<!--deDE:Inhalt--><!--frFR:Contenu--></h2>
+    <!--wd-table-of-contents-->
+</div>
+
+Installation
+------------
+
+You can install via package manager, simply download the compiled version as
+zip file here and inject or request via CDN in HTML:
+<!--deDE:
+    Sie können das Paket über den Paketmanager installieren oder einfach die
+    kompilierte Version als ZIP-Datei hier herunterladen und in HTML einbinden
+    oder über ein CDN abrufen:
+-->
+<!--frFR:
+    Vous pouvez installer le paquet via le gestionnaire de paquets ou
+    simplement télécharger ici la version compilée sous forme de fichier ZIP,
+    puis l'intégrer dans une page HTML ou la récupérer via un CDN:
+-->
+
+```bash
+npm install agile-form
+```
+
+<!--|deDE:Verwendung-->
+<!--|frFR:Demande-->
+Usage
+-----
+
+Here you can see a complete initialization example.
+<!--deDE:
+    Hier können Sie ein Komplettbeispiel der Initialisierung sehen.
+-->
+<!--frFR:
+    Ici vous pouvez voir un exemple complet d'initialisation.
+-->
+
+```JavaScript
+import {
+    api
+} from 'https://unpkg.com/agile-form@latest/dist/bundle/index.js'
+
+api.register()
+```
+
 ### Quick-Start
 
 ```HTML
@@ -80,13 +126,13 @@ Features included:
             src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/2.7.0/custom-elements-es5-adapter.js"
         ></script>
 
-        <script
-            src="https://torben.website/agile-form/data/distributionBundle/index.bundle.js"
-        ></script>
-
         <script>
-            agileForm.index.api.register()
+            AUTO_DEFINE_AGILE_FORM = true
         </script>
+        <script
+            type="module"
+            src="https://unpkg.com/agile-form@latest/dist/bundle/index.js"
+        ></script>
     </head>
     <body>
         <agile-form
