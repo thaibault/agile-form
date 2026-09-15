@@ -23,7 +23,7 @@ import TextInput from 'web-input-material/components/TextInput'
 import {describe, expect, test} from '@jest/globals'
 import '@webcomponents/webcomponentsjs/custom-elements-es5-adapter'
 
-import api, {AgileForm} from './index'
+import AgileForm, {api} from './index'
 // endregion
 /*
     NOTE: We have to preload this module to avoid introducing an additional

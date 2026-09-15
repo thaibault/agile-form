@@ -68,6 +68,7 @@ import {
     fadeIn,
     fadeOut,
     getURLParameter,
+    globalContext,
     isFunction,
     isObject,
     isPlainObject,
@@ -3836,4 +3837,7 @@ export const api: WebComponentAPI<typeof AgileForm> = {
         customElements.define(tagName, AgileForm)
     }
 }
-export default api
+export default AgileForm
+
+if ((globalContext as Mapping<boolean>).AUTO_DEFINE_AGILE_FORM)
+    api.register()
