@@ -107,6 +107,8 @@ api.register()
 
 ### Quick-Start
 
+<!--showExample-->
+
 ```HTML
 <!doctype html>
 <html>
