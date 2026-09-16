@@ -52,6 +52,7 @@
     "clear": "weboptimizer clear && rimraf styles.bundle.css",
     "document": "weboptimizer document",
     "lint": "weboptimizer lint",
+    "prepare": "yarn build",
     "serve": "weboptimizer serve",
     "serve:simple": "yarn serve '{files: {defaultHTML: {filename: \"examples/simple.html\"}}}'",
     "start": "yarn serve",
