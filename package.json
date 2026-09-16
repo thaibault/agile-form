@@ -98,7 +98,7 @@
     "cssnano": "^9.0.4",
     "eslint": "^10.10.0",
     "eslint-config-google": "^0.14.0",
-    "eslint-plugin-jsdoc": "^64.4.0",
+    "eslint-plugin-jsdoc": "^64.5.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.5.1",
     "jest-canvas-mock": "^2.5.8",
