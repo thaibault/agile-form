@@ -26,6 +26,18 @@
     "url": "https://github.com/thaibault/agile-form"
   },
   "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./type": "./dist/type.d.ts"
+  },
+  "main": "dist/index.js",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*"
+      ]
+    }
+  },
   "files": [
     "dist"
   ],
