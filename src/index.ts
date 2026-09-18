@@ -669,13 +669,13 @@ export class AgileForm<
         if (inputConfiguration.shown !== oldState) {
             if (this.resolvedConfiguration.debug)
                 if (Boolean(oldState) === oldState)
-                    log.debug(
+                    void log.debug(
                         `Update input "${name}" visibility state from`,
                         `"${oldState ? 'show' : 'hide'}" to`,
                         `"${inputConfiguration.shown ? 'show' : 'hide'}".`
                     )
                 else
-                    log.debug(
+                    void log.debug(
                         `Initialize input "${name}" visibility state to`,
                         `"${inputConfiguration.shown ? 'show' : 'hide'}".`
                     )
@@ -695,7 +695,7 @@ export class AgileForm<
         }
 
         /*
-        log.debug(
+        void log.debug(
             `Input "${name}" stays in visibility state`,
             `"${oldState ? 'show' : 'hide'}".`
         )
@@ -734,7 +734,7 @@ export class AgileForm<
 
             if (domNode.shown === oldState) {
                 /*
-                log.debug(
+                void log.debug(
                     `Group "${name}" stays in visibility state`,
                     `"${oldState ? 'show' : 'hide'}".`
                 )
@@ -747,13 +747,13 @@ export class AgileForm<
 
             if (this.resolvedConfiguration.debug)
                 if (Boolean(oldState as unknown) === oldState)
-                    log.debug(
+                    void log.debug(
                         `Update group "${name}" visibility state from`,
                         `"${oldState ? 'show' : 'hide'}" to`,
                         `"${domNode.shown ? 'show' : 'hide'}".`
                     )
                 else
-                    log.debug(
+                    void log.debug(
                         `Initialize group "${name}" visibility state to`,
                         `"${domNode.shown ? 'show' : 'hide'}".`
                     )
@@ -1084,7 +1084,7 @@ export class AgileForm<
             )
 
         if (this.resolvedConfiguration.debug)
-            log.debug(
+            void log.debug(
                 'Got configuration:', represent(this.resolvedConfiguration)
             )
     }
@@ -1099,7 +1099,7 @@ export class AgileForm<
             const evaluated: EvaluationResult<PlainObject> = evaluate(parameter)
 
             if (evaluated.error) {
-                log.warn(
+                void log.warn(
                     'Error occurred during processing given url parameter',
                     `"${this.resolvedConfiguration.name}": ${evaluated.error}`
                 )
@@ -1433,7 +1433,7 @@ export class AgileForm<
                             NOTE: Explicit input-specific model configuration
                             has higher priority than form specifications.
                         */
-                        log.debug(
+                        void log.debug(
                             `Apply form configuration for input "${name}"`,
                             `with property "${key}" and value`,
                             `"${represent(configuration.properties[key])}".`
@@ -1442,7 +1442,7 @@ export class AgileForm<
                         domNode[key] =
                             configuration.properties[key] as undefined
                     } else
-                        log.debug(
+                        void log.debug(
                             `Form configuration for input "${name}" with`,
                             `property "${key}" and value "` +
                             represent(configuration.properties[key]) +
@@ -1543,7 +1543,7 @@ export class AgileForm<
 
                     await this.digest()
 
-                    log.debug(
+                    void log.debug(
                         `Derive final initial value for input "${name}" to`,
                         `"${configuration.value as string}".`
                     )
@@ -1668,7 +1668,7 @@ export class AgileForm<
                     compile(code, {scope: originalScopeNames})
 
                 if (error)
-                    log.error(
+                    void log.error(
                         'Failed to compile "show-if" group expression',
                         `attribute "${name}": ${error}`
                     )
@@ -1716,7 +1716,7 @@ export class AgileForm<
                                 )
                             ))
                         } catch (error) {
-                            log.error(
+                            void log.error(
                                 `Failed to evaluate group "${name}" code`,
                                 `"${code}" with bound names`,
                                 `"${scopeNames.join('", "')}":`,
@@ -1795,7 +1795,7 @@ export class AgileForm<
             )
 
             if (error)
-                log.error(
+                void log.error(
                     `Failed to compile "${typeName}" "${name}": ${error}`
                 )
 
@@ -1838,7 +1838,7 @@ export class AgileForm<
                             )
                     )
                 } catch (error) {
-                    log.warn(
+                    void log.warn(
                         `Failed running "${typeName}" "${code}" for field`,
                         `field "${name}" with bound names`,
                         `"${scopeNames.join('", "')}": "${represent(error)}".`
@@ -1890,7 +1890,7 @@ export class AgileForm<
                 templateFunction = result.templateFunction
 
                 if (result.error)
-                    log.error(
+                    void log.error(
                         `Failed to compile "dynamicExtendExpression" for`,
                         `property "${subName}" in field "${name}":`,
                         result.error
@@ -1951,7 +1951,7 @@ export class AgileForm<
                         code(event, scope) :
                         templateFunction(...context)
                 } catch (error) {
-                    log.error(
+                    void log.error(
                         `Failed running "dynamicExtendExpression"`,
                         `"${code as string}" for property "${subName}" in`,
                         `field "${name}" with bound names`,
@@ -1988,7 +1988,7 @@ export class AgileForm<
             const {error, scopeNames, templateFunction} =
                 compile(code, {scope: originalScopeNames})
             if (error)
-                log.error(
+                void log.error(
                     `Failed to compile action expression "${name}": ${error}`
                 )
 
@@ -2039,7 +2039,7 @@ export class AgileForm<
                             await result :
                             result
                 } catch (error) {
-                    log.error(
+                    void log.error(
                         `Failed running action "${name}" expression`,
                         `"${code}" with bound names`,
                         `"${scopeNames.join('", "')}": "${represent(error)}".`
@@ -2073,7 +2073,7 @@ export class AgileForm<
             const {error, scopeNames, templateFunction} =
                 compile(code, {scope: originalScopeNames})
             if (error)
-                log.error(
+                void log.error(
                     `Failed to compile target action expression "${name}":`,
                     error
                 )
@@ -2112,7 +2112,7 @@ export class AgileForm<
                         ): InputConfiguration => this.inputConfigurations[name])
                     )
                 } catch (error) {
-                    log.error(
+                    void log.error(
                         `Failed running target action "${name}" expression`,
                         `"${code}" with bound names`,
                         `"${scopeNames.join('", "')}": "${represent(error)}".`
@@ -2152,7 +2152,7 @@ export class AgileForm<
                 )}
             )
             if (error)
-                log.error(
+                void log.error(
                     `Failed to compile generic expression "${name}": ${error}`
                 )
 
@@ -2197,7 +2197,7 @@ export class AgileForm<
                         )
                     )
                 } catch (error) {
-                    log.error(
+                    void log.error(
                         `Failed running generic expression "${name}"`,
                         `"${code}" with bound names`,
                         `"${scopeNames.join('", "')}": "${represent(error)}"`
@@ -2388,7 +2388,7 @@ export class AgileForm<
         if (!actionResult)
             return null
 
-        log.debug(
+        void log.debug(
             `Action "${name}" matched` +
             (
                 typeof actionResult === 'boolean' ?
@@ -2477,7 +2477,7 @@ export class AgileForm<
             try {
                 await this.resetInput(name, useDefault)
             } catch (error) {
-                log.warn(
+                void log.warn(
                     `Failed to reset input "${name}":`, represent(error)
                 )
             }
@@ -2839,7 +2839,7 @@ export class AgileForm<
         } catch (error) {
             const statusText: string = represent(error)
 
-            log.warn(`Could not request "${target.url}" "${statusText}".`)
+            void log.warn(`Could not request "${target.url}" "${statusText}".`)
 
             response = {
                 ...target.options,
@@ -2876,7 +2876,7 @@ export class AgileForm<
                 }
             )
         } catch (error) {
-            log.warn(
+            void log.warn(
                 `Given response could not be interpret as json`,
                 `"${represent(error)}".`
             )
@@ -2960,7 +2960,7 @@ export class AgileForm<
             await this.startBackgroundProcess(event)
 
             if (this.resolvedConfiguration.debug)
-                log.debug('Retrieved data:', represent(data))
+                void log.debug('Retrieved data:', represent(data))
         }
 
         await this.stopBackgroundProcess(event)
@@ -3130,7 +3130,7 @@ export class AgileForm<
                 this.submitted = false
             }
         } catch (error) {
-            log.warn(`Submitting failed: ${represent(error)}`)
+            void log.warn(`Submitting failed: ${represent(error)}`)
         }
     }
     /// endregion
@@ -3310,7 +3310,7 @@ export class AgileForm<
                     if (mappedSelector !== 'value')
                         target[key] = newValue
 
-                    log.debug(
+                    void log.debug(
                         `Change "${selector}" on "${name}" from`,
                         `"${oldValue as string}" to "${newValue as string}".`
                     )
@@ -3375,7 +3375,7 @@ export class AgileForm<
                 }
             }
         else
-            log.warn(
+            void log.warn(
                 `Input node (to update corresponding model) for "${name}"`,
                 'not found.'
             )
@@ -3813,7 +3813,7 @@ export class AgileForm<
                     )
                 })
             } catch (error) {
-                log.warn(
+                void log.warn(
                     `Could not retrieve a re-captcha token:`,
                     `"${represent(error)}".`
                 )
