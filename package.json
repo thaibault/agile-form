@@ -48,7 +48,7 @@
     "build:plain": "weboptimizer build",
     "build:types": "weboptimizer build:types",
     "check": "yarn check:types && yarn lint",
-    "check:types": "yarn clear && weboptimizer check:types",
+    "check:types": "weboptimizer check:types",
     "clear": "weboptimizer clear && rimraf styles.bundle.css",
     "document": "weboptimizer document",
     "lint": "weboptimizer lint",
@@ -56,10 +56,10 @@
     "serve": "weboptimizer serve",
     "serve:simple": "yarn serve '{files: {defaultHTML: {filename: \"examples/simple.html\"}}}'",
     "start": "yarn serve",
-    "test": "yarn clear && weboptimizer test",
-    "test:browser": "yarn clear && weboptimizer test:browser",
-    "test:coverage": "yarn clear && weboptimizer test:coverage",
-    "test:coverage:report": "yarn clear && weboptimizer test:coverage:report",
+    "test": "weboptimizer test",
+    "test:browser": "weboptimizer test:browser",
+    "test:coverage": "weboptimizer test:coverage",
+    "test:coverage:report": "weboptimizer test:coverage:report",
     "update:documentation": "web-documentation",
     "watch": "weboptimizer build --watch"
   },
@@ -139,7 +139,7 @@
     "web-component-wrapper": "^0.0.619",
     "web-documentation": "^1.0.65",
     "web-input-material": "^0.0.520",
-    "weboptimizer": "^4.0.96",
+    "weboptimizer": "^4.0.103",
     "webpack-dev-server": "^6.1.0"
   },
   "peerDependencies": {
