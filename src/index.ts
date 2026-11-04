@@ -47,6 +47,7 @@ import type {
     IndicatorFunction,
     InputAnnotation,
     InputConfiguration,
+    InputUpdateCascade,
     NormalizedConfiguration,
     ResponseResult,
     StateURL,
@@ -101,6 +102,9 @@ export const log = new Logger({name: 'agile-form'})
  * inputs.
  * @property scrollAndFocusTimeoutInMilliseconds - Maximum time to wait for a
  * smooth scroll to end before focusing anyway.
+ * @property maximumNumberOfInputChangesPerUpdate - Maximum number of input
+ * changes a single update may cascade into before it is stopped (to avoid
+ * endless loops of inputs changing each other).
  * @property actionResults - Mapping of action names to their results.
  * @property clearButtons - Reference to form clear button nodes.
  * @property resetButtons - Reference to form reset button nodes.
@@ -337,6 +341,7 @@ export class AgileForm<
         'initialValue'
     ]
     static scrollAndFocusTimeoutInMilliseconds = 1000
+    static maximumNumberOfInputChangesPerUpdate = 1000
     static _name = 'AgileForm'
 
     scope: EvaluationScope = {} as EvaluationScope
@@ -474,10 +479,37 @@ export class AgileForm<
      * be needed for classes inheriting from this class.
      */
     async render(reason = 'unknown', resolveRendering = true): Promise<void> {
+        /*
+            NOTE: Connecting triggers rendering by itself, so further render
+            calls may come in while a cycle is still running. Overlapping
+            cycles would reset input configurations the other one is still
+            working on, so we process them one after another.
+        */
+        const lockName = 'render'
+        await this.lock.acquire(lockName)
+
+        try {
+            await this.processRendering(reason, resolveRendering)
+        } finally {
+            await this.lock.release(lockName)
+        }
+    }
+    /**
+     * Performs a single render cycle. Listeners can prevent it by calling
+     * "preventDefault()" on the dispatched "render" event.
+     * @param reason - Description why rendering is necessary.
+     * @param resolveRendering - Indicates whether rendering should be resolved
+     * finally.
+     * @returns A promise resolving when rendering has finished.
+     */
+    async processRendering(
+        reason: string, resolveRendering: boolean
+    ): Promise<void> {
         if (!(
             this.self.doRender &&
             this.dispatchEvent(new CustomEvent(
-                'render', {detail: {reason, scope: this.scope}}
+                'render',
+                {cancelable: true, detail: {reason, scope: this.scope}}
             ))
         )) {
             await this.resolveRenderingPromiseIfSet(reason, resolveRendering)
@@ -3296,10 +3328,20 @@ export class AgileForm<
      * state.
      * @param name - Field name to update.
      * @param event - Triggering event object.
+     * @param cascade - State of the update cascade this update belongs to.
      * @returns A Promise resolving to a boolean indicator whether a state
      * changed happened or not.
      */
-    async updateInput(name: string, event: Event): Promise<boolean> {
+    async updateInput(
+        name: string,
+        event: Event,
+        cascade: InputUpdateCascade = {
+            lastChangedNames: [], numberOfChanges: 0, stopped: false
+        }
+    ): Promise<boolean> {
+        if (cascade.stopped)
+            return false
+
         this.runEvaluations()
 
         const configuration: InputConfiguration =
@@ -3373,9 +3415,36 @@ export class AgileForm<
             }
 
         if ((await this.updateInputVisibility(name)) || changed) {
+            /*
+                NOTE: Dependent inputs are updated until nothing changes
+                anymore. Expressions which keep changing each other would
+                never settle, so we stop the whole cascade at some point.
+            */
+            cascade.numberOfChanges += 1
+            cascade.lastChangedNames = cascade.lastChangedNames
+                .concat(name)
+                .slice(-10)
+
+            if (
+                cascade.numberOfChanges >
+                this.self.maximumNumberOfInputChangesPerUpdate
+            ) {
+                cascade.stopped = true
+
+                void log.error(
+                    'Stopped updating inputs triggered by event',
+                    `"${this.determineEventName(event)}" after`,
+                    `${String(cascade.numberOfChanges - 1)} changes since`,
+                    'dependent inputs keep changing each other. Last changed',
+                    `inputs: "${cascade.lastChangedNames.join('", "')}".`
+                )
+
+                return changed
+            }
+
             await this.triggerModelUpdate(name)
 
-            await this.updateInputDependencies(name, event)
+            await this.updateInputDependencies(name, event, cascade)
         }
 
         return changed
@@ -3384,11 +3453,18 @@ export class AgileForm<
      * Updates all related fields for the given field name.
      * @param name - Field to check their dependent fields.
      * @param event - Triggering event.
+     * @param cascade - State of the update cascade this update belongs to.
      * @returns Promise holding nothing.
      */
-    async updateInputDependencies(name: string, event: Event): Promise<void> {
+    async updateInputDependencies(
+        name: string,
+        event: Event,
+        cascade: InputUpdateCascade = {
+            lastChangedNames: [], numberOfChanges: 0, stopped: false
+        }
+    ): Promise<void> {
         for (const dependentName of this.dependencyMapping[name])
-            await this.updateInput(dependentName, event)
+            await this.updateInput(dependentName, event, cascade)
     }
     /**
      * Trigger inputs internal change detection.
