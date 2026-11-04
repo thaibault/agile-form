@@ -99,6 +99,8 @@ export const log = new Logger({name: 'agile-form'})
  * to their corresponding input field property name (if not equal).
  * @property knownPropertyOrdering - Order of known properties to apply on
  * inputs.
+ * @property scrollAndFocusTimeoutInMilliseconds - Maximum time to wait for a
+ * smooth scroll to end before focusing anyway.
  * @property actionResults - Mapping of action names to their results.
  * @property clearButtons - Reference to form clear button nodes.
  * @property resetButtons - Reference to form reset button nodes.
@@ -334,6 +336,7 @@ export class AgileForm<
         'default',
         'initialValue'
     ]
+    static scrollAndFocusTimeoutInMilliseconds = 1000
     static _name = 'AgileForm'
 
     scope: EvaluationScope = {} as EvaluationScope
@@ -2541,7 +2544,9 @@ export class AgileForm<
         }
     }
     /**
-     * Scrolls to the given element and focuses it.
+     * Scrolls to the given element and focuses it. Focusing happens once the
+     * target position is reached, scrolling ends (for example, when it was
+     * interrupted) or a timeout expires, whichever comes first.
      * @param targetDomNode - Dom node to scroll to.
      * @param smooth - Indicates whether to animate scrolling.
      * @returns A promise resolving when focusing has finished.
@@ -2551,36 +2556,71 @@ export class AgileForm<
     ): Promise<void> {
         return new Promise<void>((resolve: () => void): void => {
             const offset: Offset = this.getOffset(targetDomNode)
-            const newScrollPosition: number = Math.max(
-                0, offset.top - this.resolvedConfiguration.offsetInPixel
+            /*
+                NOTE: The browser can't scroll beyond the document's end, so
+                an unclamped position may never be reached.
+            */
+            const maximumScrollPosition: number = Math.max(
+                0,
+                document.documentElement.scrollHeight - window.innerHeight
+            )
+            const newScrollPosition: number = Math.min(
+                maximumScrollPosition,
+                Math.max(
+                    0, offset.top - this.resolvedConfiguration.offsetInPixel
+                )
             )
 
-            const onScroll = () => {
-                if (window.scrollY.toFixed() === newScrollPosition.toFixed()) {
-                    window.removeEventListener('scroll', onScroll)
+            let finished = false
+            const removeListener: Array<() => void> = []
+            let timer: null | ReturnType<typeof setTimeout> = null
 
-                    if (typeof targetDomNode.focus === 'function')
-                        targetDomNode.focus()
+            const finish = () => {
+                if (finished)
+                    return
 
-                    resolve()
-                }
+                finished = true
+
+                for (const remove of removeListener)
+                    remove()
+                if (timer !== null)
+                    clearTimeout(timer)
+
+                if (typeof targetDomNode.focus === 'function')
+                    targetDomNode.focus()
+
+                resolve()
+            }
+            const isReached = (): boolean =>
+                Math.abs(window.scrollY - newScrollPosition) < 1
+
+            if (isReached()) {
+                finish()
+
+                return
             }
 
-            this.addSecureEventListener(window, 'scroll', onScroll)
-
-            onScroll()
-
-            if (smooth)
-                window.scrollTo(
-                    {
-                        behavior: 'smooth',
-                        top: newScrollPosition
-                    }
-                )
-            else {
+            if (!smooth) {
                 window.scrollTo(0, newScrollPosition)
-                onScroll()
+                finish()
+
+                return
             }
+
+            removeListener.push(
+                this.addSecureEventListener(window, 'scroll', () => {
+                    if (isReached())
+                        finish()
+                }),
+                this.addSecureEventListener(
+                    window, 'scrollend' as 'scroll', finish
+                )
+            )
+            timer = setTimeout(
+                finish, this.self.scrollAndFocusTimeoutInMilliseconds
+            )
+
+            window.scrollTo({behavior: 'smooth', top: newScrollPosition})
         })
     }
     /// region form submission
@@ -2637,7 +2677,7 @@ export class AgileForm<
 
                         if (typeof configuration.dataMapping === 'string') {
                             const evaluated: EvaluationResult = evaluate(
-                                configuration.dataMapping, scope
+                                configuration.dataMapping, {scope}
                             )
 
                             if (evaluated.error)
@@ -2649,7 +2689,7 @@ export class AgileForm<
                                 configuration.dataMapping as Mapping
                             )) {
                                 const evaluated: EvaluationResult =
-                                    evaluate(expression, scope)
+                                    evaluate(expression, {scope})
 
                                 if (evaluated.error)
                                     throw new Error(evaluated.error)
@@ -3102,7 +3142,7 @@ export class AgileForm<
                     const constraint of this.resolvedConfiguration.constraints
                 ) {
                     const evaluatedConstraint: EvaluationResult =
-                        evaluate(constraint.evaluation, scope)
+                        evaluate(constraint.evaluation, {scope})
                     if (evaluatedConstraint.error)
                         throw new Error(evaluatedConstraint.error)
                     if (!evaluatedConstraint.result) {
