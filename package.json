@@ -1,6 +1,6 @@
 {
   "name": "agile-form",
-  "version": "0.0.483",
+  "version": "0.0.483-1",
   "description": "Reusable form builder with support for (richt-)text, code, selections, numbers, dates and so on.",
   "keywords": [
     "component",
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/thaibault/agile-form"
+    "url": "git+https://github.com/thaibault/agile-form.git"
   },
   "type": "module",
   "exports": {
