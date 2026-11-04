@@ -275,6 +275,12 @@ export interface PropertyTypes {
 }
 
 export type FormResponse = Response & {data: null | PlainObject}
+export interface InputUpdateCascade {
+    lastChangedNames: Array<string>
+    numberOfChanges: number
+    stopped: boolean
+}
+
 export interface ResponseResult {
     data: Mapping<unknown>
     invalidInputNames: Array<string>

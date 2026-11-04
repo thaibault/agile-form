@@ -96,7 +96,8 @@ describe('AgileForm', (): void => {
         expect(form.inputConfigurations).toHaveProperty('test.domNode', input)
         expect(form.inputConfigurations)
             .toHaveProperty('test.domNodes', [input])
-        expect(form.inputConfigurations).toHaveProperty('test.dependsOn', null)
+        expect(form.inputConfigurations)
+            .toHaveProperty('test.dependsOn', ['test'])
         expect(form.inputConfigurations).toHaveProperty('test.name', 'test')
         expect(form.inputConfigurations).toHaveProperty('test.properties', {})
         expect(form.inputConfigurations).toHaveProperty('test.shown', true)
@@ -1326,6 +1327,91 @@ describe('AgileForm visibility and reset', (): void => {
         )
     })
 })
+describe('AgileForm input updates', (): void => {
+    /**
+     * Creates a form with two inputs depending on each other (as in
+     * prototyping mode) whose "disabled" state is derived dynamically.
+     * @param deriveX - Derives "x" state from "y" configuration.
+     * @param deriveY - Derives "y" state from "x" configuration.
+     * @returns Created form.
+     */
+    const createMutuallyDependentForm = (
+        deriveX: (y: InputConfiguration) => unknown,
+        deriveY: (x: InputConfiguration) => unknown
+    ): AgileForm => {
+        const form = createForm()
+        form.inputConfigurations = {
+            x: createInputConfiguration('x', {
+                dependsOn: ['x', 'y'], domNodes: [createDomNode()]
+            }),
+            y: createInputConfiguration('y', {
+                dependsOn: ['x', 'y'], domNodes: [createDomNode()]
+            })
+        }
+        const {x, y} = form.inputConfigurations
+        x.dynamicExtend = {disabled: () => deriveX(y)}
+        y.dynamicExtend = {disabled: () => deriveY(x)}
+        form.createDependencyMapping()
+
+        return form
+    }
+
+    test('dependent inputs are updated until nothing changes', async (
+    ): Promise<void> => {
+        const form = createMutuallyDependentForm(
+            () => true, (x: InputConfiguration) => x.properties.disabled
+        )
+
+        expect(await form.updateInput('x', new Event('change')))
+            .toStrictEqual(true)
+
+        const {x, y} = form.inputConfigurations
+        expect(x.properties.disabled).toStrictEqual(true)
+        expect(y.properties.disabled).toStrictEqual(true)
+        expect(y.domNodes[0].disabled).toStrictEqual(true)
+        expect(logError).not.toHaveBeenCalled()
+    })
+    test('endlessly changing inputs are stopped', async (): Promise<
+        void
+    > => {
+        const form = createMutuallyDependentForm(
+            (y: InputConfiguration) => !y.properties.disabled,
+            (x: InputConfiguration) => x.properties.disabled
+        )
+        const updateInput = jest.spyOn(form, 'updateInput')
+        const maximumNumberOfChanges =
+            AgileForm.maximumNumberOfInputChangesPerUpdate
+        AgileForm.maximumNumberOfInputChangesPerUpdate = 20
+
+        try {
+            await form.updateInput('x', new Event('change'))
+
+            expect(logError).toHaveBeenCalledTimes(1)
+            expect(logError.mock.calls[0].join(' ')).toContain(
+                'Stopped updating inputs triggered by event "change" after ' +
+                '20 changes'
+            )
+            expect(logError.mock.calls[0].join(' '))
+                .toMatch(/Last changed inputs: "[xy]", "[xy]"/)
+            /*
+                Each change updates both dependent inputs, so the whole
+                cascade has to stop instead of exploding beneath the limit.
+            */
+            expect(updateInput.mock.calls.length).toBeLessThanOrEqual(
+                1 + 2 * (AgileForm.maximumNumberOfInputChangesPerUpdate + 1)
+            )
+
+            // A new update starts a new cascade.
+            await form.updateAllInputs(new Event('input'))
+            expect(logError).toHaveBeenCalledTimes(2)
+            expect(logError.mock.calls[1].join(' '))
+                .toContain('triggered by event "input"')
+        } finally {
+            AgileForm.maximumNumberOfInputChangesPerUpdate =
+                maximumNumberOfChanges
+        }
+    })
+})
 describe('AgileForm network', (): void => {
     test('doRequest succeeds', async (): Promise<void> => {
         const form = createForm()
@@ -1730,6 +1816,61 @@ describe('AgileForm rendering', (): void => {
         )
 
         form.remove()
+    })
+    test('overlapping render calls', async (): Promise<void> => {
+        const form = document.createElement(name) as AgileForm
+        form.innerHTML = '<input name="x"><input name="y">'
+        form.setAttribute('configuration', '{animation: false}')
+
+        let running = 0
+        let maximumRunning = 0
+        const processRendering = form.processRendering.bind(form)
+        const processRenderingSpy = jest.spyOn(form, 'processRendering')
+            .mockImplementation(async (
+                reason: string, resolveRendering: boolean
+            ) => {
+                running += 1
+                maximumRunning = Math.max(maximumRunning, running)
+
+                try {
+                    await processRendering(reason, resolveRendering)
+                } finally {
+                    running -= 1
+                }
+            })
+
+        // Connecting renders by itself; render explicitly at the same time.
+        document.body.appendChild(form)
+        await Promise.all([form.render('first'), form.render('second')])
+        // Wait for the queued, connection-triggered render cycle as well.
+        await timeout()
+        await form.lock.acquire('render')
+        await form.lock.release('render')
+
+        expect(maximumRunning).toStrictEqual(1)
+        expect(processRenderingSpy).toHaveBeenCalledTimes(3)
+        expect(Object.keys(form.inputConfigurations)).toStrictEqual(['x', 'y'])
+        expect(form.pending).toStrictEqual(false)
+
+        form.remove()
+    })
+    test('rendering can be prevented', async (): Promise<void> => {
+        const form = createForm()
+        form.innerHTML = '<input name="x">'
+        const events = recordEvents(form, ['initialize'])
+
+        let renderEvent: Event | null = null
+        form.addEventListener('render', (event: Event) => {
+            renderEvent = event
+            event.preventDefault()
+        })
+
+        await form.render()
+
+        expect(renderEvent).toHaveProperty('cancelable', true)
+        expect(form.inputConfigurations).toStrictEqual({})
+        expect(form.pending).toStrictEqual(true)
+        expect(events).toHaveLength(0)
     })
     test('rendering can be disabled', async (): Promise<void> => {
         const form = createForm()
