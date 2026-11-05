@@ -6994,7 +6994,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:^8.72.1"
     "@webcomponents/webcomponentsjs": "npm:^2.8.0"
     blob-util: "npm:^2.0.2"
-    clientnode: "npm:^4.0.1530"
+    clientnode: "npm:^4.0.1531"
     css-loader: "npm:^7.1.5"
     cssnano: "npm:^9.9.0"
     eslint: "npm:^10.14.0"
@@ -8424,7 +8424,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clientnode@npm:4.0.1530, clientnode@npm:^4.0.1530":
+"clientnode@npm:4.0.1530":
   version: 4.0.1530
   resolution: "clientnode@npm:4.0.1530"
   peerDependencies:
@@ -8439,6 +8439,24 @@ __metadata:
     prop-types:
       optional: true
   checksum: 10c0/3aa080f17cdaaa3dac38a0a9d68ef9669efed29d6cb2ee4b310525d3274b676d7f1fafc0ebc880a72d08ee1fa6432269248c3d1dda2c08f8b8ded5dfb01e8bd9
+  languageName: node
+  linkType: hard
+
+"clientnode@npm:^4.0.1531":
+  version: 4.0.1531
+  resolution: "clientnode@npm:4.0.1531"
+  peerDependencies:
+    "@types/prop-types": "*"
+    node-fetch: "*"
+    prop-types: "*"
+  peerDependenciesMeta:
+    "@types/prop-types":
+      optional: true
+    node-fetch:
+      optional: true
+    prop-types:
+      optional: true
+  checksum: 10c0/693139f69b4524e070ef58f26aa460290858ce2fbfd4addeb59e7c0d63d199098cf8b6f93b170609295339ed69dac3a171591b357f0179e0d35afd4d98e9fc7a
   languageName: node
   linkType: hard
 

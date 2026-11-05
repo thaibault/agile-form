@@ -106,7 +106,7 @@
     "@typescript-eslint/parser": "^8.72.1",
     "@webcomponents/webcomponentsjs": "^2.8.0",
     "blob-util": "^2.0.2",
-    "clientnode": "^4.0.1530",
+    "clientnode": "^4.0.1531",
     "css-loader": "^7.1.5",
     "cssnano": "^9.9.0",
     "eslint": "^10.14.0",
