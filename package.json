@@ -166,8 +166,7 @@
     "yarn": ">=4"
   },
   "webDocumentation": {
-    "tagline": "Build flexible agnostic forms.",
-    "trackingCode": "TODO"
+    "tagline": "Build flexible agnostic forms."
   },
   "webOptimizer": {
     "commandLine": {
