@@ -52,7 +52,7 @@ Features included:
 - Powerful dynamic input configuration via input attributes, form attributes,
   configuration given by external endpoint or url query parameter.
 - Explicit enable-list capability to allow what to allow to configure via url.
-- Fully configurable data transformation and serialisation engine.
+- Fully configurable data transformation and serialization engine.
 - Dynamic inter-input configurations. Derive input configurations from other
   dependent input elements or runtime form state.
 - Dynamic output evaluation in specified output html elements.
