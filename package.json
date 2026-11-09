@@ -139,7 +139,7 @@
     "web-component-wrapper": "^0.0.620",
     "web-documentation": "^1.0.72",
     "web-input-material": "^0.0.521",
-    "weboptimizer": "^4.0.105",
+    "weboptimizer": "^4.0.108",
     "webpack-dev-server": "^6.1.0"
   },
   "peerDependencies": {
