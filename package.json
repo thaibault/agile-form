@@ -166,6 +166,11 @@
     "yarn": ">=4"
   },
   "webDocumentation": {
+    "languages": [
+      "enUS",
+      "deDE",
+      "frFR"
+    ],
     "tagline": "Build flexible agnostic forms."
   },
   "webOptimizer": {
