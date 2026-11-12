@@ -6995,6 +6995,7 @@ __metadata:
     "@webcomponents/webcomponentsjs": "npm:^2.8.0"
     blob-util: "npm:^2.0.2"
     clientnode: "npm:^4.0.1531"
+    core-js: "npm:^3.51.0"
     css-loader: "npm:^7.1.5"
     cssnano: "npm:^9.9.0"
     eslint: "npm:^10.14.0"
@@ -7031,6 +7032,7 @@ __metadata:
     webpack-dev-server: "npm:^6.1.0"
   peerDependencies:
     clientnode: "*"
+    core-js: "*"
     node-fetch: "*"
   peerDependenciesMeta:
     node-fetch:

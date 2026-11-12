@@ -107,6 +107,7 @@
     "@webcomponents/webcomponentsjs": "^2.8.0",
     "blob-util": "^2.0.2",
     "clientnode": "^4.0.1531",
+    "core-js": "^3.51.0",
     "css-loader": "^7.1.5",
     "cssnano": "^9.9.0",
     "eslint": "^10.14.0",
@@ -144,6 +145,7 @@
   },
   "peerDependencies": {
     "clientnode": "*",
+    "core-js": "*",
     "node-fetch": "*"
   },
   "peerDependenciesMeta": {
