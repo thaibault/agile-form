@@ -64,7 +64,7 @@
     "watch": "weboptimizer build --watch"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^8.0.7",
+    "@babel/eslint-parser": "^8.1.2",
     "@codemirror/autocomplete": "^6.20.4",
     "@codemirror/commands": "^6.11.1",
     "@codemirror/lang-css": "^6.3.1",
@@ -89,10 +89,10 @@
     "@rmwc/touch-target": "^14.3.5",
     "@rmwc/typography": "^14.3.5",
     "@stylistic/eslint-plugin": "^5.10.0",
-    "@tiptap/core": "^3.32.2",
-    "@tiptap/extensions": "^3.32.2",
-    "@tiptap/react": "^3.32.2",
-    "@tiptap/starter-kit": "^3.32.2",
+    "@tiptap/core": "^3.33.1",
+    "@tiptap/extensions": "^3.33.1",
+    "@tiptap/react": "^3.33.1",
+    "@tiptap/starter-kit": "^3.33.1",
     "@types/ejs": "^3.1.5",
     "@types/grecaptcha": "^3.0.9",
     "@types/html-minifier": "^4.0.6",
@@ -102,8 +102,8 @@
     "@types/react-dom": "^18.3.7",
     "@types/react-transition-group": "^4.4.12",
     "@types/webpack-env": "^1.18.8",
-    "@typescript-eslint/eslint-plugin": "^8.72.1",
-    "@typescript-eslint/parser": "^8.72.1",
+    "@typescript-eslint/eslint-plugin": "^8.72.2",
+    "@typescript-eslint/parser": "^8.72.2",
     "@webcomponents/webcomponentsjs": "^2.8.0",
     "blob-util": "^2.0.2",
     "clientnode": "^4.0.1531",
@@ -112,7 +112,7 @@
     "cssnano": "^9.9.0",
     "eslint": "^10.14.0",
     "eslint-config-google": "^0.14.0",
-    "eslint-plugin-jsdoc": "^65.4.3",
+    "eslint-plugin-jsdoc": "^65.4.5",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.5.2",
     "jest-canvas-mock": "^2.5.8",
@@ -126,9 +126,9 @@
     "postcss-preset-env": "^11.6.2",
     "postcss-scss": "^4.0.9",
     "prop-types": "^15.8.1",
-    "react-generic-animate": "^0.0.141",
-    "react-generic-dummy": "^0.0.141",
-    "react-generic-tools": "^0.0.138",
+    "react-generic-animate": "^0.0.142",
+    "react-generic-dummy": "^0.0.142",
+    "react-generic-tools": "^0.0.139",
     "react-useanimations": "^3.1.1",
     "rimraf": "^6.1.4",
     "spark-md5": "^3.0.2",
@@ -136,11 +136,11 @@
     "stylelint": "^18.0.0",
     "stylelint-config-standard": "^41.0.0",
     "tslib": "^2.9.1",
-    "typescript-eslint": "^8.72.1",
-    "web-component-wrapper": "^0.0.620",
-    "web-documentation": "^1.0.72",
-    "web-input-material": "^0.0.521",
-    "weboptimizer": "^4.0.109",
+    "typescript-eslint": "^8.72.2",
+    "web-component-wrapper": "^0.0.622",
+    "web-documentation": "^1.0.74",
+    "web-input-material": "^0.0.522",
+    "weboptimizer": "^4.0.114",
     "webpack-dev-server": "^6.1.0"
   },
   "peerDependencies": {
@@ -234,6 +234,10 @@
         }
       },
       "optimizer": {
+        "#": "Let all serve entries share one module cache so the playground configures the same dependency instances (e.g. the clientnode logger) the components use.",
+        "runtimeChunk": {
+          "__evaluate__": "2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2] === 'serve' ? 'single' : false"
+        },
         "terser": {
           "terserOptions": {
             "compress": {
