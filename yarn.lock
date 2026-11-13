@@ -6873,6 +6873,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "agile-form@workspace:."
   dependencies:
+    "@babel/core": "npm:^8.1.0"
     "@babel/eslint-parser": "npm:^8.1.2"
     "@codemirror/autocomplete": "npm:^6.20.4"
     "@codemirror/commands": "npm:^6.11.1"
