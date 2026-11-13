@@ -64,6 +64,7 @@
     "watch": "weboptimizer build --watch"
   },
   "devDependencies": {
+    "@babel/core": "^8.1.0",
     "@babel/eslint-parser": "^8.1.2",
     "@codemirror/autocomplete": "^6.20.4",
     "@codemirror/commands": "^6.11.1",
