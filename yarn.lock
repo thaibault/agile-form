@@ -6948,7 +6948,7 @@ __metadata:
     typescript-eslint: "npm:^8.72.2"
     web-component-wrapper: "npm:^0.0.623"
     web-documentation: "npm:^1.0.74"
-    web-input-material: "npm:^0.0.522"
+    web-input-material: "npm:^0.0.524"
     weboptimizer: "npm:^4.0.114"
     webpack-dev-server: "npm:^6.1.0"
   peerDependencies:
@@ -15068,9 +15068,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-input-material@npm:^0.0.522":
-  version: 0.0.522
-  resolution: "web-input-material@npm:0.0.522"
+"web-input-material@npm:^0.0.524":
+  version: 0.0.524
+  resolution: "web-input-material@npm:0.0.524"
   peerDependencies:
     "@babel/preset-react": "*"
     "@codemirror/autocomplete": "*"
@@ -15222,7 +15222,7 @@ __metadata:
       optional: true
     web-component-wrapper:
       optional: true
-  checksum: 10c0/0b577453e3df4367fb7c45cd834c74247555834b34e6452a74cd90fe13bce1f82e023dabbaab117601e61b7758d927e2fe434f881b02b8934cf6bdad9b72f392
+  checksum: 10c0/f31dea9343fb1f023c28f791ae6864025436ee5e4f039b198ddc37e258d9579faa9785024bdb9368f62fa25b4b2ca4d826c9e5af21f20ddf4c418d7013ca2b92
   languageName: node
   linkType: hard
 
