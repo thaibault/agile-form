@@ -6963,7 +6963,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:^8.72.2"
     "@webcomponents/webcomponentsjs": "npm:^2.8.0"
     blob-util: "npm:^2.0.2"
-    clientnode: "npm:^4.0.1531"
+    clientnode: "npm:^4.0.1532"
     core-js: "npm:^3.51.0"
     css-loader: "npm:^7.1.5"
     cssnano: "npm:^9.9.0"
@@ -6985,10 +6985,10 @@ __metadata:
     prop-types: "npm:^15.8.1"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-generic-animate: "npm:^0.0.142"
-    react-generic-dummy: "npm:^0.0.142"
-    react-generic-tools: "npm:^0.0.140"
-    react-input-material: "npm:^0.0.858"
+    react-generic-animate: "npm:^0.0.143"
+    react-generic-dummy: "npm:^0.0.143"
+    react-generic-tools: "npm:^0.0.141"
+    react-input-material: "npm:^0.0.859"
     react-transition-group: "npm:^4.4.5"
     react-useanimations: "npm:^3.1.1"
     rimraf: "npm:^6.1.4"
@@ -6998,10 +6998,10 @@ __metadata:
     stylelint-config-standard: "npm:^41.0.0"
     tslib: "npm:^2.9.1"
     typescript-eslint: "npm:^8.72.2"
-    web-component-wrapper: "npm:^0.0.623"
-    web-documentation: "npm:^1.0.74"
-    web-input-material: "npm:^0.0.524"
-    weboptimizer: "npm:^4.0.115"
+    web-component-wrapper: "npm:^0.0.624"
+    web-documentation: "npm:^1.0.75"
+    web-input-material: "npm:^0.0.525"
+    weboptimizer: "npm:^4.0.118"
     webpack-dev-server: "npm:^6.1.0"
   peerDependencies:
     clientnode: "*"
@@ -7469,20 +7469,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"babel-plugin-istanbul@npm:8.0.0":
-  version: 8.0.0
-  resolution: "babel-plugin-istanbul@npm:8.0.0"
-  dependencies:
-    "@babel/helper-plugin-utils": "npm:^7.0.0"
-    "@istanbuljs/load-nyc-config": "npm:^1.0.0"
-    "@istanbuljs/schema": "npm:^0.1.3"
-    istanbul-lib-instrument: "npm:^6.0.2"
-    test-exclude: "npm:^7.0.1"
-  checksum: 10c0/c8afa37f2e9d4fc8ab174636a2ca7fcbf0cc0531ebab80003044b923fe93388b1052c693259af45cf7edf304e448422aee700417ee62d8ddf085e00ff24cbca0
-  languageName: node
-  linkType: hard
-
-"babel-plugin-istanbul@npm:^8.0.0":
+"babel-plugin-istanbul@npm:8.0.2, babel-plugin-istanbul@npm:^8.0.0":
   version: 8.0.2
   resolution: "babel-plugin-istanbul@npm:8.0.2"
   dependencies:
@@ -7992,11 +7979,11 @@ __metadata:
   linkType: hard
 
 "baseline-browser-mapping@npm:^2.11.12, baseline-browser-mapping@npm:^2.11.20, baseline-browser-mapping@npm:^2.11.26":
-  version: 2.11.32
-  resolution: "baseline-browser-mapping@npm:2.11.32"
+  version: 2.11.37
+  resolution: "baseline-browser-mapping@npm:2.11.37"
   bin:
     baseline-browser-mapping: dist/cli.cjs
-  checksum: 10c0/50aa1ebd997bf3fef7c3623c79c82f89217bf490debf291f9d7746366be50b5feb66e2404dabd8f374a2ada00f9b558f5961f1fee37691c858203bdefdb6c861
+  checksum: 10c0/48322036bee156d700d1511045abcce3be6cd596d4fadd2e383960ba4206ef4f5eb8c1485481443f931e9b972ab5d9a6f91ec19e7e7778c197fcda88bcf27349
   languageName: node
   linkType: hard
 
@@ -8288,9 +8275,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30000844, caniuse-lite@npm:^1.0.30001809, caniuse-lite@npm:^1.0.30001810, caniuse-lite@npm:^1.0.30001813":
-  version: 1.0.30001819
-  resolution: "caniuse-lite@npm:1.0.30001819"
-  checksum: 10c0/6842319cdb9c8ac950ef0910fc3cc7dac3320b96b150de83ac65162c6b4906d2721ca830943a9e5a833c265b186aa0c417402ddd4157108bbf5474d6fabdc843
+  version: 1.0.30001826
+  resolution: "caniuse-lite@npm:1.0.30001826"
+  checksum: 10c0/11e9dba4dd105d270f69da022ce6a47be67cd1cc376f74029f99524ba8141a840153aa285f22c9a643a2fe608ffc0879592bcc9b7c20ad6875ad7ede663a1a6d
   languageName: node
   linkType: hard
 
@@ -8393,7 +8380,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clientnode@npm:4.0.1531, clientnode@npm:^4.0.1531":
+"clientnode@npm:4.0.1531":
   version: 4.0.1531
   resolution: "clientnode@npm:4.0.1531"
   peerDependencies:
@@ -8408,6 +8395,25 @@ __metadata:
     prop-types:
       optional: true
   checksum: 10c0/693139f69b4524e070ef58f26aa460290858ce2fbfd4addeb59e7c0d63d199098cf8b6f93b170609295339ed69dac3a171591b357f0179e0d35afd4d98e9fc7a
+  languageName: node
+  linkType: hard
+
+"clientnode@npm:^4.0.1532":
+  version: 4.0.1532
+  resolution: "clientnode@npm:4.0.1532"
+  peerDependencies:
+    "@types/prop-types": "*"
+    core-js: "*"
+    node-fetch: "*"
+    prop-types: "*"
+  peerDependenciesMeta:
+    "@types/prop-types":
+      optional: true
+    node-fetch:
+      optional: true
+    prop-types:
+      optional: true
+  checksum: 10c0/c68cde696bf7308bdc929ca6d6e1a0431cdf4e6bc54848ba673d3fa49168c791fe80eb0dc79b8304fd9b4c3fc882b03b26a5c89fa6324fd85c035de32ede73e6
   languageName: node
   linkType: hard
 
@@ -10181,7 +10187,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-minifier@npm:^5.0.4":
+"html-minifier@npm:^5.1.0":
   version: 5.1.0
   resolution: "html-minifier@npm:5.1.0"
   dependencies:
@@ -13525,15 +13531,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-generic-animate@npm:^0.0.142":
-  version: 0.0.142
-  resolution: "react-generic-animate@npm:0.0.142"
+"react-generic-animate@npm:^0.0.143":
+  version: 0.0.143
+  resolution: "react-generic-animate@npm:0.0.143"
   peerDependencies:
     "@babel/preset-react": "*"
     "@types/react": "*"
     "@types/react-dom": "*"
     "@types/react-transition-group": "*"
     clientnode: "*"
+    core-js: "*"
     react: "*"
     react-dom: "*"
     react-transition-group: "*"
@@ -13555,41 +13562,13 @@ __metadata:
       optional: true
     react-transition-group:
       optional: true
-  checksum: 10c0/4e098c1d6f6cb87bf9716ca124ccb6d8da6cfb4609933ade238801db4264beab85e11b7e45190d3b55da4e7eb9d2c7242ff9bf2aa049d754ea9d2dc0d3a368a8
+  checksum: 10c0/cc778e4b3c53430beca10892f1b3f5a9adff63c52ab3e60ce6c04221572843180492a1c8fdd0049751d8345d1d6dcce91fddec9df8659464e3b62b5e17f3390f
   languageName: node
   linkType: hard
 
-"react-generic-dummy@npm:^0.0.142":
-  version: 0.0.142
-  resolution: "react-generic-dummy@npm:0.0.142"
-  peerDependencies:
-    "@babel/preset-react": "*"
-    "@types/react": "*"
-    "@types/react-dom": "*"
-    clientnode: "*"
-    react: "*"
-    react-dom: "*"
-    tslib: "*"
-  peerDependenciesMeta:
-    "@babel/preset-react":
-      optional: true
-    "@types/react":
-      optional: true
-    "@types/react-dom":
-      optional: true
-    clientnode:
-      optional: true
-    react:
-      optional: true
-    react-dom:
-      optional: true
-  checksum: 10c0/de328e7762402110bf21a9f2d5b5ac1d5155dcbdf943080ea0190c40f1c7da6ca13fc5b86efa7a39026a55b223e9be801db677d487180c74dc23a6dcd8d4ea26
-  languageName: node
-  linkType: hard
-
-"react-generic-tools@npm:^0.0.140":
-  version: 0.0.140
-  resolution: "react-generic-tools@npm:0.0.140"
+"react-generic-dummy@npm:^0.0.143":
+  version: 0.0.143
+  resolution: "react-generic-dummy@npm:0.0.143"
   peerDependencies:
     "@babel/preset-react": "*"
     "@types/react": "*"
@@ -13612,13 +13591,42 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/031b9de95788324302c487a9aa6b1bd4d588b72617e552befd0330e3cc4c6368c31220309b0a463aa47d386e5b27a60c3517516ce3c44530336a253ff6f9f1d6
+  checksum: 10c0/dde3ddcbd00648892927a1fa87f04335facf104088373cbbda2a9f577e60508d830e397d522922fb69cc60178f5f61016d41ad3d6dbdae97f1422efb82254cb3
   languageName: node
   linkType: hard
 
-"react-input-material@npm:^0.0.858":
-  version: 0.0.858
-  resolution: "react-input-material@npm:0.0.858"
+"react-generic-tools@npm:^0.0.141":
+  version: 0.0.141
+  resolution: "react-generic-tools@npm:0.0.141"
+  peerDependencies:
+    "@babel/preset-react": "*"
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    clientnode: "*"
+    core-js: "*"
+    react: "*"
+    react-dom: "*"
+    tslib: "*"
+  peerDependenciesMeta:
+    "@babel/preset-react":
+      optional: true
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+    clientnode:
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: 10c0/2c0b22dd995cc9a4a27b7815c6a73bf412d122e5c993056e30f39a8400c838d6b2ceb09686d9bb32ffaf0fdbd9cfb5294edd573a91f17686d0fa8a03f79f8063
+  languageName: node
+  linkType: hard
+
+"react-input-material@npm:^0.0.859":
+  version: 0.0.859
+  resolution: "react-input-material@npm:0.0.859"
   peerDependencies:
     "@babel/preset-react": "*"
     "@codemirror/autocomplete": "*"
@@ -13755,7 +13763,7 @@ __metadata:
       optional: true
     spark-md5:
       optional: true
-  checksum: 10c0/be5b72dd11e2b13abad299483eb4ce736f828757d901aa50ed245641468323812fcd1bf11017b87b0f808cff96de48abbd2609aeea96a981b7ddf3a1e881902e
+  checksum: 10c0/93023feff711fb380b7b47e070af29abacb81f40cb5ae372eb5307d3cc00a710547b70e32c0f05671bba7ca907416527e43bb6e20870cc34b11086481606ec21
   languageName: node
   linkType: hard
 
@@ -15289,9 +15297,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-component-wrapper@npm:^0.0.623":
-  version: 0.0.623
-  resolution: "web-component-wrapper@npm:0.0.623"
+"web-component-wrapper@npm:^0.0.624":
+  version: 0.0.624
+  resolution: "web-component-wrapper@npm:0.0.624"
   peerDependencies:
     "@types/react": "*"
     "@types/react-dom": "*"
@@ -15308,22 +15316,22 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 10c0/00d0dc9a53023bba1d5f2df1e2c89fa418469308bd1ccef011b9567345256c8b4e442b33de30b1ed122fe80bcab66b3258ba3552892e36969c24dcbdbb2df330
+  checksum: 10c0/f83647868610522ae282ff081990531af001cf9511efcb4de97adfc05751f6bdadabcbd140f48e8b885fb9c990d31569447fc7a0122fda0ded4e4e3779b437fe
   languageName: node
   linkType: hard
 
-"web-documentation@npm:^1.0.74":
-  version: 1.0.74
-  resolution: "web-documentation@npm:1.0.74"
+"web-documentation@npm:^1.0.75":
+  version: 1.0.75
+  resolution: "web-documentation@npm:1.0.75"
   bin:
     web-documentation: dist/deploy.js
-  checksum: 10c0/fbef518963c1931b0a8bb2c049ac9ec25ddeed4bf3f93ebb49bb0fcb7dbe0964999b6a6ca3a366f94fa770df5e7ceb4adf42b705ac0035f550da931cd6c34a20
+  checksum: 10c0/841e207b8b4b84d73ebc0e5fe5a92f7d440b2cfe353dddf46ef0d495876671193276b539747ed506cc82acb77001b8f9dc6194f9a38d444b3c109a0e0bf3e9be
   languageName: node
   linkType: hard
 
-"web-input-material@npm:^0.0.524":
-  version: 0.0.524
-  resolution: "web-input-material@npm:0.0.524"
+"web-input-material@npm:^0.0.525":
+  version: 0.0.525
+  resolution: "web-input-material@npm:0.0.525"
   peerDependencies:
     "@babel/preset-react": "*"
     "@codemirror/autocomplete": "*"
@@ -15475,7 +15483,7 @@ __metadata:
       optional: true
     web-component-wrapper:
       optional: true
-  checksum: 10c0/f31dea9343fb1f023c28f791ae6864025436ee5e4f039b198ddc37e258d9579faa9785024bdb9368f62fa25b4b2ca4d826c9e5af21f20ddf4c418d7013ca2b92
+  checksum: 10c0/049ff5582d78f341a77693f00e91e2c71dd0d4fab9052604ba8acf63cac2b1827539dbd2bf50e47ea37546d3505d121bb887012df740317b1972c6b43fd47a0c
   languageName: node
   linkType: hard
 
@@ -15493,9 +15501,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"weboptimizer@npm:^4.0.115":
-  version: 4.0.115
-  resolution: "weboptimizer@npm:4.0.115"
+"weboptimizer@npm:^4.0.118":
+  version: 4.0.118
+  resolution: "weboptimizer@npm:4.0.118"
   dependencies:
     "@babel/plugin-proposal-decorators": "npm:^8.0.2"
     "@babel/plugin-transform-class-properties": "npm:^8.0.1"
@@ -15504,7 +15512,7 @@ __metadata:
     "@babel/preset-typescript": "npm:^8.0.7"
     "@typescript/native": "npm:typescript@^7.0.2"
     babel-loader: "npm:^10.1.1"
-    babel-plugin-istanbul: "npm:8.0.0"
+    babel-plugin-istanbul: "npm:8.0.2"
     babel-plugin-polyfill-corejs3: "npm:^1.0.0"
     babel-plugin-transform-rewrite-imports: "npm:^1.5.4"
     clientnode: "npm:4.0.1531"
@@ -15513,7 +15521,7 @@ __metadata:
     extract-loader: "npm:^5.1.0"
     glob-all: "npm:^3.3.1"
     html-loader: "npm:^5.1.0"
-    html-minifier: "npm:^5.0.4"
+    html-minifier: "npm:^5.1.0"
     html-webpack-plugin: "npm:^5.6.8"
     imports-loader: "npm:^5.0.0"
     jest-environment-jsdom: "npm:^30.5.2"
@@ -15643,7 +15651,7 @@ __metadata:
       optional: true
   bin:
     weboptimizer: dist/index.js
-  checksum: 10c0/8fbacb88626899ac5bda5890730592e81904fab0ca9eeeb085b7dd3d83e892bc7a8a0c0920cf70da76f60bd5e8fdfc571d9c4f347b3970bfaeb0a3f43e1ee4ab
+  checksum: 10c0/0c8a7fd277f9e8bf0996550cc7f0f165ab5550c9cd61b61b0243e677efcee2b7d11e36215862465a8c86b64f021f92b604e62ed2402bcfeefe99e5238f4f2f12
   languageName: node
   linkType: hard
 
