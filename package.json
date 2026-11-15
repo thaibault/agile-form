@@ -89,7 +89,7 @@
     "@rmwc/tooltip": "^14.3.5",
     "@rmwc/touch-target": "^14.3.5",
     "@rmwc/typography": "^14.3.5",
-    "@stylistic/eslint-plugin": "^5.10.0",
+    "@stylistic/eslint-plugin": "^6.0.0",
     "@tiptap/core": "^3.34.0",
     "@tiptap/extensions": "^3.34.0",
     "@tiptap/react": "^3.34.0",
