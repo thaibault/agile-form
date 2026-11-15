@@ -240,21 +240,23 @@
       },
       "optimizer": {
         "#": "Let all serve entries share one module cache so the playground configures the same dependency instances (e.g. the clientnode logger) the components use.",
-        "runtimeChunk": {
-          "__evaluate__": "2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2] === 'serve' ? 'single' : false"
-        },
-        "terser": {
-          "terserOptions": {
-            "compress": {
-              "#": "To provide a logging output we need to exclude this feature.",
-              "drop_console": {
-                "__evaluate__": "false"
-              },
-              "drop_debugger": {
-                "__evaluate__": "false"
+        "javaScript": {
+          "minify": {
+            "options": {
+              "compress": {
+                "#": "To provide a logging output we need to exclude this feature.",
+                "drop_console": {
+                  "__evaluate__": "false"
+                },
+                "drop_debugger": {
+                  "__evaluate__": "false"
+                }
               }
             }
           }
+        },
+        "runtimeChunk": {
+          "__evaluate__": "2 < self.givenCommandLineArguments.length && self.givenCommandLineArguments[2] === 'serve' ? 'single' : false"
         }
       }
     },
