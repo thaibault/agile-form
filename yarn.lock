@@ -6988,7 +6988,7 @@ __metadata:
     react-generic-animate: "npm:^0.0.143"
     react-generic-dummy: "npm:^0.0.143"
     react-generic-tools: "npm:^0.0.141"
-    react-input-material: "npm:^0.0.859"
+    react-input-material: "npm:^0.0.860"
     react-transition-group: "npm:^4.4.5"
     react-useanimations: "npm:^3.1.1"
     rimraf: "npm:^6.1.4"
@@ -6999,9 +6999,9 @@ __metadata:
     tslib: "npm:^2.9.1"
     typescript-eslint: "npm:^8.72.2"
     web-component-wrapper: "npm:^0.0.624"
-    web-documentation: "npm:^1.0.75"
-    web-input-material: "npm:^0.0.525"
-    weboptimizer: "npm:^4.0.119"
+    web-documentation: "npm:^1.0.76"
+    web-input-material: "npm:^0.0.526"
+    weboptimizer: "npm:^4.0.121"
     webpack-dev-server: "npm:^6.1.0"
   peerDependencies:
     clientnode: "*"
@@ -8380,25 +8380,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"clientnode@npm:4.0.1531":
-  version: 4.0.1531
-  resolution: "clientnode@npm:4.0.1531"
-  peerDependencies:
-    "@types/prop-types": "*"
-    node-fetch: "*"
-    prop-types: "*"
-  peerDependenciesMeta:
-    "@types/prop-types":
-      optional: true
-    node-fetch:
-      optional: true
-    prop-types:
-      optional: true
-  checksum: 10c0/693139f69b4524e070ef58f26aa460290858ce2fbfd4addeb59e7c0d63d199098cf8b6f93b170609295339ed69dac3a171591b357f0179e0d35afd4d98e9fc7a
-  languageName: node
-  linkType: hard
-
-"clientnode@npm:^4.0.1532":
+"clientnode@npm:4.0.1532, clientnode@npm:^4.0.1532":
   version: 4.0.1532
   resolution: "clientnode@npm:4.0.1532"
   peerDependencies:
@@ -10187,9 +10169,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-minifier@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "html-minifier@npm:5.1.0"
+"html-minifier@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "html-minifier@npm:5.2.0"
   dependencies:
     commander: "npm:^15.1.0"
     entities: "npm:^9.0.0"
@@ -10204,7 +10186,7 @@ __metadata:
   bin:
     hm: cli.js
     html-minifier: cli.js
-  checksum: 10c0/ad5e037459b2b3a20a6e0b0e6a857724be341ea78a1d9a6f1be1f9b24243be65904046a0104616070367756001041114bc04ed33ab99542a49fc28b1eb135253
+  checksum: 10c0/db24402765bedc89894dffd9359c3341059e846766d5fdcf4e0dded453de8078248a0154507a310cd05955170f4ac7aa317527166aa1ce11875d82931cdab1f2
   languageName: node
   linkType: hard
 
@@ -13624,9 +13606,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-input-material@npm:^0.0.859":
-  version: 0.0.859
-  resolution: "react-input-material@npm:0.0.859"
+"react-input-material@npm:^0.0.860":
+  version: 0.0.860
+  resolution: "react-input-material@npm:0.0.860"
   peerDependencies:
     "@babel/preset-react": "*"
     "@codemirror/autocomplete": "*"
@@ -13763,7 +13745,7 @@ __metadata:
       optional: true
     spark-md5:
       optional: true
-  checksum: 10c0/93023feff711fb380b7b47e070af29abacb81f40cb5ae372eb5307d3cc00a710547b70e32c0f05671bba7ca907416527e43bb6e20870cc34b11086481606ec21
+  checksum: 10c0/5a8c2641a50f9f6dc87549a9c8aa614b9efa5ac8cb8bc47ab242b72e3eaa15fd08d3dd766f7ca9774c36b9422b16f09313151c99178d4185cc2df1102033ed59
   languageName: node
   linkType: hard
 
@@ -15320,18 +15302,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-documentation@npm:^1.0.75":
-  version: 1.0.75
-  resolution: "web-documentation@npm:1.0.75"
+"web-documentation@npm:^1.0.76":
+  version: 1.0.76
+  resolution: "web-documentation@npm:1.0.76"
   bin:
     web-documentation: dist/deploy.js
-  checksum: 10c0/841e207b8b4b84d73ebc0e5fe5a92f7d440b2cfe353dddf46ef0d495876671193276b539747ed506cc82acb77001b8f9dc6194f9a38d444b3c109a0e0bf3e9be
+  checksum: 10c0/4956ab1138b48442c300bb07b2fcab292bab3f71a75e6cf055c5f4010b5866797e1e740cfadefe83912aa9c940ad14b9f9ed9d5be17b4170de716655d4680249
   languageName: node
   linkType: hard
 
-"web-input-material@npm:^0.0.525":
-  version: 0.0.525
-  resolution: "web-input-material@npm:0.0.525"
+"web-input-material@npm:^0.0.526":
+  version: 0.0.526
+  resolution: "web-input-material@npm:0.0.526"
   peerDependencies:
     "@babel/preset-react": "*"
     "@codemirror/autocomplete": "*"
@@ -15483,7 +15465,7 @@ __metadata:
       optional: true
     web-component-wrapper:
       optional: true
-  checksum: 10c0/049ff5582d78f341a77693f00e91e2c71dd0d4fab9052604ba8acf63cac2b1827539dbd2bf50e47ea37546d3505d121bb887012df740317b1972c6b43fd47a0c
+  checksum: 10c0/e2474ec0bdc42045c1f493ea0bf154762a878c00bdeb5d5506674084d657248e185f6087961ee2691d6db990da31154beb650e411b0971112beba48a5ff4c0cf
   languageName: node
   linkType: hard
 
@@ -15501,9 +15483,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"weboptimizer@npm:^4.0.119":
-  version: 4.0.119
-  resolution: "weboptimizer@npm:4.0.119"
+"weboptimizer@npm:^4.0.121":
+  version: 4.0.121
+  resolution: "weboptimizer@npm:4.0.121"
   dependencies:
     "@babel/plugin-proposal-decorators": "npm:^8.0.2"
     "@babel/plugin-transform-class-properties": "npm:^8.0.1"
@@ -15515,13 +15497,13 @@ __metadata:
     babel-plugin-istanbul: "npm:8.0.2"
     babel-plugin-polyfill-corejs3: "npm:^1.0.0"
     babel-plugin-transform-rewrite-imports: "npm:^1.5.4"
-    clientnode: "npm:4.0.1531"
+    clientnode: "npm:4.0.1532"
     ejs: "npm:^7.0.2"
     exports-loader: "npm:^5.0.0"
     extract-loader: "npm:^5.1.0"
     glob-all: "npm:^3.3.1"
     html-loader: "npm:^5.1.0"
-    html-minifier: "npm:^5.1.0"
+    html-minifier: "npm:^5.2.0"
     html-webpack-plugin: "npm:^5.6.8"
     imports-loader: "npm:^5.0.0"
     jest-environment-jsdom: "npm:^30.5.2"
@@ -15645,7 +15627,7 @@ __metadata:
       optional: true
   bin:
     weboptimizer: dist/index.js
-  checksum: 10c0/28634dd066a2fb66ab458914354f9b206f7b7c483d1770b32fcaee20bf91928fbb2a89c4aa028b9641910cfa272ac0d59dc5504c690d7da91d6431b6ce5ae448
+  checksum: 10c0/522a58c44dd3516c72ea5310b4fe649a1bdbfe61cafe0d8e9753fff7a2b148574c08d16fde656f4ab66ad4bb20a5acb855af5f0d1656f7be83f02b5cff968f52
   languageName: node
   linkType: hard
 

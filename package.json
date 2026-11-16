@@ -132,7 +132,7 @@
     "react-generic-animate": "^0.0.143",
     "react-generic-dummy": "^0.0.143",
     "react-generic-tools": "^0.0.141",
-    "react-input-material": "^0.0.859",
+    "react-input-material": "^0.0.860",
     "react-transition-group": "^4.4.5",
     "react-useanimations": "^3.1.1",
     "rimraf": "^6.1.4",
@@ -143,9 +143,9 @@
     "tslib": "^2.9.1",
     "typescript-eslint": "^8.72.2",
     "web-component-wrapper": "^0.0.624",
-    "web-documentation": "^1.0.75",
-    "web-input-material": "^0.0.525",
-    "weboptimizer": "^4.0.119",
+    "web-documentation": "^1.0.76",
+    "web-input-material": "^0.0.526",
+    "weboptimizer": "^4.0.121",
     "webpack-dev-server": "^6.1.0"
   },
   "peerDependencies": {
