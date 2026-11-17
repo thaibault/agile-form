@@ -6985,7 +6985,7 @@ __metadata:
     prop-types: "npm:^15.8.1"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
-    react-generic-animate: "npm:^0.0.143"
+    react-generic-animate: "npm:^0.0.144"
     react-generic-dummy: "npm:^0.0.143"
     react-generic-tools: "npm:^0.0.141"
     react-input-material: "npm:^0.0.860"
@@ -13513,9 +13513,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-generic-animate@npm:^0.0.143":
-  version: 0.0.143
-  resolution: "react-generic-animate@npm:0.0.143"
+"react-generic-animate@npm:^0.0.144":
+  version: 0.0.144
+  resolution: "react-generic-animate@npm:0.0.144"
   peerDependencies:
     "@babel/preset-react": "*"
     "@types/react": "*"
@@ -13544,7 +13544,7 @@ __metadata:
       optional: true
     react-transition-group:
       optional: true
-  checksum: 10c0/cc778e4b3c53430beca10892f1b3f5a9adff63c52ab3e60ce6c04221572843180492a1c8fdd0049751d8345d1d6dcce91fddec9df8659464e3b62b5e17f3390f
+  checksum: 10c0/467b40d4669bbc9177e7ef0455744bb968891b069eab0beeec4a0261fc8dacbb5ec10f220cb38faeddd37b2d903dd8eb3937b77cf506ed24bca8c630293a348b
   languageName: node
   linkType: hard
 
