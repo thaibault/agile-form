@@ -55,6 +55,18 @@ TextInput.register()
 
 const name = 'test-form'
 api.register(name)
+/**
+ * Creates a not yet connected instance of the registered form component.
+ * @returns Created form instance.
+ */
+const createFormElement = (): AgileForm => {
+    const form = document.createElement(name)
+
+    if (!(form instanceof AgileForm))
+        throw new Error(`"${name}" is not registered as "AgileForm".`)
+
+    return form as AgileForm
+}
 
 describe('api', () => {
     test('api definitions', () => {
@@ -66,13 +78,13 @@ describe('api', () => {
 })
 describe('AgileForm', (): void => {
     test('custom element definition', () => {
-        const form = document.createElement(name) as AgileForm
+        const form = createFormElement()
         document.body.appendChild(form)
 
         expect(form).toBeDefined()
     })
     test('attribute configuration', async () => {
-        const form = document.createElement(name) as AgileForm
+        const form = createFormElement()
         document.body.appendChild(form)
 
         form.setAttribute('configuration', '{value: 2}')
@@ -82,7 +94,7 @@ describe('AgileForm', (): void => {
         expect(form).toHaveProperty('resolvedConfiguration.value', 2)
     })
     test('input connections', async (): Promise<void> => {
-        const form = document.createElement(name) as AgileForm
+        const form = createFormElement()
         document.body.appendChild(form)
 
         expect(form).toHaveProperty('inputConfigurations', {})
@@ -109,7 +121,7 @@ describe('AgileForm', (): void => {
     })
     // region configuration
     test('normalizeURLConfiguration', (): void => {
-        const form = document.createElement(name) as AgileForm
+        const form = createFormElement()
 
         expect(form.self.normalizeURLConfiguration({})).toStrictEqual({})
 
@@ -138,7 +150,7 @@ describe('AgileForm', (): void => {
             })
     })
     test('normalizeConfiguration', (): void => {
-        const form = document.createElement(name) as AgileForm
+        const form = createFormElement()
 
         expect(form.self.normalizeConfiguration({})).toStrictEqual({
             evaluations: [], tag: {values: []}
@@ -169,7 +181,7 @@ describe('AgileForm', (): void => {
         })
     })
     test('normalizeEvaluations', (): void => {
-        const form = document.createElement(name) as AgileForm
+        const form = createFormElement()
 
         expect(form.self.normalizeEvaluations([])).toStrictEqual([])
         expect(form.self.normalizeEvaluations([{}])).toStrictEqual([])
@@ -197,7 +209,7 @@ describe('AgileForm', (): void => {
             .toStrictEqual([['a', 1], ['b', '1 + 1'], ['c', '2 + 1']])
     })
     test('mergeConfiguration', (): void => {
-        const form = document.createElement(name) as AgileForm
+        const form = createFormElement()
 
         const initialConfiguration: Configuration =
             copy(form.resolvedConfiguration)
@@ -220,7 +232,7 @@ describe('AgileForm', (): void => {
         )
     })
     test('resolveConfiguration', (): void => {
-        const form = document.createElement(name) as AgileForm
+        const form = createFormElement()
 
         const initialConfiguration: Configuration =
             copy(form.resolvedConfiguration)
@@ -234,7 +246,7 @@ describe('AgileForm', (): void => {
             .toStrictEqual({...initialConfiguration, a: 2})
     })
     test('getConfigurationFromURL', (): void => {
-        const form = document.createElement(name) as AgileForm
+        const form = createFormElement()
 
         expect(form.getConfigurationFromURL()).toStrictEqual(null)
 
@@ -282,7 +294,7 @@ const originalFetch = globalContext.fetch
  * @returns Created form instance.
  */
 const createForm = (): AgileForm => {
-    const form = document.createElement(name) as AgileForm
+    const form = createFormElement()
     form.resolvedConfiguration.animation = false
 
     return form
@@ -1679,7 +1691,7 @@ describe('AgileForm rendering', (): void => {
     const renderForm = async (
         content: string, configuration: Mapping<unknown> = {}
     ): Promise<AgileForm> => {
-        const form = document.createElement(name) as AgileForm
+        const form = createFormElement()
         form.innerHTML = content
         form.setAttribute(
             'configuration',
@@ -1818,7 +1830,7 @@ describe('AgileForm rendering', (): void => {
         form.remove()
     })
     test('overlapping render calls', async (): Promise<void> => {
-        const form = document.createElement(name) as AgileForm
+        const form = createFormElement()
         form.innerHTML = '<input name="x"><input name="y">'
         form.setAttribute('configuration', '{animation: false}')
 
